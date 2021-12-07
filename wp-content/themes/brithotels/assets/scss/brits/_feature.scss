@@ -1,0 +1,304 @@
+
+
+
+.feature {
+	text-align: center;
+	color: $white;
+	margin-bottom: 60px;
+	img {
+		margin-bottom: 40px;
+		max-height: 120px;
+	}
+	h5 {
+		font-size: 2.2rem;
+		font-weight: 400;
+		font-family: $font1;
+	}
+	p {
+		font-size: 1.4rem;
+		font-weight: 400;
+		font-family: $font3;
+		color: $white;
+	}
+}
+
+.info-box {
+	padding: 80px;
+	color: $white;
+	height: 100%;
+	&.color1 {
+		background: #1a1a1a;
+	}
+	&.color2 {
+		background: #333333;
+	}
+	&.color3 {
+		background: #4d4d4d;
+	}
+	h3 {
+		font-size: 4.3rem;
+		font-family: $font1;
+	}
+	p {
+		font-size: 2.1rem;
+		color: $white;
+		font-weight: 400;
+		font-family: $font3;
+	}
+}
+
+.facilities {
+	text-align: center;
+	h2.page-title {
+		font-size: 6.0rem;
+		font-weight: 400;
+		font-family: $font3;
+		color: #686868;
+		position: relative;
+		margin-bottom: 100px;
+		&:before {
+			position: absolute;
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+			height: 1px;
+			background: #686868;
+			width: 290px;
+			content: '';
+		}
+	}
+	p {
+		font-size: 2.9rem;
+		font-weight: 200;
+		font-family: $font3;
+		color: #686868;
+		margin-bottom: 30px;
+		line-height: 1.5;
+	}
+	ul {
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		text-align: left;
+		li {
+			font-size: 1.8rem;
+			font-family: $font3;
+			color: #686868;
+			font-weight: 400;
+			flex: 0 0 calc(33.33% - 34px);
+			margin: 3px 0 13px 19px;
+			line-height: 1.3;
+		}
+	}
+	.btn {
+    margin-top: 120px;
+    &.mt70 {
+    	margin-top: 70px;
+    }
+    &.mt0 {
+    	margin-top: 0;
+    }
+	}
+}
+
+.feature-2-wrap {
+	display: flex;
+	width: 100%;
+	justify-content: center;
+	flex-wrap: wrap;
+	.feature-2 {
+		flex: 0 0 20%;
+		padding: 0;
+		text-align: center;
+		color: $white;
+		margin-bottom: 60px;
+		img {
+			margin-bottom: 40px;
+			max-height: 100px;
+		}
+		h5 {
+			font-size: 2.0rem;
+			font-weight: 400;
+			font-family: $font1;
+			text-transform: uppercase;
+		}
+		p {
+			font-size: 1.4rem;
+			font-weight: 400;
+			font-family: $font3;
+			color: $white;
+		}
+	}
+}
+
+.hotel-facility-wrap {
+	position: relative;
+	overflow: hidden;
+	.hotel-thumb {
+		position: absolute;
+		top: 200px;
+		left: 0;
+		bottom: 0;
+		width: 50%;
+		img {
+			width: 100%;
+		}
+	}
+	&.reverse {
+		.hotel-thumb {
+			left: auto;
+			right: 0;
+		}
+	}
+}
+
+.facility-2 {
+	padding: 100px 0;
+	h3 {
+		font-size: 4.5rem;
+		font-weight: 400;
+		font-family: $font3;
+		color: #686868;
+	}
+	p {
+		font-size: 2.9rem;
+		font-weight: 200;
+		font-family: $font3;
+		color: #686868;
+		margin-top: 30px;
+		line-height: 1.5;
+	}
+}
+
+.room-book-btn {
+	text-align: center;
+	.btn {
+    &.mt70 {
+    	margin-top: 70px;
+    }
+	}
+}
+
+@media all and(min-width: 1700px) {
+	.facility-2 {
+		h3 {
+			font-size: 6.0rem;
+		}
+	}
+}
+
+@media all and (max-width: 1600px) {
+	.info-box {
+		padding: 40px;
+		h3 {
+			font-size: 3.0rem;
+		}
+	}
+	.facility-2 {
+		padding: 0px 0;
+	}
+}
+
+@media all and (max-width: 1199px) {
+	.feature-2-wrap {
+		.feature-2 {
+			flex: 0 0 33.33%;
+		}
+	}
+}
+
+@media all and (max-width: 991px) {
+	.info-box {
+		height: auto;
+		margin-bottom: 40px;
+	}
+	.facilities {
+		h2 {
+			font-size: 3.4rem;
+		}
+		ul {
+			li {
+				flex: 0 0 calc(50% - 34px);
+				font-size: 1.6rem;
+			}
+		}
+		.btn {
+		    margin-top: 30px;
+		}
+	}
+	.hotel-facility-wrap {
+		.hotel-thumb {
+			position: static;
+			width: 720px;
+			margin: 0 auto;
+			padding: 0 15px;
+			img {
+				width: 100%;
+			}
+		}
+	}
+	.facility-2 {
+		background: $white;
+		padding: 50px;
+	}
+}
+
+@media all and (max-width: 767px) {
+	.info-box {
+		h3 {
+			font-size: 2.8rem;
+		}
+		p {
+			font-size: 1.6rem;
+		}
+	}
+	.facilities {
+		ul {
+			li {
+				flex: 0 0 100%;
+			}
+		}
+	}
+	.feature-2-wrap {
+		.feature-2 {
+			flex: 0 0 50%;
+		}
+	}
+	.hotel-facility-wrap {
+		.hotel-thumb {
+			width: 540px;
+		}
+	}
+	.facility-2 {
+		padding: 30px;
+		h3 {
+			font-size: 2.0rem;
+		}
+		p {
+			font-size: 1.6rem;
+		}
+	}
+}
+
+@media all and (max-width: 575px) {
+	.feature-2-wrap {
+		.feature-2 {
+			flex: 0 0 100%;
+			padding: 0;
+		}
+	}
+	.hotel-facility-wrap {
+		.hotel-thumb {
+			width: 100%;
+		}
+	}
+	.facilities,
+	.room-book-btn {
+		.btn.btn-100 {
+			display: block;
+			width: 100%;
+		}
+	}
+}

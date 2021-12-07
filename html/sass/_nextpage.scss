@@ -1,0 +1,30 @@
+
+
+.next-page {
+	text-align: center;
+	color: $white;
+	h2 {
+		font-size: 7.7rem;
+		font-weight: 400;
+		font-family: $font1;
+	}
+	a {
+		text-transform: uppercase;
+		font-family: $font3;
+		color: #686868;
+		font-size: 3.0rem;
+		font-weight: 400;
+		text-decoration: underline;
+	}
+}
+
+@media all and (max-width: 991px) {
+	.next-page {
+		h2 {
+			font-size: 3.2rem;
+		}
+		a {
+			font-size: 1.8rem;
+		}
+	}
+}

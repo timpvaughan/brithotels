@@ -1,0 +1,43 @@
+
+
+.breadcrumb {
+	padding: 40px 0 0;
+	margin: 0;
+	background: transparent;
+	ul {
+		padding: 0;
+		margin: 0;
+		width: 100%;
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		li {
+			font-size: 1.6rem;
+			font-family: $font3;
+			font-weight: 400;
+			color: #686868;
+			position: relative;
+			+ li {
+				padding-left: 10px;
+				margin-left: 5px;
+				&:before {
+					position: absolute;
+					top: 0;
+					left: 0;
+					content: '-';
+				}
+			}
+		}
+	}
+}
+
+@media all and (max-width: 991px) {
+	.breadcrumb {
+		ul {
+			li {
+				font-size: 1.6rem;
+			}
+		}
+	}
+}
