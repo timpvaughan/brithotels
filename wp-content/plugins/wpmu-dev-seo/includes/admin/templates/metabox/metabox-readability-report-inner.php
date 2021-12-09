@@ -12,7 +12,7 @@ $readability_levels_map = empty( $readability_levels_map ) ? array() : $readabil
 		<div class="wds-check-item sui-accordion-item <?php echo esc_attr( $accordion_item_classes ); ?>">
 			<div class="<?php echo $readability_ignored ? 'wds-ignored-item-header' : 'sui-accordion-item-header'; ?>">
 				<div class="sui-accordion-item-title sui-accordion-col-8">
-					<i aria-hidden="true" class="<?php echo esc_attr( $icon_class ); ?>"></i>
+					<span aria-hidden="true" class="<?php echo esc_attr( $icon_class ); ?>"></span>
 					<?php esc_html_e( 'Flesch-Kincaid Test', 'wds' ); ?>
 				</div>
 
@@ -22,12 +22,12 @@ $readability_levels_map = empty( $readability_levels_map ) ? array() : $readabil
 						        class="wds-unignore wds-disabled-during-request sui-button sui-button-ghost"
 						        data-check_id="readability">
 							<span class="sui-loading-text">
-								<i class="sui-icon-undo" aria-hidden="true"></i>
+								<span class="sui-icon-undo" aria-hidden="true"></span>
 
 								<?php esc_html_e( 'Restore', 'wds' ); ?>
 							</span>
 
-							<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+							<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 						</button>
 					</div>
 				<?php else : ?>
@@ -39,7 +39,7 @@ $readability_levels_map = empty( $readability_levels_map ) ? array() : $readabil
 						<button class="sui-button-icon sui-accordion-open-indicator"
 						        type="button"
 						        aria-label="<?php esc_html_e( 'Open item', 'wds' ); ?>">
-							<i class="sui-icon-chevron-down" aria-hidden="true"></i>
+							<span class="sui-icon-chevron-down" aria-hidden="true"></span>
 						</button>
 					</div>
 				<?php endif; ?>
@@ -86,12 +86,12 @@ $readability_levels_map = empty( $readability_levels_map ) ? array() : $readabil
 							        class="wds-ignore wds-disabled-during-request sui-button sui-button-ghost"
 							        data-check_id="readability">
 								<span class="sui-loading-text">
-									<i class="sui-icon-eye-hide" aria-hidden="true"></i>
+									<span class="sui-icon-eye-hide" aria-hidden="true"></span>
 
 									<?php esc_html_e( 'Ignore', 'wds' ); ?>
 								</span>
 
-								<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+								<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 							</button>
 
 							<span><small><?php esc_html_e( 'This will ignore warnings for this particular post.', 'wds' ); ?></small></span>

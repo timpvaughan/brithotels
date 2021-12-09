@@ -3,11 +3,11 @@
 
 	function switch_reporting(on) {
 		var $checkbox = $(":checkbox[name*='checkup-cron-enable']"),
-			$tab = $('[data-target="tab_settings"]').get(0),
+			$tab = $('[data-target="tab_reporting"]'),
 			$enable_button = $('.wds-enable-reporting'),
 			$disable_button = $('.wds-disable-reporting');
 
-		$tab.click();
+		$tab.trigger('click');
 		$checkbox.prop('checked', on);
 		$checkbox.trigger('change');
 		if (on) {
@@ -82,16 +82,6 @@
 		}
 	}
 
-	function frequency_tab_change() {
-		var $radio = $(this),
-			frequency = $radio.val();
-
-		$dow_selects = $('.wds-dow').hide();
-		$dow_selects.find('select').prop('disabled', true);
-		$dow_selects.filter('.' + frequency).show();
-		$dow_selects.filter('.' + frequency).find('select').prop('disabled', false);
-	}
-
 	function post(action, data) {
 		data = $.extend({
 			action: action,
@@ -159,9 +149,35 @@
 		return $(":checkbox[name*='checkup-cron-enable']");
 	}
 
+	function start_buttons_selector() {
+		return '.wds-start-checkup-button, #tab_checkup .sui-button-blue';
+	}
+
+	function start_checkup(e) {
+		e.preventDefault();
+
+		$(start_buttons_selector()).addClass('disabled');
+
+		return post('wds-start-checkup', {})
+			.done(function (data) {
+				if (data.success) {
+					window.location.reload();
+				} else {
+					window.Wds.show_floating_message(
+						'wds-checkup-notice',
+						Wds.l10n('checkup', 'check-not-started'),
+						'error'
+					);
+					$(start_buttons_selector()).removeClass('disabled');
+				}
+			});
+	}
+
 	function init() {
 		window.Wds.hook_toggleables();
 		window.Wds.vertical_tabs();
+		window.Wds.reporting_schedule();
+		window.Wds.dismissible_message();
 		open_target_check_item();
 
 		$('.sui-accordion').off();
@@ -169,14 +185,10 @@
 		$(document)
 			.on('click', '.wds-enable-reporting', enable_reporting)
 			.on('click', '.wds-disable-reporting', disable_reporting)
-			.on('change', '.wds-checkup-frequency-radio', frequency_tab_change)
 			.on('click', '.sui-accordion-item-header', toggle_accordion_item_state)
 			.on('click', '.wds-unignore', handle_unignore_button_click)
+			.on('click', start_buttons_selector(), start_checkup)
 			.on('click', '.wds-ignore', handle_ignore_button_click);
-
-		$('.wds-checkup-frequency-radio:checked').each(function () {
-			frequency_tab_change.apply(this);
-		});
 
 		$('img').on("error", function () {
 			$(this).prop('src', _wds_checkup.broken_image);

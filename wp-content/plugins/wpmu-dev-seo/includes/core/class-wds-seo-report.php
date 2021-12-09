@@ -11,11 +11,20 @@ class Smartcrawl_SeoReport {
 	private $_state_messages = array();
 	private $_meta = array();
 
+	/**
+	 * @var Smartcrawl_Model_Ignores
+	 */
 	private $_ignores;
 
 	private $_sitemap_issues = 0;
+	/**
+	 * @var Smartcrawl_Model_Redirection
+	 */
+	private $_redirects;
 
 	public function __construct() {
+		$this->_ignores = new Smartcrawl_Model_Ignores();
+		$this->_redirects = new Smartcrawl_Model_Redirection();
 	}
 
 	/**
@@ -96,13 +105,16 @@ class Smartcrawl_SeoReport {
 			}
 			foreach ( $items as $item ) {
 				$key = $this->get_item_key( $item, $type );
+				$path = (string) smartcrawl_get_array_value( $item, 'path' );
 				if ( empty( $key ) ) {
 					continue; // Invalid key
 				}
 				$item['type'] = $type;
+				$item['ignored'] = $this->is_ignored_issue( $key );
+				$item['redirect'] = $this->get_redirect( $path );
 
 				$this->_items[ $key ] = $item;
-				$this->_by_type[ $type ][] = $key;
+				$this->_by_type[ $type ][ $key ] = $item;
 			}
 		}
 
@@ -116,8 +128,6 @@ class Smartcrawl_SeoReport {
 				$this->_state_messages[] = $msg;
 			}
 		}
-
-		$this->_ignores = new Smartcrawl_Model_Ignores();
 
 		return $this;
 	}
@@ -164,18 +174,6 @@ class Smartcrawl_SeoReport {
 	}
 
 	/**
-	 * Boolean accessor to check issues existence by type
-	 *
-	 * @param string $type Optional issue type
-	 *                     - if omitted, all issues are considered
-	 *
-	 * @return bool
-	 */
-	public function has_issues( $type = false ) {
-		return $this->get_issues_count( $type ) > 0;
-	}
-
-	/**
 	 * Gets issues count, for all issues or by type
 	 *
 	 * @param string $type Optional issue type
@@ -200,15 +198,15 @@ class Smartcrawl_SeoReport {
 	 * @return array List of all known issues
 	 */
 	public function get_all_issues( $include_ignored = false ) {
-		$all = array_keys( $this->_items );
+		$all = $this->_items;
 		if ( ! empty( $include_ignored ) ) {
 			return $all;
 		}
 
 		$result = array();
-		foreach ( $all as $issue ) {
-			if ( ! $this->is_ignored_issue( $issue ) ) {
-				$result[] = $issue;
+		foreach ( $all as $key => $issue ) {
+			if ( ! smartcrawl_get_array_value( $issue, 'ignored' ) ) {
+				$result[ $key ] = $issue;
 			}
 		}
 
@@ -242,45 +240,19 @@ class Smartcrawl_SeoReport {
 		}
 
 		$result = array();
-		foreach ( $issues as $issue ) {
-			if ( ! $this->is_ignored_issue( $issue ) ) {
-				$result[] = $issue;
+		foreach ( $issues as $key => $issue ) {
+			if ( ! smartcrawl_get_array_value( $issue, 'ignored' ) ) {
+				$result[ $key ] = $issue;
 			}
 		}
 
-		return array_unique( $result );
+		return $result;
 	}
 
-	/**
-	 * Checks if we have any ignored issues going on
-	 *
-	 * @return bool
-	 */
-	public function has_ignored_issues() {
-		return $this->get_ignored_issues_count() > 0;
-	}
-
-	/**
-	 * Gets ignored issues count, all or by type
-	 *
-	 * @param string $type Optional issue type to count ignores for
-	 *                     - if omitted, all ignores are counted
-	 *
-	 * @return int Ignored issues count
-	 */
-	public function get_ignored_issues_count( $type = false ) {
-		$issues = empty( $type )
-			? $this->get_all_issues( true )
-			: $this->get_issues_by_type( $type, true );
-		$count = 0;
-
-		foreach ( $issues as $key ) {
-			if ( $this->is_ignored_issue( $key ) ) {
-				$count ++;
-			}
-		}
-
-		return (int) $count;
+	public function get_all_issues_grouped_by_type() {
+		return empty( $this->_by_type )
+			? array()
+			: $this->_by_type;
 	}
 
 	/**
@@ -397,4 +369,13 @@ class Smartcrawl_SeoReport {
 		);
 	}
 
+	private function get_redirect( $path ) {
+		$redirect = $this->_redirects->get_redirection( $path );
+		if ( ! $redirect ) {
+			// Maybe the path is relative? Try with home_url
+			$redirect = $this->_redirects->get_redirection( home_url( $path ) );
+		}
+
+		return (string) $redirect;
+	}
 }

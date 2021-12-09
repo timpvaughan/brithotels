@@ -17,28 +17,13 @@ jQuery(function($) {
 		
 		Parent.call(this, element, options);
 		
-		if(!window.google)
-		{
-			var status = WPGMZA.googleAPIStatus;
-			var message = "Google API not loaded";
-			
-			if(status && status.message)
-				message += " - " + status.message;
-			
-			if(status.code == "USER_CONSENT_NOT_GIVEN")
-			{
-				return;
-			}
-			
-			$(element).html("<div class='notice notice-error'><p>" + WPGMZA.localized_strings.google_api_not_loaded + "<pre>" + message + "</pre></p></div>");
-			
-			throw new Error(message);
-		}
-		
 		this.loadGoogleMap();
 		
-		if(options)
+		if(options){
 			this.setOptions(options, true);
+		} else {
+			this.setOptions({}, true);
+		}
 
 		google.maps.event.addListener(this.googleMap, "click", function(event) {
 			var wpgmzaEvent = new WPGMZA.Event("click");
@@ -145,6 +130,7 @@ jQuery(function($) {
 	WPGMZA.GoogleMap.prototype.loadGoogleMap = function()
 	{
 		var self = this;
+
 		var options = this.settings.toGoogleMapsOptions();
 		
 		this.googleMap = new google.maps.Map(this.engineElement, options);
@@ -152,14 +138,15 @@ jQuery(function($) {
 		google.maps.event.addListener(this.googleMap, "bounds_changed", function() { 
 			self.onBoundsChanged();
 		});
-		
+
 		if(this.settings.bicycle == 1)
 			this.enableBicycleLayer(true);
 		if(this.settings.traffic == 1)
 			this.enableTrafficLayer(true);
-		if(this.settings.transport == 1)
+		if(this.settings.transport_layer)
 			this.enablePublicTransportLayer(true);
-		this.showPointsOfInterest(this.settings.show_point_of_interest);
+
+		this.showPointsOfInterest(this.settings.wpgmza_show_point_of_interest);
 		
 		// Move the loading wheel into the map element (it has to live outside in the HTML file because it'll be overwritten by Google otherwise)
 		$(this.engineElement).append($(this.element).find(".wpgmza-loader"));
@@ -187,7 +174,7 @@ jQuery(function($) {
 				lng: parseFloat(clone.center.lng)
 			};
 		
-		if(this.settings.hide_point_of_interest == "1")
+		if(this.settings.hide_point_of_interest)
 		{
 			var noPoi = {
 				featureType: "poi",
@@ -223,8 +210,8 @@ jQuery(function($) {
 	 * Removes the specified marker from this map
 	 * @return void
 	 */
-	WPGMZA.GoogleMap.prototype.removeMarker = function(marker) {
-		
+	WPGMZA.GoogleMap.prototype.removeMarker = function(marker)
+	{
 		marker.googleMarker.setMap(null);
 		
 		Parent.prototype.removeMarker.call(this, marker);
@@ -373,29 +360,33 @@ jQuery(function($) {
 	 * Gets the bounds
 	 * @return object
 	 */
-	WPGMZA.GoogleMap.prototype.getBounds = function()
-	{
-		var bounds = this.googleMap.getBounds();
-		var northEast = bounds.getNorthEast();
-		var southWest = bounds.getSouthWest();
-		
+	WPGMZA.GoogleMap.prototype.getBounds = function() {
 		var nativeBounds = new WPGMZA.LatLngBounds({});
 		
-		nativeBounds.north = northEast.lat();
-		nativeBounds.south = southWest.lat();
-		nativeBounds.west = southWest.lng();
-		nativeBounds.east = northEast.lng();
-		
-		// Backward compatibility
-		nativeBounds.topLeft = {
-			lat: northEast.lat(),
-			lng: southWest.lng()
-		};
-		
-		nativeBounds.bottomRight = {
-			lat: southWest.lat(),
-			lng: northEast.lng()
-		};
+		try {
+			var bounds = this.googleMap.getBounds();
+			var northEast = bounds.getNorthEast();
+			var southWest = bounds.getSouthWest();
+			
+			
+			nativeBounds.north = northEast.lat();
+			nativeBounds.south = southWest.lat();
+			nativeBounds.west = southWest.lng();
+			nativeBounds.east = northEast.lng();
+			
+			// Backward compatibility
+			nativeBounds.topLeft = {
+				lat: northEast.lat(),
+				lng: southWest.lng()
+			};
+			
+			nativeBounds.bottomRight = {
+				lat: southWest.lat(),
+				lng: northEast.lng()
+			};
+		} catch (ex){
+			/* Just return a default, instead of throwing an error */
+		}
 		
 		return nativeBounds;
 	}
@@ -480,10 +471,10 @@ jQuery(function($) {
 	 * @return void
 	 */
 	WPGMZA.GoogleMap.prototype.enablePublicTransportLayer = function(enable)
-	{
+	{		
 		if(!this.publicTransportLayer)
 			this.publicTransportLayer = new google.maps.TransitLayer();
-		
+				
 		this.publicTransportLayer.setMap(
 			enable ? this.googleMap : null
 		);

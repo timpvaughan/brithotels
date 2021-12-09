@@ -200,6 +200,14 @@ function _wds_hb_convert_tri( $num, $tri ) {
  */
 function smartcrawl_get_trimmed_excerpt( $excerpt, $contents ) {
 	$string = $excerpt ? $excerpt : $contents;
+
+	// Check if we have the excerpt cached
+	$cache_key = 'wds-' . md5( $string );
+	$cached = wp_cache_get( $cache_key, 'smartcrawl' );
+	if ( is_string( $cached ) ) {
+		return $cached;
+	}
+
 	// Remove shortcodes but keep the content
 	$string = smartcrawl_remove_shortcodes( $string );
 	// Strip all HTML tags
@@ -208,8 +216,12 @@ function smartcrawl_get_trimmed_excerpt( $excerpt, $contents ) {
 	$string = esc_attr( $string );
 	// Normalize whitespace
 	$string = smartcrawl_normalize_whitespace( $string );
+	// Truncate length
+	$string = smartcrawl_truncate_meta_description( $string );
 
-	return smartcrawl_truncate_meta_description( $string );
+	wp_cache_set( $cache_key, (string) $string, 'smartcrawl', 60 );
+
+	return $string;
 }
 
 function smartcrawl_normalize_whitespace( $string ) {
@@ -226,14 +238,22 @@ function smartcrawl_normalize_whitespace( $string ) {
  * @see get_shortcode_regex()
  */
 function smartcrawl_remove_shortcodes( $content ) {
-	$pattern = get_shortcode_regex();
+	if ( strpos( $content, '[' ) === false ) {
+		return $content;
+	}
+
+	preg_match_all( "/\[([a-zA-Z0-9_-]+)/", $content, $shortcode_matches );
+	if ( empty( $shortcode_matches[1] ) ) {
+		return $content;
+	}
+	$shortcode_tags = array_values( array_unique( $shortcode_matches[1] ) );
+
+	$pattern = get_shortcode_regex( $shortcode_tags );
 	return preg_replace_callback( "/$pattern/s", 'smartcrawl_extract_shortcode_contents', $content );
 }
 
 /**
  * Our callback function for making get_shortcode_regex() replacements.
- *
- * @see get_shortcode_regex()
  *
  * @param $matches array This array contains data in the following format:
  * array(
@@ -247,6 +267,8 @@ function smartcrawl_remove_shortcodes( $content ) {
  * );
  *
  * @return bool|mixed|string
+ * @see get_shortcode_regex()
+ *
  */
 function smartcrawl_extract_shortcode_contents( $matches ) {
 	if ( empty( $matches ) || count( $matches ) < 7 ) {
@@ -415,11 +437,11 @@ function user_can_see_seo_metabox_301_redirect() {
  * Metaboxes are still added to "Screen Options".
  * If user chooses to show/hide them, respect her decision.
  *
- * @deprecated as of version 1.0.9
- *
  * @param array $arg Whatever's been already hidden.
  *
  * @return array
+ * @deprecated as of version 1.0.9
+ *
  */
 function smartcrawl_process_default_hidden_meta_boxes( $arg ) {
 	$smartcrawl_options = Smartcrawl_Settings::get_options();
@@ -504,28 +526,6 @@ function register_metabox_collapsed_state() {
 }
 
 add_filter( 'post_edit_form_tag', 'register_metabox_collapsed_state' );
-
-/**
- * Checks the page tab slug against permitted ones.
- *
- * This applies only for multisite, non-sitewide setups.
- *
- * @param string $slug Slug to check.
- *
- * @TODO: This function is a duplicate of Smartcrawl_Settings_Admin.is_tab_allowed, make sure only one remains
- *
- * @return bool
- */
-function smartcrawl_is_allowed_tab( $slug ) {
-	$blog_tabs = get_site_option( 'wds_blog_tabs' );
-	$blog_tabs = is_array( $blog_tabs ) ? $blog_tabs : array();
-	$allowed = true;
-	if ( is_multisite() && ! SMARTCRAWL_SITEWIDE ) {
-		$allowed = in_array( $slug, array_keys( $blog_tabs ), true ) ? true : false;
-	}
-
-	return $allowed;
-}
 
 /**
  * Checks if transient is stuck
@@ -663,34 +663,6 @@ function smartcrawl_put_array_value( $value, &$array, $keys ) {
 }
 
 /**
- * Checks if a dashboard widget mode is renderable
- *
- * Used on dashboard root page, for scenarios when we're
- * outside the network-wide mode and not all tabs are active
- * for site admins, in order to prevent showing broken "configure" links
- * and such. Re: https://app.asana.com/0/46496453944769/509480319187557/f
- *
- * @param string $tab Tab to check.
- *
- * @return bool
- */
-function smartcrawl_can_show_dash_widget_for( $tab ) {
-	if ( ! ! smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) ) {
-		return true;
-	}
-
-	if ( ! is_network_admin() ) {
-		return true;
-	} // Whatever, let site admin deal with it.
-
-	// Not in sitewide mode, let's check if site admins can access it.
-	$allowed_blog_tabs = Smartcrawl_Settings_Settings::get_blog_tabs();
-	$allowed = in_array( $tab, array_keys( $allowed_blog_tabs ), true ) && ! empty( $allowed_blog_tabs[ $tab ] );
-
-	return $allowed;
-}
-
-/**
  * Sanitizes a string into relative URL
  *
  * @param string $raw Raw string to process.
@@ -741,14 +713,6 @@ function smartcrawl_get_relative_urls_regex( $urls ) {
 	$regex = '/https?:\/\/.*?(' . join( '|', $processed ) . ')\/?$/';
 
 	return $regex;
-}
-
-function smartcrawl_subsite_setting_page_enabled( $key ) {
-	if ( ! is_multisite() || smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) ) {
-		return true;
-	}
-
-	return (boolean) smartcrawl_get_array_value( get_site_option( 'wds_blog_tabs', array() ), $key );
 }
 
 function smartcrawl_get_attachment_id_by_url( $url ) {
@@ -804,20 +768,10 @@ function smartcrawl_get_archive_post_type_labels() {
  * @return string Sitemap URL
  */
 function smartcrawl_get_sitemap_url() {
-	$smartcrawl_options = Smartcrawl_Settings::get_options();
-	$sitemap_options = ( is_multisite() && is_main_site() ) ? $smartcrawl_options : get_option( 'wds_sitemap_options' );
-	$sitemap_url = ! empty( $sitemap_options['sitemapurl'] ) ? $sitemap_options['sitemapurl'] : false;
-
-	if ( empty( $sitemap_url ) ) {
-		$sitemap_url = trailingslashit( home_url( false ) ) . 'sitemap.xml';
-	}
-
-	if ( is_multisite() && class_exists( 'domain_map' ) ) {
-		$sitemap_url = home_url( false ) . '/sitemap.xml';
-
-		if ( defined( 'SMARTCRAWL_SITEMAP_DM_SIMPLE_DISCOVERY_FALLBACK' ) && SMARTCRAWL_SITEMAP_DM_SIMPLE_DISCOVERY_FALLBACK ) {
-			$sitemap_url = ( is_network_admin() ? '../../' : ( is_admin() ? '../' : '/' ) ) . 'sitemap.xml'; // Simplest possible logic.
-		}
+	if ( '' === get_option( 'permalink_structure' ) ) {
+		$sitemap_url = home_url( '?wds_sitemap=1&wds_sitemap_type=index' );
+	} else {
+		$sitemap_url = home_url( 'sitemap.xml' );
 	}
 
 	return apply_filters( 'wds-sitemaps-sitemap_url', $sitemap_url );
@@ -1034,11 +988,98 @@ function smartcrawl_is_build_type_full() {
 }
 
 function smartcrawl_frontend_post_types() {
-	$types = get_post_types( array(
-		'public'             => true,
-		'publicly_queryable' => true,
-	) );
-	$types[] = 'page';
+	$types['post'] = 'post';
+	$types['page'] = 'page';
+	$types['attachment'] = 'attachment';
+	foreach (
+		get_post_types( array(
+			'public'             => true,
+			'publicly_queryable' => true,
+			'_builtin'           => false,
+		) ) as $type
+	) {
+		$types[ $type ] = $type;
+	}
 
 	return $types;
+}
+
+function smartcrawl_frontend_taxonomies( $output = 'objects' ) {
+	$taxonomies = get_taxonomies( array(
+		'public'             => true,
+		'publicly_queryable' => true,
+	), $output );
+
+	unset( $taxonomies['post_format'] );
+
+	return $taxonomies;
+}
+
+function smartcrawl_sanitize_recipients( $email_recipients ) {
+	if ( empty( $email_recipients ) ) {
+		return array();
+	}
+
+	$sanitized_recipients = array();
+	foreach ( $email_recipients as $recipient ) {
+		$recipient_name = smartcrawl_get_array_value( $recipient, 'name' );
+		$recipient_email = smartcrawl_get_array_value( $recipient, 'email' );
+
+		$sanitized_emails = array_column( $sanitized_recipients, 'email' );
+		$recipient_exists = in_array( $recipient_email, $sanitized_emails, true );
+		if (
+			$recipient_name && $recipient_email
+			&& sanitize_text_field( $recipient_name ) === $recipient_name
+			&& sanitize_email( $recipient_email ) === $recipient_email
+			&& ! $recipient_exists
+		) {
+			$sanitized_recipients[] = $recipient;
+		}
+	}
+
+	return $sanitized_recipients;
+}
+
+function smartcrawl_subsite_manager_role() {
+	$manager_role = get_site_option( 'wds_subsite_manager_role', false );
+	return empty( $manager_role )
+		? 'admin'
+		: $manager_role;
+}
+
+function smartcrawl_activate_all_blog_tabs() {
+	update_site_option(
+		'wds_blog_tabs',
+		array(
+			Smartcrawl_Settings::TAB_ONPAGE    => true,
+			Smartcrawl_Settings::TAB_SCHEMA    => true,
+			Smartcrawl_Settings::TAB_SOCIAL    => true,
+			Smartcrawl_Settings::TAB_SITEMAP   => true,
+			Smartcrawl_Settings::TAB_AUTOLINKS => true,
+			Smartcrawl_Settings::TAB_SETTINGS  => true,
+		)
+	);
+}
+
+function smartcrawl_camel_to_snake( $string ) {
+	return strtolower( preg_replace( '/(?<!^)[A-Z]/', '_$0', $string ) );
+}
+
+function smartcrawl_snake_to_camel( $string ) {
+	$string = str_replace( ' ', '', ucwords( str_replace( '_', ' ', $string ) ) );
+	$string[0] = strtolower( $string[0] );
+
+	return $string;
+}
+
+function smartcrawl_woocommerce_active() {
+	return class_exists( 'woocommerce' );
+}
+
+function smartcrawl_clean( $value ) {
+	if ( is_array( $value ) ) {
+		return array_map( 'smartcrawl_clean', $value );
+	} else {
+		return is_scalar( $value ) ? sanitize_text_field( $value ) : $value;
+	}
 }

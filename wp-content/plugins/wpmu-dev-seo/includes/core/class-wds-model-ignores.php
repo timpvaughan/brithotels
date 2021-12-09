@@ -23,9 +23,7 @@ class Smartcrawl_Model_Ignores extends Smartcrawl_Model {
 	public function load() {
 		$this->_ignores = array();
 
-		$ignores = smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' )
-			? get_site_option( $this->get_ignores_storage() )
-			: get_option( $this->get_ignores_storage() );
+		$ignores = get_option( $this->get_ignores_storage() );
 
 		if ( ! empty( $ignores ) && is_array( $ignores ) ) {
 			$this->_ignores = array_filter( array_unique( $ignores ) );
@@ -46,9 +44,7 @@ class Smartcrawl_Model_Ignores extends Smartcrawl_Model {
 	 * @return bool Status
 	 */
 	public function clear() {
-		return smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' )
-			? update_site_option( $this->get_ignores_storage(), array() )
-			: update_option( $this->get_ignores_storage(), array() );
+		return update_option( $this->get_ignores_storage(), array() );
 	}
 
 	/**
@@ -74,11 +70,7 @@ class Smartcrawl_Model_Ignores extends Smartcrawl_Model {
 	public function set_ignores( $keys ) {
 		$this->_ignores = array_filter( array_unique( $keys ) );
 
-		$status = smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' )
-			? update_site_option( $this->get_ignores_storage(), $this->_ignores )
-			: update_option( $this->get_ignores_storage(), $this->_ignores );
-
-		return $status;
+		return update_option( $this->get_ignores_storage(), $this->_ignores );
 	}
 
 	/**
@@ -118,11 +110,7 @@ class Smartcrawl_Model_Ignores extends Smartcrawl_Model {
 
 		$this->_ignores = array_filter( array_unique( $this->_ignores ) );
 
-		$status = smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' )
-			? update_site_option( $this->get_ignores_storage(), $this->_ignores )
-			: update_option( $this->get_ignores_storage(), $this->_ignores );
-
-		return $status;
+		return update_option( $this->get_ignores_storage(), $this->_ignores );
 	}
 
 	/**

@@ -27,19 +27,32 @@ class Smartcrawl_Compatibility extends Smartcrawl_Base_Controller {
 	}
 
 	protected function init() {
-		add_action( 'init', array( $this, 'load_divi_in_ajax' ), - 10 );
-		add_action( 'init', array( $this, 'load_wp_bakery_shortcodes' ), - 10 );
 		add_filter( 'wds-omitted-shortcodes', array( $this, 'avada_omitted_shortcodes' ) );
 		add_filter( 'wds-omitted-shortcodes', array( $this, 'divi_omitted_shortcodes' ) );
 		add_filter( 'wds-omitted-shortcodes', array( $this, 'wpbakery_omitted_shortcodes' ) );
 		add_filter( 'wds-omitted-shortcodes', array( $this, 'swift_omitted_shortcodes' ) );
-		add_filter( 'wds_before_sitemap_rebuild', array( $this, 'prevent_wpml_url_translation' ) );
+		add_filter( 'wds_before_sitemap_rebuild', array( $this, 'translate_url_wpml' ) );
 		add_filter( 'wds_full_sitemap_items', array( $this, 'add_wpml_homepage_versions' ) );
 		add_filter( 'wds_partial_sitemap_items', array( $this, 'add_wpml_homepage_versions_to_partial' ), 10, 3 );
+		add_filter( 'bbp_register_topic_taxonomy', array( $this, 'allow_sitemap_access' ) );
+		add_filter( 'bbp_register_forum_post_type', array( $this, 'allow_sitemap_access' ) );
+		add_filter( 'bbp_register_topic_post_type', array( $this, 'allow_sitemap_access' ) );
+		add_filter( 'bbp_register_reply_post_type', array( $this, 'allow_sitemap_access' ) );
+		add_filter( 'wds-sitemaps-sitemap_url', array( $this, 'change_sitemap_url_for_domain_map' ) );
 		// Disable defender login redirect because we are not entirely sure about its security implications
 		//add_filter( 'wds-report-admin-url', array( $this, 'ensure_defender_login_redirect' ) );
 
 		return true;
+	}
+
+	public function allow_sitemap_access( $args ) {
+		$request = parse_url( rawurldecode( $_SERVER['REQUEST_URI'] ), PHP_URL_PATH );
+		$is_sitemap_request = strpos( $request, '/sitemap.xml' ) === strlen( $request ) - strlen( '/sitemap.xml' );
+		$sc_sitemap_active = Smartcrawl_Settings::get_setting( 'sitemap' );
+		if ( $sc_sitemap_active && $is_sitemap_request ) {
+			$args['show_ui'] = true;
+		}
+		return $args;
 	}
 
 	public function avada_omitted_shortcodes( $omitted ) {
@@ -70,34 +83,6 @@ class Smartcrawl_Compatibility extends Smartcrawl_Base_Controller {
 			'spb_raw_js',
 			'spb_raw_html',
 		) );
-	}
-
-	/**
-	 * Divi doesn't usually load its shortcodes during ajax requests but we need these shortcodes in order to
-	 * render an accurate preview.
-	 *
-	 * Force Divi to load during our requests.
-	 */
-	public function load_divi_in_ajax() {
-		if ( $this->is_preview_request() ) {
-			$_POST['et_load_builder_modules'] = '1';
-		}
-	}
-
-	/**
-	 * Force WPBakery to load its shortcodes so we can render an accurate preview
-	 */
-	public function load_wp_bakery_shortcodes() {
-		if ( $this->is_preview_request() ) {
-			$load_shortcodes_callback = array(
-				'WPBMap',
-				'addAllMappedShortcodes',
-			);
-
-			if ( is_callable( $load_shortcodes_callback ) ) {
-				add_action( 'init', $load_shortcodes_callback );
-			}
-		}
 	}
 
 	public function add_wpml_homepage_versions_to_partial( $items, $type, $page_number ) {
@@ -157,14 +142,53 @@ class Smartcrawl_Compatibility extends Smartcrawl_Base_Controller {
 	 *
 	 * If the post ID of an Urdu post is passed to get_permalink, we expect to get the Urdu url in return but the conversion changes it to default language URL.
 	 */
-	public function prevent_wpml_url_translation() {
+	public function translate_url_wpml() {
 		global $sitepress;
 		if ( empty( $sitepress ) ) {
 			return;
 		}
 
 		// Get rid of all permalink modifications when we are building the sitemap.
-		remove_all_filters( 'post_link' );
+		$this->add_wpml_filters();
+	}
+
+	private function add_wpml_filters() {
+		$callback = array( $this, 'translate_post_url_wpml' );
+
+		add_filter( 'post_link', $callback, 10, 2 );
+		add_filter( 'page_link', $callback, 10, 2 );
+		add_filter( 'post_type_link', $callback, 10, 2 );
+	}
+
+	private function remove_wpml_filters() {
+		$callback = array( $this, 'translate_post_url_wpml' );
+
+		remove_filter( 'post_link', $callback, 10 );
+		remove_filter( 'page_link', $callback, 10 );
+		remove_filter( 'post_type_link', $callback, 10 );
+	}
+
+	/**
+	 * @param $link
+	 * @param $post WP_Post
+	 *
+	 * @return string
+	 */
+	public function translate_post_url_wpml( $link, $post_or_id ) {
+		global $sitepress;
+
+		$post = get_post( $post_or_id );
+		$language = wpml_get_language_information( null, $post->ID );
+		$language_code = smartcrawl_get_array_value( $language, 'language_code' );
+		if ( $sitepress->get_current_language() === $language_code ) {
+			return $link;
+		}
+
+		$this->remove_wpml_filters(); // To avoid infinite recursion
+		$language_url = apply_filters( 'wpml_permalink', get_permalink( $post->ID ), $language_code, true );
+		$this->add_wpml_filters();
+
+		return $language_url;
 	}
 
 	private function is_preview_request() {
@@ -186,5 +210,17 @@ class Smartcrawl_Compatibility extends Smartcrawl_Base_Controller {
 		}
 
 		return \WP_Defender\Module\Advanced_Tools\Component\Mask_Api::maybeAppendTicketToUrl( $url );
+	}
+
+	public function change_sitemap_url_for_domain_map( $sitemap_url ) {
+		if (
+			is_multisite()
+			&& class_exists( 'domain_map' )
+			&& smartcrawl_is_switch_active( 'SMARTCRAWL_SITEMAP_DM_SIMPLE_DISCOVERY_FALLBACK' )
+		) {
+			$sitemap_url = ( is_network_admin() ? '../../' : ( is_admin() ? '../' : '/' ) ) . 'sitemap.xml'; // Simplest possible logic.
+		}
+
+		return $sitemap_url;
 	}
 }

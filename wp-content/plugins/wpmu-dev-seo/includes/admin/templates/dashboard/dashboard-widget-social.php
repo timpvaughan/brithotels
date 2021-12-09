@@ -1,5 +1,5 @@
 <?php
-if ( ! smartcrawl_subsite_setting_page_enabled( 'wds_social' ) ) {
+if ( ! Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SOCIAL ) ) {
 	return;
 }
 
@@ -18,9 +18,9 @@ $social_enabled = Smartcrawl_Settings::get_setting( 'social' );
 ?>
 <section id="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_SOCIAL ); ?>" class="sui-box wds-dashboard-widget">
 	<div class="sui-box-header">
-		<h3 class="sui-box-title">
-			<i class="sui-icon-social-twitter"></i> <?php esc_html_e( 'Social', 'wds' ); ?>
-		</h3>
+		<h2 class="sui-box-title">
+			<span class="sui-icon-social-twitter" aria-hidden="true"></span> <?php esc_html_e( 'Social', 'wds' ); ?>
+		</h2>
 	</div>
 
 	<div class="sui-box-body">
@@ -37,10 +37,11 @@ $social_enabled = Smartcrawl_Settings::get_setting( 'social' );
 							type="button"
 							data-option-id="<?php echo esc_attr( $social_option_name ); ?>"
 							data-flag="<?php echo 'og-enable'; ?>"
+							aria-label="<?php esc_html_e( 'Activate OpenGraph', 'wds' ); ?>"
 							class="wds-activate-component wds-disabled-during-request sui-button sui-button-blue">
 
 						<span class="sui-loading-text"><?php esc_html_e( 'Activate', 'wds' ); ?></span>
-						<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+						<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 					</button>
 				<?php else : ?>
 					<div class="wds-right">
@@ -58,10 +59,11 @@ $social_enabled = Smartcrawl_Settings::get_setting( 'social' );
 					<button type="button"
 					        data-option-id="<?php echo esc_attr( $social_option_name ); ?>"
 					        data-flag="<?php echo 'twitter-card-enable'; ?>"
+					        aria-label="<?php esc_html_e( 'Activate twitter cards', 'wds' ); ?>"
 					        class="wds-activate-component wds-disabled-during-request sui-button sui-button-blue">
 
 						<span class="sui-loading-text"><?php esc_html_e( 'Activate', 'wds' ); ?></span>
-						<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+						<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 					</button>
 				<?php else : ?>
 					<div class="wds-right">
@@ -79,8 +81,9 @@ $social_enabled = Smartcrawl_Settings::get_setting( 'social' );
 						<small><?php esc_html_e( 'Verify your website with Pinterest to attribute your website when your website content is pinned to the platform.', 'wds' ); ?></small>
 					</p>
 					<a href="<?php echo esc_attr( $social_page_url ); ?>&tab=tab_pinterest_verification"
+					   aria-label="<?php esc_html_e( 'Connect to pinterest', 'wds' ); ?>"
 					   class="sui-button sui-button-blue">
-						<i class="sui-icon-plus" aria-hidden="true"></i>
+						<span class="sui-icon-plus" aria-hidden="true"></span>
 
 						<?php esc_html_e( 'Connect', 'wds' ); ?>
 					</a>
@@ -96,18 +99,20 @@ $social_enabled = Smartcrawl_Settings::get_setting( 'social' );
 	<div class="sui-box-footer">
 		<?php if ( $social_enabled ) : ?>
 			<a href="<?php echo esc_attr( $social_page_url ); ?>"
+			   aria-label="<?php esc_html_e( 'Configure social component', 'wds' ); ?>"
 			   class="sui-button sui-button-ghost">
-				<i class="sui-icon-wrench-tool"
-				   aria-hidden="true"></i> <?php esc_html_e( 'Configure', 'wds' ); ?>
+				<span class="sui-icon-wrench-tool"
+				      aria-hidden="true"></span> <?php esc_html_e( 'Configure', 'wds' ); ?>
 			</a>
 		<?php else : ?>
 			<button type="button"
 			        data-option-id="<?php echo esc_attr( $settings_option_name ); ?>"
 			        data-flag="<?php echo esc_attr( 'social' ); ?>"
+			        aria-label="<?php esc_html_e( 'Activate social component', 'wds' ); ?>"
 			        class="wds-activate-component wds-disabled-during-request sui-button sui-button-blue">
 
 				<span class="sui-loading-text"><?php esc_html_e( 'Activate', 'wds' ); ?></span>
-				<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+				<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 			</button>
 		<?php endif; ?>
 	</div>

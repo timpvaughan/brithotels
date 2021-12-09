@@ -1,3 +1,38 @@
+import ErrorBoundary from "./components/error-boundry";
+import domReady from '@wordpress/dom-ready';
+import {render} from "react-dom";
+import React from "react";
+import CustomKeywordPairs from "./components/autolinks/custom-keyword-pairs";
+import Config_Values from "./es6/config-values";
+import Redirects from "./components/redirects/redirects";
+import WooSettingsTab from "./components/woocommerce/woo-settings-tab";
+
+domReady(() => {
+	const pairsPlaceholder = document.getElementById('wds-custom-keyword-pairs');
+	if (pairsPlaceholder) {
+		const customKeywords = Config_Values.get('custom_keywords', 'autolinks') || '';
+		render(<ErrorBoundary><CustomKeywordPairs data={customKeywords}/></ErrorBoundary>, pairsPlaceholder);
+	}
+
+	const redirectsContainer = document.getElementById('wds-redirects-container');
+	if (redirectsContainer) {
+		const redirects = Config_Values.get('redirects', 'autolinks') || {};
+		const redirectTypes = Config_Values.get('redirect_types', 'autolinks') || {};
+		render(<ErrorBoundary><Redirects redirects={redirects}
+										 types={redirectTypes}/></ErrorBoundary>, redirectsContainer);
+	}
+
+	const wooTab = document.getElementById('wds-woo-settings-tab');
+	if (wooTab) {
+		const options = Config_Values.get('options', 'woo') || {};
+		const permalinkSettings = Config_Values.get('permalink_settings', 'woo');
+		render(<ErrorBoundary><WooSettingsTab {...options}
+											  permalinkSettingsUrl={permalinkSettings}
+											  disabledImagePath={Config_Values.get('image_path', 'woo')}
+											  nonce={Config_Values.get('nonce', 'woo')}/></ErrorBoundary>, wooTab);
+	}
+});
+
 ;(function ($) {
 
 	function submit_dialog_form_on_enter(e) {
@@ -8,7 +43,7 @@
 			e.preventDefault();
 			e.stopPropagation();
 
-			$button.click();
+			$button.trigger('click');
 		}
 	}
 
@@ -40,14 +75,25 @@
 	}
 
 	function adjust_robots_field_height() {
+		let scrollHeight = this.scrollHeight;
+		if (!scrollHeight && this.value.includes("\n")) {
+			scrollHeight = (this.value.split("\n").length + 1) * 22;
+		}
 		this.style.height = "1px";
-		this.style.height = this.scrollHeight + "px";
+		this.style.height = scrollHeight + "px";
+	}
+
+	function open_add_redirect_form() {
+		var query = new URLSearchParams(window.location.search);
+		if (
+			query.get('tab') === 'tab_url_redirection'
+			&& query.get('add_redirect')
+		) {
+			$('button.wds-add-redirect').trigger('click');
+		}
 	}
 
 	$(function () {
-		$(".box-autolinks-custom-keywords-settings").each(function () {
-			window.Wds.Keywords.custom_pairs($(this));
-		});
 		$("#ignorepost").closest(".wds-excluded-posts").each(function () {
 			window.Wds.Postlist.exclude($(this));
 		});
@@ -70,6 +116,8 @@
 		window.Wds.accordion();
 		window.Wds.vertical_tabs();
 		window.Wds.hook_toggleables();
+
+		open_add_redirect_form();
 	});
 
 })(jQuery);

@@ -75,11 +75,10 @@ get_header();
                         <div class="col">
                             <div class="enquiry-form">
                                 <h2>Enquiry form</h2>
-								<?php
-									$contact_form = get_theme_mod('brithotels_contact_form', 'option');
-									//echo do_shortcode('[contact-form-7 id="'.intval($contact_form).'" title="London Hotel Contact"]');
-									echo $contact_form;
-								?>
+																<?php
+																	$contact_form = get_field('brithotels_contact_form', 'option');
+																	echo $contact_form;
+																?>
                             </div>
                         </div>
                     </div>
@@ -91,11 +90,11 @@ get_header();
                     <div class="row">
                         <div class="col">
                             <div class="hotel-address">
-                                <h4>Elephant & Castle</h4>
-                                <p class="location">35 Hampton Street, London SE17 3AN</p>
+                                <h4>Earls Court</h4>
+                                <p class="location">20-22 Hogarth Road, Earl’s Court, London, SW5 0PT</p>
                                 <ul>
-                                    <li>T: +44 (0) 20 7703 0011</li>
-                                    <li>E: <a href="mailto:info@brithotelselephantcastle.co.uk">info@brithotelselephantcastle.co.uk</a></li>
+                                    <li>T: +44 (0) 207 373 0027</li>
+                                    <li>E: <a href="mailto:earlscourt@brithotels.com">earlscourt@brithotels.com</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -104,7 +103,6 @@ get_header();
             </div>
 
             <div class="map">
-               <!-- <img src="<?php /*echo get_template_directory_uri(); */?>/assets/images/map.jpg" class="img-fluid" alt="Brithotels map" />-->
 	            <?php
 		            $map_id = intval(get_field('_map_id', $current_post_id));
 		            echo do_shortcode('[wpgmza id="'.intval($map_id).'"]');
@@ -116,11 +114,7 @@ get_header();
                     <div class="row">
                         <div class="col">
                             <div class="room-book-btn">
-	                            <?php
-		                            $book_now_url = get_field('_book_now', $current_post_id);
-	                            ?>
-                                <a href="<?php echo $book_now_url; ?>" class="btn btn-100"><?php esc_html_e('Book Now', 'brithotels'); ?> <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt=""></a>
-                            </div>
+	                           </div>
                         </div>
                     </div>
                 </div>

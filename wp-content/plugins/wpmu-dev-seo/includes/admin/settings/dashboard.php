@@ -9,6 +9,7 @@ class Smartcrawl_Settings_Dashboard extends Smartcrawl_Settings_Admin {
 	const BOX_CONTENT_ANALYSIS = 'wds-content-analysis-box';
 	const BOX_SITEMAP = 'wds-sitemap-box';
 	const BOX_SEO_CHECKUP = 'wds-seo-checkup';
+	const BOX_LIGHTHOUSE = 'wds-lighthouse';
 	const BOX_TOP_STATS = 'wds-dashboard-stats';
 	const BOX_REPORTS = 'wds-reports-box';
 	const BOX_UPGRADE = 'wds-upgrade';
@@ -33,194 +34,10 @@ class Smartcrawl_Settings_Dashboard extends Smartcrawl_Settings_Admin {
 		$this->slug = Smartcrawl_Settings::TAB_DASHBOARD;
 		$this->page_title = __( 'SmartCrawl Wizard: Dashboard', 'wds' );
 
-		add_action( 'wp_ajax_wds-service-redirect', array( $this, 'json_service_redirect' ) );
-		add_action( 'wp_ajax_wds-service-ignore', array( $this, 'json_ignore_seo_issues' ) );
-		add_action( 'wp_ajax_wds-service-unignore', array( $this, 'json_unignore_seo_issues' ) );
-		add_action( 'wp_ajax_wds-service-ignores-purge', array( $this, 'json_purge_seo_ignores' ) );
-		add_action( 'wp_ajax_wds-load-issue-occurrences', array( $this, 'json_load_issue_occurrences' ) );
-
 		add_action( 'wp_ajax_wds-activate-component', array( $this, 'json_activate_component' ) );
 		add_action( 'wp_ajax_wds-reload-box', array( $this, 'json_reload_component' ) );
 
 		parent::init();
-	}
-
-	public function json_load_issue_occurrences() {
-		$seo_service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SEO );
-		$report = $seo_service->get_report();
-		$data = $this->get_request_data();
-		if ( empty( $data ) || empty( $data['issue_id'] ) ) {
-			Smartcrawl_Logger::error( 'Issue occurrences could not be loaded. Request data invalid.' );
-			wp_send_json_error();
-		}
-
-		$issue_id = smartcrawl_get_array_value( $data, 'issue_id' );
-		$issue = $report->get_issue( $issue_id );
-		if ( empty( $issue ) ) {
-			Smartcrawl_Logger::error( 'Issue occurrences could not be loaded. Issue not found.' );
-			wp_send_json_error();
-		}
-
-		$occurrences = array();
-		foreach ( $issue['origin'] as $origin ) {
-			$issue_origin = is_array( $origin ) && ! empty( $origin[0] ) ? $origin[0] : $origin;
-			$occurrences[] = $issue_origin;
-		}
-
-		wp_send_json_success( array(
-			'occurrences' => $occurrences,
-		) );
-	}
-
-	/**
-	 * Handles service ignores addition
-	 */
-	public function json_ignore_seo_issues() {
-		$result = array( 'status' => 0 );
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json( $result );
-		}
-
-		$ignores = new Smartcrawl_Model_Ignores();
-
-		$data = $this->get_request_data();
-		if ( empty( $data['issue_id'] ) ) {
-			wp_send_json( $result );
-		}
-
-		$issue_id = $data['issue_id'];
-		$issue_ids = is_array( $issue_id )
-			? array_map( 'sanitize_text_field', $issue_id )
-			: array( sanitize_text_field( $issue_id ) );
-
-		foreach ( $issue_ids as $issue ) {
-			$ignores->set_ignore( $issue );
-		}
-
-		// Send updated list to Hub
-		$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SEO );
-		if ( ! $service->sync_ignores() ) {
-			Smartcrawl_Logger::debug( 'We encountered an error syncing ignores with Hub' );
-		}
-
-		$result['status'] = 1;
-
-		wp_send_json( $result );
-	}
-
-	/**
-	 * Handles service un-ignores addition
-	 */
-	public function json_unignore_seo_issues() {
-		$result = array( 'status' => 0 );
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json( $result );
-
-			return;
-		}
-
-		$ignores = new Smartcrawl_Model_Ignores();
-
-		$data = $this->get_request_data();
-		if ( empty( $data['issue_id'] ) ) {
-			wp_send_json( $result );
-
-			return;
-		}
-
-		$issue_id = $data['issue_id'];
-		$issue_ids = is_array( $issue_id )
-			? array_map( 'sanitize_text_field', $issue_id )
-			: array( sanitize_text_field( $issue_id ) );
-
-		foreach ( $issue_ids as $issue ) {
-			$ignores->unset_ignore( $issue );
-		}
-
-		// Send updated list to Hub
-		$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SEO );
-		if ( ! $service->sync_ignores() ) {
-			Smartcrawl_Logger::debug( 'We encountered an error syncing ignores with Hub' );
-		}
-
-		$result['status'] = 1;
-		wp_send_json( $result );
-	}
-
-	/**
-	 * Handles service ignores purging
-	 */
-	public function json_purge_seo_ignores() {
-		$result = array( 'status' => 0 );
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return wp_send_json( $result );
-		}
-
-		$ignores = new Smartcrawl_Model_Ignores();
-
-		if ( $ignores->clear() ) {
-			// Send updated list to Hub
-			$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SEO );
-			if ( ! $service->sync_ignores() ) {
-				Smartcrawl_Logger::debug( 'We encountered an error syncing ignores with Hub' );
-			}
-
-			$result['status'] = 1;
-		}
-
-		return wp_send_json( $result );
-	}
-
-	/**
-	 * Handles service redirect requests
-	 */
-	public function json_service_redirect() {
-		$data = $this->get_request_data();
-		$result = array();
-
-		if (
-			empty( $data['source'] ) ||
-			empty( $data['redirect'] ) ||
-			empty( $data['wds-redirect'] )
-		) {
-			wp_send_json_error( $result );
-		}
-
-		if ( ! wp_verify_nonce( $_POST['wds-redirect'], 'wds-redirect' ) ) {
-			wp_send_json_error( $result );
-		}
-
-		$is_sitewide = is_multisite() && defined( 'SMARTCRAWL_SITEWIDE' ) && SMARTCRAWL_SITEWIDE;
-
-		$permissions = $is_sitewide ? 'manage_network_options' : 'manage_options';
-		if ( ! current_user_can( $permissions ) ) {
-			wp_send_json_error( $result );
-		}
-
-		$source = (string) smartcrawl_get_array_value( $data, 'source' );
-		$source = trim( esc_url( $source ) );
-
-		$redirect = (string) smartcrawl_get_array_value( $data, 'redirect' );
-		$redirect = trim( esc_url( $redirect ) );
-
-		if ( ! $source || ! $redirect ) {
-			wp_send_json_error( $result );
-		}
-		if ( ! preg_match( '/^https?:\/\//', $source ) ) {
-			$source = home_url( $source );
-		}
-		if ( ! preg_match( '/^https?:\/\//', $redirect ) ) {
-			$redirect = home_url( $redirect );
-		}
-
-		$rmodel = new Smartcrawl_Model_Redirection();
-
-		$status_code = $rmodel->get_default_redirection_status_type();
-
-		// Set both redirection and default status code
-		$result['status'] = $rmodel->set_redirection( $source, $redirect ) && $rmodel->set_redirection_type( $source, $status_code );
-
-		wp_send_json( $result );
 	}
 
 	public function json_activate_component() {
@@ -292,32 +109,21 @@ class Smartcrawl_Settings_Dashboard extends Smartcrawl_Settings_Admin {
 			case self::BOX_SEO_CHECKUP:
 				return Smartcrawl_Checkup_Renderer::load( 'dashboard/dashboard-widget-seo-checkup' );
 
+			case self::BOX_LIGHTHOUSE:
+				return Smartcrawl_Lighthouse_Dashboard_Renderer::load( 'dashboard/dashboard-widget-lighthouse' );
+
 			case self::BOX_TOP_STATS:
-				return Smartcrawl_Checkup_Renderer::load( 'dashboard/dashboard-top' );
+				if ( Smartcrawl_Health_Settings::is_test_mode_checkup() ) {
+					return Smartcrawl_Checkup_Renderer::load( 'dashboard/dashboard-top' );
+				} else {
+					return Smartcrawl_Lighthouse_Dashboard_Renderer::load( 'dashboard/dashboard-top-lighthouse' );
+				}
 
 			case self::BOX_SCHEMA:
 				return $this->_load( 'dashboard/dashboard-widget-schema' );
 		};
 
 		return null;
-	}
-
-	/**
-	 * Process run action
-	 */
-	public function process_run_action() {
-		if ( isset( $_GET['_wds_nonce'], $_GET['run-checkup'] ) && wp_verify_nonce( $_GET['_wds_nonce'], 'wds-checkup-nonce' ) ) { // Simple presence switch, no value.
-			return $this->run_checkup();
-		}
-	}
-
-	public static function checkup_url() {
-		$checkup_url = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_DASHBOARD );
-
-		return esc_url_raw( add_query_arg( array(
-			'run-checkup' => 'yes',
-			'_wds_nonce'  => wp_create_nonce( 'wds-checkup-nonce' ),
-		), $checkup_url ) );
 	}
 
 	/**
@@ -366,12 +172,6 @@ class Smartcrawl_Settings_Dashboard extends Smartcrawl_Settings_Admin {
 			$this->slug,
 			array( &$this, 'options_page' )
 		);
-
-		// For pages that can deal with run requests, let's make sure they
-		// actually do that early enough
-		if ( is_callable( array( $this, 'process_run_action' ) ) ) {
-			add_action( 'load-' . $this->smartcrawl_page_hook, array( $this, 'process_run_action' ) );
-		}
 
 		add_action( "admin_print_styles-{$this->smartcrawl_page_hook}", array( &$this, 'admin_styles' ) );
 	}
@@ -429,6 +229,9 @@ class Smartcrawl_Settings_Dashboard extends Smartcrawl_Settings_Admin {
 		return $this->_seo_service;
 	}
 
+	/**
+	 * TODO: replace with check_ajax_referer
+	 */
 	private function get_request_data() {
 		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-nonce' ) ? stripslashes_deep( $_POST ) : array();
 	}

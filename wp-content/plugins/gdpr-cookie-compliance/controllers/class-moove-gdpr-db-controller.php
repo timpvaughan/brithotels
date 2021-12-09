@@ -4,7 +4,7 @@
  *
  * @category Moove_GDPR_Database_Controller
  * @package   gdpr-cookie-compliance
- * @author    Gaspar Nemes
+ * @author    Moove Agency
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @category Class
  * @package  Moove_GDPR_Database_Controller
- * @author   Gaspar Nemes
+ * @author   Moove Agency
  */
 class Moove_GDPR_DB_Controller {
 
@@ -130,6 +130,20 @@ class Moove_GDPR_DB_Controller {
 	 */
 	private static function remove_duplicate_entries() {
 		global $wpdb;
+
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}gdpr_cc_options'" ) != $wpdb->prefix . 'gdpr_cc_options' ) :
+			$wpdb->query(
+				"CREATE TABLE IF NOT EXISTS {$wpdb->prefix}gdpr_cc_options(
+	        id INTEGER NOT NULL auto_increment,
+	        option_key VARCHAR(255) NOT NULL DEFAULT 1,
+	        option_value LONGTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+	        site_id INTEGER DEFAULT NULL,
+	        extras LONGTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+	        PRIMARY KEY (id)
+	      );"
+			); // phpcs:ignore
+		endif;
+
 		return $wpdb->query( "DELETE c1 FROM {$wpdb->prefix}gdpr_cc_options c1 INNER JOIN {$wpdb->prefix}gdpr_cc_options c2 WHERE c1.id > c2.id AND c1.option_key = c2.option_key" ); // db call ok; no-cache ok.
 
 	}

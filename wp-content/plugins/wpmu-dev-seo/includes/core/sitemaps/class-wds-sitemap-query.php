@@ -9,7 +9,7 @@ abstract class Smartcrawl_Sitemap_Query extends Smartcrawl_WorkUnit {
 	 *
 	 * @return Smartcrawl_Sitemap_Item[] Array of sitemap items
 	 */
-	abstract function get_items( $type = '', $page_number = 0 );
+	public abstract function get_items( $type = '', $page_number = 0 );
 
 	public function can_handle_type( $type ) {
 		$allowed = $this->get_supported_types();
@@ -17,19 +17,11 @@ abstract class Smartcrawl_Sitemap_Query extends Smartcrawl_WorkUnit {
 		return in_array( $type, $allowed, true );
 	}
 
-	abstract function get_supported_types();
+	public abstract function get_supported_types();
 
-	protected function get_limit( $page_number, $full_sitemap_limit = self::NO_LIMIT ) {
+	protected function get_limit( $page_number ) {
 		if ( $page_number === 0 ) { // 0 means all items are requested
-
-			$split = Smartcrawl_Sitemap_Utils::split_sitemaps_enabled();
-			if ( $split ) {
-				// Split sitemap has no limit
-				return self::NO_LIMIT;
-			} else {
-				// If we are serving one huge sitemap apply the full sitemap limit
-				return $full_sitemap_limit;
-			}
+			return self::NO_LIMIT;
 		}
 
 		// Otherwise return the limit based on page number
@@ -79,6 +71,9 @@ abstract class Smartcrawl_Sitemap_Query extends Smartcrawl_WorkUnit {
 		return $images;
 	}
 
+	/**
+	 * @return Smartcrawl_Sitemap_Index_Item[]
+	 */
 	public function get_index_items() {
 		$types = $this->get_supported_types();
 		$index_items = array();
@@ -104,6 +99,10 @@ abstract class Smartcrawl_Sitemap_Query extends Smartcrawl_WorkUnit {
 		return $this->make_index_items( $type, $items, $item_count );
 	}
 
+	protected function get_index_item_url( $type, $sitemap_num ) {
+		return home_url( "/{$type}-sitemap{$sitemap_num}.xml" );
+	}
+
 	/**
 	 * @param $type string
 	 * @param $items Smartcrawl_Sitemap_Item[]
@@ -121,7 +120,7 @@ abstract class Smartcrawl_Sitemap_Query extends Smartcrawl_WorkUnit {
 		$index_items = array();
 
 		for ( $sitemap_num = 1; $sitemap_num <= $sitemap_count; $sitemap_num ++ ) {
-			$location = home_url( "/{$type}-sitemap{$sitemap_num}.xml" );
+			$location = $this->get_index_item_url( $type, $sitemap_num );
 			$last_modified_item = $sitemap_num === $sitemap_count // If this is the last, potentially not full, sitemap
 				? $item_count - 1                       // ... use the very last item index
 				: ( $sitemap_num * $per_sitemap ) - 1;  // ... otherwise use the last item in this sitemap
@@ -131,11 +130,13 @@ abstract class Smartcrawl_Sitemap_Query extends Smartcrawl_WorkUnit {
 				continue;
 			}
 
-			$last_modified = $this->get_item_last_modified( $items[ $last_modified_item ] );
-
 			$index_item = new Smartcrawl_Sitemap_Index_Item();
-			$index_item->set_location( $location )
-			           ->set_last_modified( $last_modified );
+			$index_item->set_location( $location );
+
+			$last_modified = $this->get_item_last_modified( $items[ $last_modified_item ] );
+			if ( $last_modified ) {
+				$index_item->set_last_modified( $last_modified );
+			}
 
 			$index_items[] = $index_item;
 		}

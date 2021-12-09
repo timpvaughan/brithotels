@@ -292,7 +292,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 
 		$this->specific_replacements = array(
 			'%%date%%'             => mysql2date( get_option( 'date_format' ), $post_data['post_date'] ),
-			'%%excerpt%%'          => smartcrawl_get_trimmed_excerpt( $post_data['post_excerpt'], $post_data['post_content'] ),
+			'%%excerpt%%'          => $this->get_trimmed_excerpt( $post ),
 			'%%excerpt_only%%'     => $post_data['post_excerpt'],
 			'%%id%%'               => $post_data['ID'],
 			'%%modified%%'         => $post_data['post_modified'],
@@ -310,6 +310,23 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 		} elseif ( 'post' === $post_data['post_type'] ) {
 			$this->specific_replacements['%%category%%'] = get_the_category_list( ', ', '', $post_data['ID'] );
 		}
+	}
+
+	/**
+	 * @param $post WP_Post
+	 *
+	 * @return mixed|string
+	 */
+	private function get_trimmed_excerpt( $post ) {
+		$from_meta = get_post_meta( $post->ID, '_wds_trimmed_excerpt', false );
+		if ( ! empty( $from_meta ) ) {
+			return $from_meta[0];
+		}
+
+		return smartcrawl_get_trimmed_excerpt(
+			$post->post_excerpt,
+			$post->post_content
+		);
 	}
 
 	private function get_hierarchical_terms_for_post_type( $post ) {
@@ -408,7 +425,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	private function find_term_field_replacements( $subject, $context, $prefix, $term_field ) {
-		$pattern = "/(%%{$prefix}[a-z_]+%%)/";
+		$pattern = "/(%%{$prefix}[a-z_\-]+%%)/";
 		$matches = array();
 		$replacements = array();
 		$match_result = preg_match_all( $pattern, $subject, $matches, PREG_PATTERN_ORDER );
@@ -435,7 +452,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 
 	private function find_meta_replacements( $subject, $context ) {
 		$prefix = 'cf_';
-		$pattern = "/(%%{$prefix}[a-z_]+%%)/";
+		$pattern = "/(%%{$prefix}[a-z_\-]+%%)/";
 		$matches = array();
 		$replacements = array();
 		$match_result = preg_match_all( $pattern, $subject, $matches, PREG_PATTERN_ORDER );

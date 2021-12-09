@@ -54,8 +54,193 @@ class Smartcrawl_Schema_Settings extends Smartcrawl_Settings_Admin {
 
 		add_action( 'wp_ajax_wds-change-schema-status', array( $this, 'change_schema_component_status' ) );
 		add_action( 'wp_ajax_wds-authorize-yt-api-key', array( $this, 'authorize_youtube_api_key' ) );
+		add_action( 'wp_ajax_wds-search-schema-term', array( $this, 'search_schema_term' ) );
+		add_action( 'wp_ajax_wds-search-post-meta', array( $this, 'search_schema_post_meta' ) );
+		add_action( 'wp_ajax_wds-format-schema-location', array( $this, 'format_schema_location' ) );
 
 		parent::init();
+	}
+
+	public function format_schema_location() {
+		$conditions = $_GET['conditions'];
+
+		$count = - 1;
+		$summary_item = false;
+		$or_texts = array();
+		foreach ( $conditions as $condition_group ) {
+			$and_texts = array();
+			foreach ( $condition_group as $condition ) {
+				$count ++;
+
+				$lhs = smartcrawl_get_array_value( $condition, 'lhs' );
+				$lhs_text = $this->get_lhs_text( $lhs );
+
+				$operator = smartcrawl_get_array_value( $condition, 'operator' );
+				$operator_text = $operator === '=' ? '=' : '≠';
+
+				$rhs = smartcrawl_get_array_value( $condition, 'rhs' );
+				$rhs_text = $this->get_rhs_text( $lhs, $rhs );
+
+				if ( $lhs === 'show_globally' || $lhs === 'homepage' ) {
+					$and_texts[] = $lhs_text;
+					if ( ! $summary_item ) {
+						$summary_item = $lhs_text;
+					}
+				} else {
+					$and_texts[] = sprintf( "%s %s %s", $lhs_text, $operator_text, $rhs_text );
+					if ( ! $summary_item ) {
+						$summary_item = $rhs_text;
+					}
+				}
+			}
+
+			$and_text = implode( ' & ', $and_texts );
+			$or_texts[] = $and_text;
+		}
+
+		$full_text = join( ' OR ', $or_texts );
+		$summary_text = $summary_item;
+		if ( $count ) {
+			$summary_text = sprintf( '%s, +%d more', $summary_text, $count );
+		}
+
+		wp_send_json( array(
+			'full'    => $full_text,
+			'summary' => $summary_text,
+		) );
+	}
+
+	private function get_lhs_text( $lhs ) {
+		$texts = array(
+			'post_type'     => __( 'Post type', 'wds' ),
+			'show_globally' => __( 'Show Globally', 'wds' ),
+			'homepage'      => __( 'Homepage', 'wds' ),
+			'author_role'   => __( 'Author role', 'wds' ),
+			'post_format'   => __( 'Post format', 'wds' ),
+			'page_template' => __( 'Page template', 'wds' ),
+			'product_type'  => __( 'Product type', 'wds' ),
+		);
+		if ( isset( $texts[ $lhs ] ) ) {
+			return $texts[ $lhs ];
+		}
+
+		$post_types = array_map( function ( $post_type ) {
+			return get_post_type_object( $post_type )->labels->singular_name;
+		}, smartcrawl_frontend_post_types() );
+		if ( isset( $post_types[ $lhs ] ) ) {
+			return $post_types[ $lhs ];
+		}
+
+		$taxonomies = $this->get_taxonomies_singular();
+		if ( isset( $taxonomies[ $lhs ] ) ) {
+			return $taxonomies[ $lhs ];
+		}
+
+		return '';
+	}
+
+	private function get_rhs_text( $lhs, $rhs ) {
+		$product_types = array(
+			'WC_Product_Variable' => __( 'Variable Product', 'wds' ),
+			'WC_Product_Simple'   => __( 'Simple Product', 'wds' ),
+			'WC_Product_Grouped'  => __( 'Grouped Product', 'wds' ),
+			'WC_Product_External' => __( 'External Product', 'wds' ),
+		);
+		switch ( $lhs ) {
+			case 'post_type':
+				$post_type = get_post_type_object( $rhs );
+				return $post_type ? $post_type->labels->singular_name : '';
+
+			case 'show_globally':
+			case 'homepage':
+				return '';
+
+			case 'author_role':
+				return isset( wp_roles()->role_names[ $rhs ] )
+					? wp_roles()->role_names[ $rhs ]
+					: '';
+
+			case 'post_format':
+				return $rhs;
+
+			case 'page_template':
+				$page_templates = wp_get_theme()->get_page_templates();
+				return isset( $page_templates[ $rhs ] )
+					? $page_templates[ $rhs ]
+					: '';
+
+			case 'product_type':
+				return (string) smartcrawl_get_array_value( $product_types, $rhs );
+		}
+
+		if ( in_array( $lhs, smartcrawl_frontend_post_types() ) ) {
+			$post = get_post( $rhs );
+			return $post ? $post->post_title : '';
+		}
+
+		$taxonomies = $this->get_taxonomies_singular();
+		if ( isset( $taxonomies[ $lhs ] ) ) {
+			$taxonomy_term = get_term( $rhs, $lhs );
+			return $taxonomy_term && ! is_wp_error( $taxonomy_term )
+				? $taxonomy_term->name
+				: '';
+		}
+
+		return '';
+	}
+
+	public function search_schema_term() {
+		$search_query = smartcrawl_get_array_value( $_GET, 'term' );
+		$taxonomy = smartcrawl_get_array_value( $_GET, 'type' );
+		$request_type = smartcrawl_get_array_value( $_GET, 'request_type' );
+		$term_id = smartcrawl_get_array_value( $_GET, 'id' );
+		$results = array();
+		if ( empty( $search_query ) && empty( $term_id ) ) {
+			wp_send_json( array( 'results' => $results ) );
+			return;
+		}
+
+		/**
+		 * @var $terms WP_Term
+		 */
+		$args = array(
+			'hide_empty' => false,
+			'taxonomy'   => $taxonomy,
+		);
+		if ( $request_type === 'text' && $term_id ) {
+			$args['include'] = array( $term_id );
+			$args['number'] = 1;
+		} else {
+			$args['search'] = $search_query;
+			$args['number'] = 10;
+		}
+		$terms = get_terms( $args );
+		foreach ( $terms as $term ) {
+			$results[] = array(
+				'id'   => $term->term_id,
+				'text' => $term->name,
+			);
+		}
+		wp_send_json( array( 'results' => $results ) );
+	}
+
+	public function search_schema_post_meta() {
+		$search_query = smartcrawl_get_array_value( $_GET, 'term' );
+		$results = array();
+		if ( empty( $search_query ) ) {
+			wp_send_json( array( 'results' => $results ) );
+			return;
+		}
+
+		global $wpdb;
+		$meta_keys = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT meta_key from {$wpdb->postmeta} WHERE meta_key LIKE %s", '%' . $wpdb->esc_like( $search_query ) . '%' ) );
+		foreach ( $meta_keys as $meta_key ) {
+			$results[] = array(
+				'id'   => $meta_key,
+				'text' => $meta_key,
+			);
+		}
+		wp_send_json( array( 'results' => $results ) );
 	}
 
 	public function change_schema_component_status() {
@@ -103,6 +288,7 @@ class Smartcrawl_Schema_Settings extends Smartcrawl_Settings_Admin {
 		);
 
 		wp_enqueue_script( Smartcrawl_Controller_Assets::SCHEMA_JS );
+		wp_enqueue_script( Smartcrawl_Controller_Assets::SCHEMA_TYPES_JS );
 		wp_enqueue_media();
 
 		$this->_render_page( 'schema/schema-settings', $arguments );
@@ -128,22 +314,18 @@ class Smartcrawl_Schema_Settings extends Smartcrawl_Settings_Admin {
 		return $pages;
 	}
 
-	private function get_taxonomies() {
-		$taxonomies = array();
-		foreach (
-			get_taxonomies( array(
-				'public'  => true,
-				'show_ui' => true,
-			) ) as $taxonomy
-		) {
-			if ( in_array( $taxonomy, array( 'nav_menu', 'link_category', 'post_format' ), true ) ) {
-				continue;
-			}
-			$tax = get_taxonomy( $taxonomy );
-			$taxonomies[ $taxonomy ] = $tax->label;
-		}
+	private function get_taxonomies_singular() {
+		return array_map( function ( $taxonomy ) {
+			return isset( $taxonomy->labels->singular_name )
+				? $taxonomy->labels->singular_name
+				: $taxonomy->label;
+		}, smartcrawl_frontend_taxonomies() );
+	}
 
-		return $taxonomies;
+	private function get_taxonomies() {
+		return array_map( function ( $taxonomy ) {
+			return $taxonomy->label;
+		}, smartcrawl_frontend_taxonomies() );
 	}
 
 	private function get_post_types() {
@@ -170,7 +352,7 @@ class Smartcrawl_Schema_Settings extends Smartcrawl_Settings_Admin {
 		return array(
 			'person_job_title'                   => '',
 			'person_phone_number'                => '',
-			'organization_type'                  => Smartcrawl_Schema_Value_Helper::ORGANIZATION_LOCAL_BUSINESS,
+			'organization_type'                  => '',
 			'organization_contact_type'          => 'customer support',
 			'organization_phone_number'          => '',
 			'schema_main_navigation_menu'        => '',

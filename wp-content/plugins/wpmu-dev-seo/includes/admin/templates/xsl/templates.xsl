@@ -3,6 +3,7 @@
                 xmlns:html="http://www.w3.org/TR/REC-html40"
                 xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
                 xmlns:sitemap="http://www.sitemaps.org/schemas/sitemap/0.9"
+                xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
     <xsl:template name="sitemapHead" match="/">
@@ -161,7 +162,7 @@
     <xsl:template name="sitemapHeader" match="/">
         <div class="header">
             <span>Powered by
-                <a target="_blank" href="https://premium.wpmudev.org/project/smartcrawl-wordpress-seo/">SmartCrawl</a>
+                <a target="_blank" href="https://wpmudev.com/project/smartcrawl-wordpress-seo/">SmartCrawl</a>
             </span>
         </div>
     </xsl:template>
@@ -171,6 +172,58 @@
             This is an XML Sitemap, meant for consumption by search engines. For more info visit <a
                 href="http://sitemaps.org">sitemaps.org</a>.
         </p>
+    </xsl:template>
+
+    <xsl:template name="newsSitemapBody" match="/">
+        <div id="content">
+            <xsl:call-template name="sitemapHeader"/>
+            <h1>News Sitemap</h1>
+            <table id="sitemap">
+                <caption>This XML sitemap file contains
+                    <strong>
+                        <xsl:value-of select="count(sitemap:urlset/sitemap:url)"/>
+                    </strong>
+                    URLs.
+                </caption>
+                <thead>
+                    <tr>
+                        <th width="70%" valign="bottom">URL</th>
+                        <th width="20%" valign="bottom">Publication Title</th>
+                        <th width="10%" valign="bottom">Publication Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <xsl:for-each select="sitemap:urlset/sitemap:url">
+                        <xsl:variable name="css-class">
+                            <xsl:choose>
+                                <xsl:when test="position() mod 2 = 0">even</xsl:when>
+                                <xsl:otherwise>odd</xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:variable>
+                        <tr class="{$css-class}">
+                            <xsl:variable name="item_url">
+                                <xsl:value-of select="sitemap:loc"/>
+                            </xsl:variable>
+                            <td>
+                                <a href="{$item_url}">
+                                    <xsl:value-of select="sitemap:loc"/>
+                                </a>
+                            </td>
+                            <td style="white-space: break-spaces;">
+                                <a href="{$item_url}">
+                                    <xsl:value-of select="news:news/news:title"/>
+                                </a>
+                            </td>
+                            <td>
+                                <xsl:value-of
+                                        select="concat(substring(news:news/news:publication_date,0,11),concat(' ', substring(news:news/news:publication_date,12,5)))"/>
+                            </td>
+                        </tr>
+                    </xsl:for-each>
+                </tbody>
+            </table>
+            <xsl:call-template name="sitemapFooter"/>
+        </div>
     </xsl:template>
 
     <xsl:template name="sitemapBody" match="/">

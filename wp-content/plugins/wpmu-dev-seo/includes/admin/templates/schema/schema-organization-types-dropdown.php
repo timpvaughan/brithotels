@@ -23,7 +23,6 @@ $organization_type = empty( $organization_type ) ? '' : $organization_type;
 				Smartcrawl_Schema_Value_Helper::ORGANIZATION_FUNDING_SCHEME   => 'Funding Scheme',
 				Smartcrawl_Schema_Value_Helper::ORGANIZATION_GOVERNMENT       => 'Government',
 				Smartcrawl_Schema_Value_Helper::ORGANIZATION_LIBRARY_SYSTEM   => 'Library System',
-				Smartcrawl_Schema_Value_Helper::ORGANIZATION_LOCAL_BUSINESS   => 'Local Business',
 				Smartcrawl_Schema_Value_Helper::ORGANIZATION_MEDICAL          => 'Medical',
 				Smartcrawl_Schema_Value_Helper::ORGANIZATION_NGO              => 'NGO',
 				Smartcrawl_Schema_Value_Helper::ORGANIZATION_NEWS_MEDIA       => 'News Media',
@@ -40,5 +39,14 @@ $organization_type = empty( $organization_type ) ? '' : $organization_type;
 		<?php endforeach; ?>
 	</select>
 
-	<p class="sui-description"><?php esc_html_e( 'Choose the type that best describes your organization website.', 'wds' ); ?></p>
+	<p class="sui-description" style="margin-bottom: 7px;">
+		<?php esc_html_e( 'Choose the type that best describes your organization website.', 'wds' ); ?>
+	</p>
+	<p class="sui-description">
+		<?php echo smartcrawl_format_link(
+			esc_html__( 'Note: If you want to add Local Business markup, you can do it by adding a “Local Business” type in the %s.', 'wds' ),
+			Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_SCHEMA ) . '&tab=tab_types',
+			esc_html__( 'Types Builder', 'wds' )
+		); ?>
+	</p>
 </div>

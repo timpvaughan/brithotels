@@ -6,7 +6,7 @@
 
 <?php 
 if ( $content->show ) : ?>
-  <aside id="moove_gdpr_cookie_info_bar" class="<?php echo $content->class; ?>" role="note" aria-label="<?php esc_html_e('GDPR Cookie Banner', 'gdpr-cookie-compliance'); ?>">
+  <aside id="moove_gdpr_cookie_info_bar" class="<?php echo $content->class; ?>" role="note" aria-label="<?php esc_html_e('GDPR Cookie Banner', 'gdpr-cookie-compliance'); ?>" style="display: none;">
     <div class="moove-gdpr-info-bar-container">
       <div class="moove-gdpr-info-bar-content">
         <?php echo gdpr_get_module('infobar-content'); ?>
@@ -16,5 +16,5 @@ if ( $content->show ) : ?>
     </div>
     <!-- moove-gdpr-info-bar-container -->
   </aside>
-  <!-- #moove_gdpr_cookie_info_bar  -->
+  <!-- #moove_gdpr_cookie_info_bar -->
 <?php endif; ?>

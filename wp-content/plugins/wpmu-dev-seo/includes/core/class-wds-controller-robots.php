@@ -101,6 +101,6 @@ class Smartcrawl_Controller_Robots extends Smartcrawl_Base_Controller {
 			$contents = sprintf( "%s\n\nSitemap: %s", $contents, $sitemap_url );
 		}
 
-		return $contents;
+		return apply_filters( 'wds_robots_txt_content', $contents );
 	}
 }

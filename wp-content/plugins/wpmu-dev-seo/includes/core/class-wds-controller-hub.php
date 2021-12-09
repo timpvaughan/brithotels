@@ -1,6 +1,6 @@
 <?php
 
-class Smartcrawl_Controller_Hub { // phpcs:ignore -- We have two versions of this class
+class Smartcrawl_Controller_Hub extends Smartcrawl_Controller_Hub_Abstract { // phpcs:ignore -- We have two versions of this class
 
 
 	private static $_instance;
@@ -86,7 +86,32 @@ class Smartcrawl_Controller_Hub { // phpcs:ignore -- We have two versions of thi
 		$actions['wds-run-checkup'] = array( $this, 'json_run_checkup' );
 		$actions['wds-run-crawl'] = array( $this, 'json_run_crawl' );
 
+		$actions['wds-refresh-lighthouse-report'] = array( $this, 'json_refresh_lighthouse_report' );
+
+		$actions['wds-apply-config'] = array( $this, 'apply_config' );
+		$actions['wds-export-config'] = array( $this, 'export_config' );
+
 		return $actions;
+	}
+
+	public function apply_config( $params ) {
+		if ( empty( $params->configs ) ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Invalid config', 'wds' ) )
+			);
+		}
+
+		$configs = json_decode( json_encode( $params->configs ), true );
+		Smartcrawl_Controller_Configs::get()->apply_config( $configs );
+		wp_send_json_success();
+	}
+
+	public function export_config() {
+		$config = Smartcrawl_Config_Model::create_from_plugin_snapshot();
+		wp_send_json_success( array(
+			'configs' => $config->get_configs(),
+			'strings' => $config->get_strings(),
+		) );
 	}
 
 	public function obj_to_array( $data ) {
@@ -275,200 +300,8 @@ class Smartcrawl_Controller_Hub { // phpcs:ignore -- We have two versions of thi
 		return Smartcrawl_Sitemap_Utils::set_extra_urls( array() );
 	}
 
-	public function json_seo_summary() {
-		$options = Smartcrawl_Settings::get_options();
-
-		// Twitter cards
-		$twitter_enabled = (bool) smartcrawl_get_array_value( $options, 'twitter-card-enable' );
-		$card_type = smartcrawl_get_array_value( $options, 'twitter-card-type' );
-		$twitter = $twitter_enabled
-			? array( 'card_type' => $card_type )
-			: array();
-
-		// Pinterest
-		$pinterest_status = smartcrawl_get_array_value( $options, 'pinterest-verification-status' );
-		$pinterest_value = smartcrawl_get_array_value( $options, 'pinterest-verify' );
-		$pinterest = empty( $pinterest_value )
-			? array()
-			: array(
-				'status' => 'fail' === $pinterest_status ? 'unverified' : 'verified',
-			);
-
-		// URL redirects
-		$redirection = new Smartcrawl_Model_Redirection();
-		$redirects_count = count( $redirection->get_all_redirections() );
-
-		// Moz
-		$moz_access_id = smartcrawl_get_array_value( $options, 'access-id' );
-		$moz_secret_key = smartcrawl_get_array_value( $options, 'secret-key' );
-		$moz_active = $moz_access_id && $moz_secret_key;
-		$moz = array(
-			'active' => $moz_active,
-			'data'   => $moz_active
-				? get_option( Smartcrawl_Controller_Moz_Cron::OPTION_ID, array() )
-				: (object) array(),
-		);
-
-		// Robots file
-		$robots_controller = Smartcrawl_Controller_Robots::get();
-
-		// The whole advanced page can be disabled in the network settings
-		$autolinks_settings = Smartcrawl_Autolinks_Settings::get_instance();
-		$advanced_active = smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_AUTOLINKS );
-		$autolinks_active = $this->is_active( 'autolinks' );
-		$autolinks = $autolinks_active
-			? array(
-				'insert'  => $autolinks_settings->get_insert_options(),
-				'link_to' => $autolinks_settings->get_linkto_options(),
-			)
-			: array();
-		$advanced = $advanced_active
-			? array(
-				'autolinks'          => (object) $autolinks,
-				'url_redirects'      => $redirects_count,
-				'moz'                => $moz,
-				'robots_txt_active'  => $robots_controller->robots_active(),
-				'autolinking_active' => Smartcrawl_Settings::get_setting( 'autolinks' ),
-			)
-			: array();
-
-		// Checkup reporting schedule
-		$checkup_service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_CHECKUP );
-		if ( $checkup_service->in_progress() ) {
-			// Call status once so that the last updated timestamp gets updated
-			$checkup_service->status();
-		}
-		$checkup_reporting_enabled = smartcrawl_get_array_value( $options, 'checkup-cron-enable' );
-		$checkup_reporting = $checkup_reporting_enabled
-			? array(
-				'frequency'  => smartcrawl_get_array_value( $options, 'checkup-frequency' ),
-				'day'        => smartcrawl_get_array_value( $options, 'checkup-dow' ),
-				'time'       => smartcrawl_get_array_value( $options, 'checkup-tod' ),
-				'recipients' => count( smartcrawl_get_array_value( $options, 'checkup-email-recipients' ) ),
-			)
-			: array();
-		$checkup = array(
-			'in_progress'        => $checkup_service->in_progress(),
-			'last_run_timestamp' => $checkup_service->get_last_checked_timestamp(),
-			'reporting'          => (object) $checkup_reporting,
-		);
-
-		// Crawler reporting schedule
-		$seo_service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SEO );
-		$seo_report = $seo_service->get_report();
-		$crawler_reporting_enabled = smartcrawl_get_array_value( $options, 'crawler-cron-enable' );
-		$crawler_reporting = $crawler_reporting_enabled
-			? array(
-				'frequency'  => smartcrawl_get_array_value( $options, 'crawler-frequency' ),
-				'day'        => smartcrawl_get_array_value( $options, 'crawler-dow' ),
-				'time'       => smartcrawl_get_array_value( $options, 'crawler-tod' ),
-				'recipients' => count( Smartcrawl_Sitemap_Settings::get_email_recipients() ),
-			)
-			: array();
-		$sitemap = $this->is_active( 'sitemap' )
-			? array(
-				'crawler' => array(
-					'in_progress'        => $seo_report->is_in_progress(),
-					'last_run_timestamp' => $seo_service->get_last_run_timestamp(),
-					'reporting'          => (object) $crawler_reporting,
-				),
-			)
-			: array();
-
-		// Third-party import
-		$import_plugins = array();
-		$yoast_importer = new Smartcrawl_Yoast_Importer();
-		if ( $yoast_importer->data_exists() ) {
-			$import_plugins[] = 'yoast';
-		}
-		$aioseo = new Smartcrawl_AIOSEOP_Importer();
-		if ( $aioseo->data_exists() ) {
-			$import_plugins[] = 'aioseo';
-		}
-
-		$onpage_active = $this->is_active( 'onpage' );
-		$onpage = $onpage_active
-			? array(
-				'static_homepage'   => get_option( 'show_on_front' ) === 'page',
-				'public_post_types' => count( get_post_types( array( 'public' => true ) ) ),
-			)
-			: array();
-
-		$social_active = $this->is_active( 'social' );
-		$social = $social_active
-			? array(
-				'opengraph_active' => (bool) smartcrawl_get_array_value( $options, 'og-enable' ),
-				'twitter'          => (object) $twitter,
-				'pinterest'        => (object) $pinterest,
-			)
-			: array();
-
-		$analysis = array();
-		$analysis_model = new Smartcrawl_Model_Analysis();
-		$seo_analysis_enabled = Smartcrawl_Settings::get_setting( 'analysis-seo' );
-		if ( $seo_analysis_enabled ) {
-			$analysis['seo'] = $analysis_model->get_overall_seo_analysis();
-		}
-		$readability_analysis_enabled = Smartcrawl_Settings::get_setting( 'analysis-readability' );
-		if ( $readability_analysis_enabled ) {
-			$analysis['readability'] = $analysis_model->get_overall_readability_analysis();
-		}
-
-		// Schema
-		$schema_helper = new Smartcrawl_Schema_Value_Helper();
-		$is_schema_type_person = $schema_helper->is_schema_type_person();
-		$schema_active = ! smartcrawl_get_array_value( $options, 'disable-schema' )
-		                 && smartcrawl_is_allowed_tab( 'wds_schema' );
-		$schema = $schema_active ? array(
-			'org_type' => $is_schema_type_person
-				? Smartcrawl_Schema_Value_Helper::TYPE_PERSON
-				: Smartcrawl_Schema_Value_Helper::TYPE_ORGANIZATION,
-			'org_name' => $is_schema_type_person
-				? $schema_helper->get_personal_brand_name()
-				: $schema_helper->get_organization_name(),
-		) : array();
-
-		wp_send_json_success( array(
-			'sitewide' => is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ),
-			'onpage'   => (object) $onpage,
-			'schema'   => (object) $schema,
-			'social'   => (object) $social,
-			'advanced' => (object) $advanced,
-			'checkup'  => (object) $checkup,
-			'sitemap'  => (object) $sitemap,
-			'analysis' => (object) $analysis,
-			'import'   => array( 'plugins' => $import_plugins ),
-		) );
-	}
-
-	public function is_active( $module ) {
-		return Smartcrawl_Settings::get_setting( $module )
-		       && smartcrawl_is_allowed_tab( 'wds_' . $module );
-	}
-
-	public function json_run_checkup() {
-		$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_CHECKUP );
-		$started = $service->start();
-
-		if ( $started ) {
-			wp_send_json_success();
-		} else {
-			wp_send_json_error();
-		}
-	}
-
-	public function json_run_crawl() {
-		$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SEO );
-		$started = $service->start();
-
-		if ( is_wp_error( $started ) ) {
-			wp_send_json_error( array(
-				'message' => $started->get_error_message(),
-			) );
-		} elseif ( ! $started ) {
-			wp_send_json_error();
-		} else {
-			wp_send_json_success();
-		}
+	public function json_refresh_lighthouse_report() {
+		$lighthouse = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_LIGHTHOUSE );
+		$lighthouse->refresh_report();
 	}
 }

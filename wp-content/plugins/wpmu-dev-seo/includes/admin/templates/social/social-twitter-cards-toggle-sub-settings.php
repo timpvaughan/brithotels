@@ -1,7 +1,7 @@
 <?php
 $options = empty( $options ) ? $_view['options'] : $options;
 $card_type = smartcrawl_get_array_value( $options, 'twitter-card-type' );
-$card_type_summary = Smartcrawl_Twitter_Printer::CARD_SUMMARY === $card_type;
+$card_type_summary = Smartcrawl_Twitter_Printer::CARD_SUMMARY === $card_type;		 	 	   	 		  				
 $card_type_image = empty( $card_type ) // Image card used by default in twitter printer
                    || Smartcrawl_Twitter_Printer::CARD_IMAGE === $card_type;
 $option_name = empty( $_view['option_name'] ) ? '' : $_view['option_name'];

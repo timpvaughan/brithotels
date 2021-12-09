@@ -76,9 +76,18 @@ class Smartcrawl_Youtube_Data_Fetcher {
 		return false;
 	}
 
-	private static function get_video_id( $url ) {
-		parse_str( parse_url( $url, PHP_URL_QUERY ), $youtube_id );
+	private static function is_short_url( $url ) {
+		return parse_url( $url, PHP_URL_HOST ) === 'youtu.be';
+	}
 
-		return smartcrawl_get_array_value( $youtube_id, 'v' );
+	private static function get_video_id( $url ) {
+		if ( self::is_short_url( $url ) ) {
+			$url_parts = explode( '/', $url );
+			return array_pop( $url_parts );
+		} else {
+			parse_str( parse_url( $url, PHP_URL_QUERY ), $youtube_id );
+
+			return smartcrawl_get_array_value( $youtube_id, 'v' );
+		}
 	}
 }

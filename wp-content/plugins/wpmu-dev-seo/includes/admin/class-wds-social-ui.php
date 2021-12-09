@@ -21,7 +21,7 @@ class Smartcrawl_Social_UI extends Smartcrawl_Base_Controller {
 
 	public function should_run() {
 		return Smartcrawl_Settings::get_setting( 'social' )
-		       && smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_SOCIAL );
+		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SOCIAL );
 	}
 
 	protected function init() {

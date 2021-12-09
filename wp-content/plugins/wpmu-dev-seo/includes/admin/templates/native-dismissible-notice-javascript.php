@@ -1,11 +1,15 @@
 <style type="text/css">
-	.wds-native-dismiss {
+	.wds-native-dismiss,
+	.wds-inline-notice-link {
 		vertical-align: -4px;
 		font-size: 12px;
-		font-weight: bold;
 		margin-left: 8px;
 		color: inherit;
 		text-decoration: none;
+	}
+
+	.wds-native-dismiss {
+		font-weight: bold;
 	}
 
 	.wds-native-dismissible-notice button.notice-dismiss[disabled] {

@@ -42,7 +42,7 @@ class Smartcrawl_Report_Permalinks_Controller extends Smartcrawl_Base_Controller
 		$url = false;
 
 		if ( $_GET[ self::ACTION_QV ] === self::ACTION_CHECK_REPORT ) {
-			$url = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_CHECKUP );
+			$url = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_HEALTH );
 		} elseif ( $_GET[ self::ACTION_QV ] === self::ACTION_AUDIT_REPORT ) {
 			$url = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_SITEMAP );
 		}

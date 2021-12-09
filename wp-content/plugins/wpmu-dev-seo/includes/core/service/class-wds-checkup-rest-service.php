@@ -86,7 +86,7 @@ class Smartcrawl_Checkup_Rest_Service extends Smartcrawl_Checkup_Service_Impleme
 	 * @return string
 	 */
 	public function get_service_base_url() {
-		$base_url = 'https://premium.wpmudev.org/';
+		$base_url = 'https://wpmudev.com/';
 
 		if ( defined( 'WPMUDEV_CUSTOM_API_SERVER' ) && WPMUDEV_CUSTOM_API_SERVER ) {
 			$base_url = trailingslashit( WPMUDEV_CUSTOM_API_SERVER );
@@ -147,7 +147,7 @@ class Smartcrawl_Checkup_Rest_Service extends Smartcrawl_Checkup_Service_Impleme
 			return false;
 		}
 
-		$emails = Smartcrawl_Checkup_Settings::get_email_recipients();
+		$emails = Smartcrawl_Checkup_Options::get_all_recipients();
 		if ( empty( $emails ) ) {
 			return false;
 		}

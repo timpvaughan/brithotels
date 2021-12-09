@@ -1,16 +1,16 @@
 <?php
 $checkup_available = is_main_site();
-$sitemap_available = smartcrawl_subsite_setting_page_enabled( 'wds_sitemap' );
-$social_available = smartcrawl_subsite_setting_page_enabled( 'wds_social' );
+$sitemap_available = Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SITEMAP );
+$social_available = Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SOCIAL );
 $service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE );
 $robots_file_exists = Smartcrawl_Controller_Robots::get()->file_exists();
 ?>
-<?php if ( $checkup_available ): ?>
+<?php if ( $checkup_available && Smartcrawl_Health_Settings::is_test_mode_checkup() ): ?>
 	<div class="wds-separator-top">
 		<?php
 		$this->_render( 'toggle-item', array(
 			'field_name'       => 'checkup-run',
-			'item_label'       => esc_html__( 'Run a full SEO Checkup', 'wds' ),
+			'item_label'       => esc_html__( 'Run an SEO Checkup', 'wds' ),
 			'item_description' => esc_html__( 'Get a comprehensive checkup of your homepage and have the results emailed to your inbox.', 'wds' ),
 			'checked'          => true,
 			'attributes'       => array(

@@ -32,7 +32,7 @@ $this->_render( 'onpage/onpage-meta-robots', array(
 	<button name="submit"
 	        type="submit"
 	        class="sui-button sui-button-blue">
-		<i class="sui-icon-save" aria-hidden="true"></i>
+		<span class="sui-icon-save" aria-hidden="true"></span>
 
 		<?php echo esc_html__( 'Save Settings', 'wds' ); ?>
 	</button>

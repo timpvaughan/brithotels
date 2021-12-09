@@ -61,7 +61,7 @@ $pending_recommendations_message = _n(
 				     class="wds-check-item sui-accordion-item <?php echo esc_attr( $classes ); ?>">
 					<div class="<?php echo $ignored ? 'wds-ignored-item-header' : 'sui-accordion-item-header'; ?>">
 						<div class="sui-accordion-item-title sui-accordion-col-8">
-							<i aria-hidden="true" class="<?php echo esc_attr( $icon_class ); ?>"></i>
+							<span aria-hidden="true" class="<?php echo esc_attr( $icon_class ); ?>"></span>
 							<?php echo wp_kses_post( $status_msg ); ?>
 						</div>
 						<?php if ( $ignored ) : ?>
@@ -71,12 +71,12 @@ $pending_recommendations_message = _n(
 								        class="wds-unignore wds-disabled-during-request sui-button sui-button-ghost"
 								        data-check_id="<?php echo esc_attr( $check_id ); ?>">
 									<span class="sui-loading-text">
-										<i class="sui-icon-undo" aria-hidden="true"></i>
+										<span class="sui-icon-undo" aria-hidden="true"></span>
 
 										<?php esc_html_e( 'Restore', 'wds' ); ?>
 									</span>
 
-									<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+									<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 								</button>
 							</div>
 						<?php else : ?>
@@ -84,7 +84,7 @@ $pending_recommendations_message = _n(
 								<button class="sui-button-icon sui-accordion-open-indicator"
 								        type="button"
 								        aria-label="<?php esc_html_e( 'Open item', 'wds' ); ?>">
-									<i class="sui-icon-chevron-down" aria-hidden="true"></i>
+									<span class="sui-icon-chevron-down" aria-hidden="true"></span>
 								</button>
 							</div>
 						<?php endif; ?>
@@ -118,12 +118,12 @@ $pending_recommendations_message = _n(
 										        class="wds-ignore wds-disabled-during-request sui-button sui-button-ghost"
 										        data-check_id="<?php echo esc_attr( $check_id ); ?>">
 											<span class="sui-loading-text">
-												<i class="sui-icon-eye-hide" aria-hidden="true"></i>
+												<span class="sui-icon-eye-hide" aria-hidden="true"></span>
 
 												<?php esc_html_e( 'Ignore', 'wds' ); ?>
 											</span>
 
-											<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+											<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 										</button>
 									</div>
 								<?php endif; ?>

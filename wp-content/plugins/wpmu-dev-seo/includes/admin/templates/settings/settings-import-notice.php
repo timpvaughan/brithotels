@@ -1,5 +1,5 @@
 <?php
-$settings_errors = Smartcrawl_Controller_IO::get()->get_errors();
+$settings_errors = Smartcrawl_Controller_Third_Party_Import::get()->get_errors();
 $import = smartcrawl_get_array_value( $_GET, 'import' );
 ?>
 <div class="sui-floating-notices">

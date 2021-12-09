@@ -4,7 +4,7 @@
  *
  * @category  Views
  * @package   gdpr-cookie-compliance
- * @author    Gaspar Nemes
+ * @author    Moove Agency
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -118,15 +118,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php echo esc_attr( $nav_label ); ?>
 			</a>
 
-			<a href="<?php echo esc_attr( admin_url( 'admin.php?page=moove-gdpr&amp;tab=help' ) ); ?>" class="nav-tab <?php echo 'help' === $active_tab ? 'nav-tab-active' : ''; ?>">
+			<a href="<?php echo esc_attr( admin_url( 'admin.php?page=moove-gdpr&amp;tab=help' ) ); ?>" class="nav-tab nav-tab-dark <?php echo 'help' === $active_tab ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-editor-help"></span>
 				<?php esc_html_e( 'Help, Hooks, Filters & Shortcodes', 'gdpr-cookie-compliance' ); ?>
 			</a>
 
-			<a href="<?php echo esc_attr( admin_url( 'admin.php?page=moove-gdpr&amp;tab=video-tutorial' ) ); ?>" class="nav-tab <?php echo 'video-tutorial' === $active_tab ? 'nav-tab-active' : ''; ?>">
+			<a href="<?php echo esc_attr( admin_url( 'admin.php?page=moove-gdpr&amp;tab=video-tutorial' ) ); ?>" class="nav-tab nav-tab-dark <?php echo 'video-tutorial' === $active_tab ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-format-video"></span>
 				<?php esc_html_e( 'Video Tutorial', 'gdpr-cookie-compliance-addon' ); ?>
 			</a>
 
-			<a href="<?php echo esc_attr( admin_url( 'admin.php?page=moove-gdpr&amp;tab=licence' ) ); ?>" class="nav-tab <?php echo 'licence' === $active_tab ? 'nav-tab-active' : ''; ?>">
+			<a href="<?php echo esc_attr( admin_url( 'admin.php?page=moove-gdpr&amp;tab=licence' ) ); ?>" class="nav-tab nav-tab-dark <?php echo 'licence' === $active_tab ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-admin-network"></span>
 				<?php esc_html_e( 'Licence Manager', 'gdpr-cookie-compliance-addon' ); ?>
 			</a>
 

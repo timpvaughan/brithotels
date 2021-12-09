@@ -13,6 +13,6 @@ $field_name = empty( $field_name ) ? '' : $field_name;
 	       value="<?php echo esc_attr( $id ); ?>"
 	       name="<?php echo esc_attr( $field_name ); ?>"/>
 	<a href="#remove" class="remove-action">
-		<i class="sui-icon-close" aria-hidden="true"></i>
+		<span class="sui-icon-close" aria-hidden="true"></span>
 	</a>
 </div>

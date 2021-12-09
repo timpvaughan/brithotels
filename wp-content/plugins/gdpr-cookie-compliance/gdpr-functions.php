@@ -4,7 +4,7 @@
  *
  * @category Moove_Functions
  * @package   gdpr-cookie-compliance
- * @author    Gaspar Nemes
+ * @author    Moove Agency
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -180,14 +180,64 @@ function gdpr_get_attachment_id( $url ) {
 }
 
 /**
- * Get image alt text by image URL
+ * Get image alt text by image URL or ID
  *
- * @param String $image_url Image URL.
+ * @param String $image_url Image URL or ID.
  *
  * @return Bool | String
  */
-function gdpr_get_logo_alt( $image_url ) {
-	return apply_filters( 'gdpr_cc_custom_logo_alt', get_bloginfo( 'name' ), $image_url );
+function gdpr_get_logo_alt( $image_url, $options = array() ) {
+	if ( isset( $options['moove_gdpr_company_logo_id'] ) && intval( $options['moove_gdpr_company_logo_id'] ) ) :
+		$image_alt = get_post_meta( $options['moove_gdpr_company_logo_id'], '_wp_attachment_image_alt', true );
+	else :
+		$image_alt = get_bloginfo( 'name' );
+	endif;
+	return apply_filters( 'gdpr_cc_custom_logo_alt', $image_alt, $image_url );
+}
+
+/**
+ * Get image widht & height by image URL
+ *
+ * @param string $image_url Image URL
+ */
+function gdpr_get_logo_details( $image_url, $options = array() ) {
+	$image_details = array(
+		'width' 	=> false,
+		'height'	=> false,
+	);
+	$image_size = apply_filters('gdpr_cc_company_logo_image_size', 'medium');
+	if ( $image_url && apply_filters( 'gdpr_cc_logo_details_enabled', true ) ) :
+
+		if ( strpos( $image_url,  'gdpr-cookie-compliance/dist/images/gdpr-logo.png' ) !== false ) :
+			$image_details = array(
+				'width' 	=> 350,
+				'height'	=> 233,
+			);
+		else :
+			if ( isset( $options['moove_gdpr_company_logo_id'] ) && intval( $options['moove_gdpr_company_logo_id'] ) ) :
+				$attachment_id = intval( $options['moove_gdpr_company_logo_id'] );
+			else :
+				$attachment_id = attachment_url_to_postid( $image_url );
+			endif;
+			if ( $attachment_id ) :
+				$_image = wp_get_attachment_image_src( $attachment_id, $image_size );			
+				$gdpr_default_content = new Moove_GDPR_Content();
+				$option_name          = $gdpr_default_content->moove_gdpr_get_option_name();	
+				$gdpr_options         = get_option( $option_name );
+				$gdpr_options['moove_gdpr_company_logo_id'] = $attachment_id;
+				update_option( $option_name, $gdpr_options );
+				if ( $_image ) :
+					$image_details = array(
+						'logo_url'	=> $_image[0],
+						'width' 		=> $_image[1],
+						'height'		=> $_image[2],
+					);
+				endif;
+			endif;
+		endif;
+	endif;
+	$image_details = apply_filters( 'gdpr_cc_logo_details_filter', $image_details );
+	return $image_details;
 }
 
 /**
@@ -469,3 +519,16 @@ if ( ! function_exists( 'gdpr_get_display_language_by_locale' ) ) :
 		return isset( $language_codes[ $_locale ] ) ? $language_codes[ $_locale ] . ' [' . $locale . ']' : $locale;
 	}
 endif;
+
+add_action( 'gdpr_modal_base_module', 'gdpr_copyscape_cc_remove_hidden_elements', 10, 1 ); 
+add_action( 'gdpr_infobar_base_module', 'gdpr_copyscape_cc_remove_hidden_elements', 10, 1 );
+add_action( 'gdpr_branding_styles_module', 'gdpr_copyscape_cc_remove_hidden_elements', 10, 1 );
+add_action( 'gdpr_floating_button_module', 'gdpr_copyscape_cc_remove_hidden_elements', 10, 1 );
+
+/**
+ * Disable showing HTML content if ?justtext=1 query parameter is part of the URL
+ * @param string $modal_html Modal HTML.
+ */
+function gdpr_copyscape_cc_remove_hidden_elements( $modal_html ) {
+	return isset( $_GET['justtext'] ) && sanitize_text_field( wp_unslash( $_GET['justtext'] ) ) ? '' : $modal_html;
+};

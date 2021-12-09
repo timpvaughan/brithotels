@@ -12,6 +12,7 @@ $rootdir_install = empty( $rootdir_install ) ? false : true;
 	<?php $this->_render( 'page-header', array(
 		'title'                 => esc_html__( 'Advanced Tools', 'wds' ),
 		'documentation_chapter' => 'advanced-tools',
+		'utm_campaign'          => 'smartcrawl_advanced-tools_docs',
 	) ); ?>
 
 	<?php $this->_render( 'floating-notices', array(
@@ -80,6 +81,20 @@ $rootdir_install = empty( $rootdir_install ) ? false : true;
 			}
 
 			$this->_render( 'vertical-tab', $autolinks_tab );
+			?>
+		</form>
+
+		<form action='<?php echo esc_attr( $_view['action_url'] ); ?>'
+		      method='post'
+		      class="wds-form">
+			<?php $this->settings_fields( $_view['option_name'] ); ?>
+
+			<?php
+			if ( smartcrawl_woocommerce_active() ) {
+				$this->_render( 'advanced-tools/advanced-section-woo-settings', array(
+					'is_active' => $active_tab === 'tab_woo',
+				) );
+			}
 			?>
 		</form>
 

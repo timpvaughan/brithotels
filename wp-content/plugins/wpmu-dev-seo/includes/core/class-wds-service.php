@@ -9,14 +9,16 @@ abstract class Smartcrawl_Service {
 	const SERVICE_SEO = 'seo';
 	const SERVICE_CHECKUP = 'checkup';
 	const SERVICE_SITE = 'site';
+	const SERVICE_LIGHTHOUSE = 'lighthouse';
 	private $_errors = array();
 
 	/**
 	 * Service factory method
+	 * TODO: remove this method and implement get() static methods in individual classes
 	 *
 	 * @param string $type Requested service type
 	 *
-	 * @return Smartcrawl_Uptime_Service|Smartcrawl_Checkup_Service|Smartcrawl_Site_Service|Smartcrawl_Seo_Service Smartcrawl_Service Service instance
+	 * @return Smartcrawl_Uptime_Service|Smartcrawl_Checkup_Service|Smartcrawl_Site_Service|Smartcrawl_Seo_Service|Smartcrawl_Lighthouse_Service Smartcrawl_Service Service instance
 	 */
 	public static function get( $type ) {
 		$type = ! empty( $type ) && in_array( $type, array(
@@ -24,6 +26,7 @@ abstract class Smartcrawl_Service {
 			self::SERVICE_UPTIME,
 			self::SERVICE_CHECKUP,
 			self::SERVICE_SITE,
+			self::SERVICE_LIGHTHOUSE,
 		), true )
 			? $type
 			: self::SERVICE_SEO;
@@ -33,6 +36,8 @@ abstract class Smartcrawl_Service {
 			$class_name = 'Smartcrawl_Checkup_Service';
 		} elseif ( self::SERVICE_SITE === $type ) {
 			$class_name = 'Smartcrawl_Site_Service';
+		} elseif ( self::SERVICE_LIGHTHOUSE === $type ) {
+			$class_name = 'Smartcrawl_Lighthouse_Service';
 		} else {
 			$class_name = 'Smartcrawl_Seo_Service';
 		}
@@ -326,6 +331,7 @@ abstract class Smartcrawl_Service {
 
 		Smartcrawl_Logger::debug( "Sending a remote request to [{$remote_url}] ({$verb})" );
 		$response = wp_remote_request( $remote_url, $request_arguments );
+		Smartcrawl_Logger::debug( "Received a response from [{$remote_url}] ({$verb})" . var_export( $response, true ) );
 		if ( is_wp_error( $response ) ) {
 			Smartcrawl_Logger::error( "We were not able to communicate with [{$remote_url}] ({$verb})." );
 			if ( is_callable( array( $response, 'get_error_messages' ) ) ) {

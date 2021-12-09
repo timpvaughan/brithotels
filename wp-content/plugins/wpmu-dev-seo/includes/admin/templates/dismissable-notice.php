@@ -15,11 +15,12 @@ $is_message_dismissed = smartcrawl_get_array_value( $dismissed_messages, $key ) 
 	     data-key="<?php echo esc_attr( $key ); ?>">
 		<div class="sui-notice-content">
 			<div class="sui-notice-message">
-				<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+				<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>
 				<p>
 					<?php echo wp_kses_post( $message ); ?>
 					<span class="wds-notice-wrap">
-						<a href="#" class="wds-notice-dismiss">
+						<a href="#" class="wds-notice-dismiss"
+						   aria-label="<?php esc_html_e( 'Dismiss notice', 'wds' ); ?>">
 							<?php esc_html_e( 'Dismiss', 'wds' ); ?>
 						</a>
 					</span>

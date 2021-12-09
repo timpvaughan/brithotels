@@ -43,7 +43,7 @@ $classes[] = $section_enabled && $accordion_section_open ? 'sui-accordion-item--
 			<?php endif; ?>
 			<button type="button" class="sui-button-icon sui-accordion-open-indicator"
 			        aria-label="<?php esc_html_e( 'Open item', 'wds' ); ?>">
-				<i class="sui-icon-chevron-down" aria-hidden="true"></i>
+				<span class="sui-icon-chevron-down" aria-hidden="true"></span>
 			</button>
 		</div>
 	</div>

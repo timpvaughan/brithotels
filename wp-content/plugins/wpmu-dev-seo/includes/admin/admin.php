@@ -39,6 +39,7 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 	 */
 	protected function init() {
 		// Set up dash.
+		// TODO: dash setup probably needs its own controller
 		if ( file_exists( SMARTCRAWL_PLUGIN_DIR . 'external/dash/wpmudev-dash-notification.php' ) ) {
 			global $wpmudev_notices;
 			if ( ! is_array( $wpmudev_notices ) ) {
@@ -48,23 +49,28 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 				'id'      => 167,
 				'name'    => 'SmartCrawl',
 				'screens' => array(
-					'smartcrawl_page_wds_onpage-network',
-					'smartcrawl_page_wds_onpage',
-					'smartcrawl_page_wds_sitemap-network',
-					'smartcrawl_page_wds_sitemap',
-					'smartcrawl_page_wds_settings-network',
-					'smartcrawl_page_wds_settings',
-					'smartcrawl_page_wds_autolinks-network',
-					'smartcrawl_page_wds_autolinks',
-					'smartcrawl_page_wds_social-network',
-					'smartcrawl_page_wds_social',
+					'toplevel_page_wds_wizard-network',
+					'toplevel_page_wds_wizard',
+					'smartcrawl-pro_page_wds_health-network',
+					'smartcrawl-pro_page_wds_health',
+					'smartcrawl-pro_page_wds_onpage-network',
+					'smartcrawl-pro_page_wds_onpage',
+					'smartcrawl-pro_page_wds_schema-network',
+					'smartcrawl-pro_page_wds_schema',
+					'smartcrawl-pro_page_wds_social-network',
+					'smartcrawl-pro_page_wds_social',
+					'smartcrawl-pro_page_wds_sitemap-network',
+					'smartcrawl-pro_page_wds_sitemap',
+					'smartcrawl-pro_page_wds_autolinks-network',
+					'smartcrawl-pro_page_wds_autolinks',
+					'smartcrawl-pro_page_wds_settings-network',
+					'smartcrawl-pro_page_wds_settings',
 				),
 			);
 			require_once SMARTCRAWL_PLUGIN_DIR . 'external/dash/wpmudev-dash-notification.php';
 		}
 
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
-		add_filter( 'allowed_options', array( $this, 'save_options' ), 20 );
 		add_filter( 'load-index.php', array( $this, 'enqueue_dashboard_resources' ), 20 );
 
 		add_action( 'wp_ajax_wds_dismiss_message', array( $this, 'smartcrawl_dismiss_message' ) );
@@ -79,86 +85,13 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 		}
 
 		$this->_handlers['dashboard'] = Smartcrawl_Settings_Dashboard::get_instance();
-
-		$this->_handlers['checkup'] = Smartcrawl_Checkup_Settings::get_instance();
-
-		if ( Smartcrawl_Settings::get_setting( 'onpage' ) ) {
-			$this->_handlers['onpage'] = Smartcrawl_Onpage_Settings::get_instance();
-		}
-
+		$this->_handlers['health'] = Smartcrawl_Health_Settings::get_instance();
+		$this->_handlers['onpage'] = Smartcrawl_Onpage_Settings::get_instance();
 		$this->_handlers['schema'] = Smartcrawl_Schema_Settings::get_instance();
-
-		if ( Smartcrawl_Settings::get_setting( 'social' ) ) {
-			$this->_handlers['social'] = Smartcrawl_Social_Settings::get_instance();
-		}
-
+		$this->_handlers['social'] = Smartcrawl_Social_Settings::get_instance();
 		$this->_handlers['sitemap'] = Smartcrawl_Sitemap_Settings::get_instance();
 		$this->_handlers['autolinks'] = Smartcrawl_Autolinks_Settings::get_instance();
 		$this->_handlers['settings'] = Smartcrawl_Settings_Settings::get_instance();
-	}
-
-	/**
-	 * Saves the submitted options
-	 *
-	 * @param mixed $whitelist_options Options.
-	 *
-	 * @return array
-	 */
-	public function save_options( $whitelist_options ) {
-		global $action;
-
-		$smartcrawl_pages = array(
-			'wds_settings_options',
-			'wds_autolinks_options',
-			'wds_onpage_options',
-			'wds_sitemap_options',
-			'wds_social_options',
-			'wds_schema_options',
-			'wds_redirections_options',
-			'wds_checkup_options',
-		);
-		$data = isset( $_POST['_wpnonce'], $_POST['option_page'] ) && wp_verify_nonce( $_POST['_wpnonce'], $_POST['option_page'] . '-options' )
-			? stripslashes_deep( $_POST )
-			: array();
-
-		if ( is_multisite() && SMARTCRAWL_SITEWIDE && 'update' === $action && in_array( $data['option_page'], $smartcrawl_pages, true ) ) {
-			global $option_page;
-
-			check_admin_referer( $option_page . '-options' );
-
-			if ( ! isset( $whitelist_options[ $option_page ] ) ) {
-				wp_die( esc_html__( 'Error: options page not found.', 'wds' ) );
-			}
-
-			$options = $whitelist_options[ $option_page ];
-
-			if ( $options && is_array( $options ) ) {
-				foreach ( $options as $option ) {
-					$option = trim( $option );
-					$value = null;
-					if ( isset( $data[ $option ] ) ) {
-						$value = $data[ $option ];
-					}
-					if ( ! is_array( $value ) ) {
-						$value = trim( $value );
-					}
-					$value = stripslashes_deep( $value );
-
-					// Sanitized/validated via sanitize_option_<option_page>.
-					// See each of the admin classes validate method.
-					update_site_option( $option, $value );
-				}
-			}
-
-			$errors = get_settings_errors();
-			set_transient( 'wds-settings-save-errors', $errors, 30 );
-
-			$goback = add_query_arg( 'updated', 'true', wp_get_referer() );
-			wp_safe_redirect( $goback );
-			die;
-		}
-
-		return $whitelist_options;
 	}
 
 	/**
@@ -198,8 +131,8 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 			$this->get_handler( 'redirections' ),
 			'validate',
 		) );
-		register_setting( 'wds_checkup_options', 'wds_checkup_options', array(
-			$this->get_handler( 'checkup' ),
+		register_setting( 'wds_health_options', 'wds_health_options', array(
+			$this->get_handler( 'health' ),
 			'validate',
 		) );
 	}
@@ -234,8 +167,17 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 		if ( ! apply_filters( 'wds-admin-ui-show_bar', true ) ) {
 			return false;
 		}
-		// Do not show if sitewide and we're not super admin.
-		if ( smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) && ! is_super_admin() ) {
+		// Do not show if only superadmin can view settings and the current user is not super admin.
+		if (
+			is_multisite()
+			&& smartcrawl_subsite_manager_role() === 'superadmin'
+			&& ! current_user_can( 'manage_network_options' )
+		) {
+			return false;
+		}
+
+		// On single site don't show for non-admins
+		if ( ! current_user_can( 'manage_options' ) ) {
 			return false;
 		}
 
@@ -265,12 +207,7 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 
 	private function is_admin_bar_node_allowed( $slug ) {
 		if ( is_multisite() ) {
-			$is_sitewide = smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' );
-
-			return (
-				       ( $is_sitewide && is_network_admin() ) ||
-				       ( ! $is_sitewide && ! is_network_admin() )
-			       ) && Smartcrawl_Settings_Admin::is_tab_allowed( $slug );
+			return Smartcrawl_Settings_Admin::is_tab_allowed( $slug );
 		}
 
 		return true;
@@ -282,7 +219,7 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 			'title' => $title,
 			'href'  => sprintf(
 				'%s?page=%s',
-				smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) ? network_admin_url( 'admin.php' ) : admin_url( 'admin.php' ),
+				admin_url( 'admin.php' ),
 				empty( $slug ) ? $id : $slug
 			),
 		);
@@ -307,6 +244,8 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 
 	/**
 	 * Shows blog not being public notice.
+	 *
+	 * TODO: probably not the right class for this method. We can probably make a separate controller for admin messages and the dismiss message.
 	 */
 	public function blog_not_public_notice() {
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -342,6 +281,9 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 		wp_send_json_success();
 	}
 
+	/**
+	 * TODO: we should remove widgets from the wordpress dashboard making dashboard resources unnecessary
+	 */
 	public function enqueue_dashboard_resources() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_dashboard_css' ) );
 	}

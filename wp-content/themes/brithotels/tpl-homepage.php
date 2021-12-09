@@ -60,7 +60,7 @@ get_header();
 	$elephant_hotel_photo_url = isset($elephant_hotel_photo['url']) ? $elephant_hotel_photo['url'] : get_template_directory_uri().'/assets/images/hotel/2.jpg';
 	$elephant_hotel_book_url = isset( $elephant_hotel['book_url'] ) ? $elephant_hotel['book_url'] : '';
 	$elephant_hotel_open_info = isset($elephant_hotel['open_info'])? esc_html($elephant_hotel['open_info']) : '';
-	
+
 	$earlscourt_hotel = get_field('_earlscourt_hotel_info', $post_id);
 	$earlscourt_hotel_title = isset($elephant_hotel['title'])? $earlscourt_hotel['title'] : '';
 	$earlscourt_hotel_address = isset($elephant_hotel['address'])? $earlscourt_hotel['address'] : '';
@@ -68,7 +68,7 @@ get_header();
 	$earlscourt_hotel_photo_url = isset($earlscourt_hotel_photo['url']) ? $earlscourt_hotel_photo['url'] : get_template_directory_uri().'/assets/images/hotel/2.jpg';
 	$earlscourt_hotel_book_url = isset( $earlscourt_hotel['book_url'] ) ? $earlscourt_hotel['book_url'] : '';
 	$earlscourt_hotel_open_info = isset($earlscourt_hotel['open_info'])? esc_html($earlscourt_hotel['open_info']) : '';
-	
+
 	$home_info_box1 = get_field( '_home_info_box1', 'option' );
 	$home_info_box2 = get_field( '_home_info_box2', 'option' );
 	$home_info_box3 = get_field( '_home_info_box3', 'option' );
@@ -92,30 +92,9 @@ get_header();
 					<div class="section-header">
 						<img src="<?php echo get_template_directory_uri(); ?>/assets/images/text-logo.svg" alt="">
 					</div>
-									
+
 				</div>
 				<div class="col-12">
-					<div class="hotel-list" >
-						<div class="thumb">
-							<img src="<?php echo esc_url($london_hotel_photo_url); ?>" class="img-fluid" alt="">
-						</div>
-						<div class="body">
-							<!--<h4>London Court</h4>-->
-							<h4><?php echo $london_hotel_title; ?></h4>
-							<!--<ul>
-								<li>194 - 196 Earls Court Road <br>Earls Court London SW5 0PT</li>
-								<li>T: +44 (0) 20 7373 0027</li>
-								<li>E: info@brithotelslondoncourt.com</li>
-							</ul>-->
-							<?php
-							echo $london_hotel_address;
-							?>
-							<div class="buttons">
-								<a href="<?php echo home_url('/london-court/'); ?>" class="btn">More Info <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/hotel.svg" alt="More info"/></a>
-								<a href="<?php echo esc_url($london_hotel_book_url); ?>" class="btn">Book Now <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt="Book now"/></a>
-							</div>
-						</div>
-					</div>
 					<div class="hotel-list">
 						<div class="thumb">
 							<img src="<?php echo esc_url($elephant_hotel_photo_url); ?>" class="img-fluid" alt="">
@@ -126,13 +105,7 @@ get_header();
 							<?php endif; ?>
 						</div>
 						<div class="body">
-							<!--<h4>Elephant &amp; Castle</h4>-->
 							<h4><?php echo $elephant_hotel_title; ?></h4>
-							<!--<ul>
-								<li>20-22 Hogarth Road <br>Earl’s Court London SW5 0PT</li>
-								<li>T: +44 (0) 20 7373 6155</li>
-								<li>E: info@brithotelselephantcastle.co.uk</li>
-							</ul>-->
 							<?php
 							echo $elephant_hotel_address;
 							?>
@@ -152,13 +125,7 @@ get_header();
 							<?php endif; ?>
 						</div>
 						<div class="body">
-							<!--<h4>Elephant &amp; Castle</h4>-->
 							<h4><?php echo $earlscourt_hotel_title; ?></h4>
-							<!--<ul>
-								<li>20-22 Hogarth Road <br>Earl’s Court London SW5 0PT</li>
-								<li>T: +44 (0) 20 7373 6155</li>
-								<li>E: info@brithotelselephantcastle.co.uk</li>
-							</ul>-->
 							<?php
 							echo $earlscourt_hotel_address;
 							?>
@@ -209,51 +176,8 @@ get_header();
 		?>
 		<p>&nbsp;</p>
 	</div>
-	
-	
-	<!--div class="black-bg pt15 pb170">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-lg-4">
-				<div class="info-box color1">
-					<!--<h3>Our Price Promise guarantees you receive upto 20% off.</h3>
-					<p>For the best available rate when booking your stay here. Use Promo Code BRITHOTELS.</p>>
-					<?php if($heading1 != ''): ?>
-						<h3><?php echo $heading1; ?></h3>
-					<?php endif; ?>
-					<?php if($sub_heading1 != ''): ?>
-						<p><?php echo $sub_heading1; ?></p>
-					<?php endif; ?>
-				</div>
-			</div>
-			<div class="col-lg-4">
-				<div class="info-box color2">
-					<!--<h3>Enjoy complimentary tea and freshly ground coffee all day.</h3>
-					<p>To enhance your stay with us and to offer you that little something extra</p>>
-					<?php if($heading2 != ''): ?>
-						<h3><?php echo $heading2; ?></h3>
-					<?php endif; ?>
-					<?php if($sub_heading2 != ''): ?>
-						<p><?php echo $sub_heading2; ?></p>
-					<?php endif; ?>
-				</div>
-			</div>
-			<div class="col-lg-4">
-				<div class="info-box color3">
-					<!--<h3>Book your next London getaway directly through us and enjoy complementary early check-in.</h3>>
-					<?php if($heading3 != ''): ?>
-						<h3><?php echo $heading3; ?></h3>
-					<?php endif; ?>
-					<?php if($sub_heading3 != ''): ?>
-						<p><?php echo $sub_heading3; ?></p>
-					<?php endif; ?>
-				</div>
-			</div>
-		</div>
-	</div>
-</div-->
-	
-	
+
+
 	<div class="gallery-slider-wrap black-bg pb170">
 		<div class="gallery-slider">
 			<?php

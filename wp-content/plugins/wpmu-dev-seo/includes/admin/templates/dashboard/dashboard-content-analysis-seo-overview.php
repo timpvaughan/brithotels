@@ -49,8 +49,9 @@ if ( 0 === $passed && 0 === $total ) {
 			</div>
 			<div class="sui-accordion-col-1">
 				<span class="sui-accordion-open-indicator">
-					<i aria-hidden="true" class="sui-icon-chevron-down"></i>
+					<span aria-hidden="true" class="sui-icon-chevron-down"></span>
 					<button type="button"
+					        aria-label="<?php esc_html_e( 'Expand overall SEO analysis', 'wds' ); ?>"
 					        class="sui-screen-reader-text"><?php esc_html_e( 'Expand', 'wds' ); ?></button>
 				</span>
 			</div>

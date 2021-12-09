@@ -15,9 +15,9 @@ $twitter_taxonomy_enabled = (bool) smartcrawl_get_array_value( $all_options, 'tw
 $show_social_tab = ( $og_setting_enabled && $og_taxonomy_enabled ) || ( $twitter_setting_enabled && $twitter_taxonomy_enabled );
 $show_social_tab = $show_social_tab
                    && Smartcrawl_Settings::get_setting( 'social' )
-                   && smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_SOCIAL );
+                   && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SOCIAL );
 $show_onpage_tabs = Smartcrawl_Settings::get_setting( 'onpage' )
-                    && smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_ONPAGE );
+                    && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAGE );
 if ( ! $show_social_tab && ! $show_onpage_tabs ) {
 	return;
 }

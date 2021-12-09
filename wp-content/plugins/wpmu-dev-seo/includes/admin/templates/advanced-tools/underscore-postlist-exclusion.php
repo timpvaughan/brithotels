@@ -11,7 +11,7 @@
 	<div class="wds-notice sui-notice {{= (!!posts ? '' : 'wds-postlist-empty_list') }}">
 		<div class="sui-notice-content">
 			<div class="sui-notice-message">
-				<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
+				<span class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></span>
 				<p><?php esc_html_e( "You haven't chosen to exclude any posts/pages.", 'wds' ); ?></p>
 			</div>
 		</div>
@@ -21,7 +21,7 @@
 {{ } }}
 	<div class="wds-postlist-add-post">
 		<a href="#wds-postlist-selector" rel="dialog" class="sui-button">
-			<i class="sui-icon-plus" aria-hidden="true"></i>
+			<span class="sui-icon-plus" aria-hidden="true"></span>
 			<?php esc_html_e('Add Exclusion', 'wds'); ?>
 		</a>
 	</div>

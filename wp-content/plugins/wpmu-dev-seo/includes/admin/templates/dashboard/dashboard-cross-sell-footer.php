@@ -18,7 +18,7 @@ if ( Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE )->is_member() ) 
 				<p><?php esc_html_e( 'Resize, optimize and compress all of your images with the incredibly powerful and award-winning, 100% free WordPress image optimizer.', 'wds' ); ?></p>
 				<a href="https://wordpress.org/plugins/wp-smushit/" class="sui-button sui-button-ghost"
 				   target="_blank">
-					<?php esc_html_e( 'View features', 'wds' ); ?> <i class="sui-icon-arrow-right"></i>
+					<?php esc_html_e( 'View features', 'wds' ); ?> <span class="sui-icon-arrow-right"></span>
 				</a>
 			</div>
 		</div>
@@ -32,7 +32,7 @@ if ( Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE )->is_member() ) 
 				<p><?php esc_html_e( 'Security Tweaks & Recommendations, File & Malware Scanning, Login & 404 Lockout Protection, Two-Factor Authentication & more.', 'wds' ); ?></p>
 				<a href="https://wordpress.org/plugins/defender-security/"
 				   class="sui-button sui-button-ghost" target="_blank">
-					<?php esc_html_e( 'View features', 'wds' ); ?> <i class="sui-icon-arrow-right"></i>
+					<?php esc_html_e( 'View features', 'wds' ); ?> <span class="sui-icon-arrow-right"></span>
 				</a>
 			</div>
 		</div>
@@ -46,7 +46,7 @@ if ( Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE )->is_member() ) 
 				<p><?php esc_html_e( 'Performance Tests, File Optimization & Compression, Page, Browser & Gravatar Caching, GZIP Compression, CloudFlare Integration & more.', 'wds' ); ?></p>
 				<a href="https://wordpress.org/plugins/hummingbird-performance/"
 				   class="sui-button sui-button-ghost" target="_blank">
-					<?php esc_html_e( 'View features', 'wds' ); ?> <i class="sui-icon-arrow-right"></i>
+					<?php esc_html_e( 'View features', 'wds' ); ?> <span class="sui-icon-arrow-right"></span>
 				</a>
 			</div>
 		</div>
@@ -59,7 +59,7 @@ if ( Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE )->is_member() ) 
 
 	<a class="sui-button sui-button-green"
 	   target="_blank"
-	   href="https://premium.wpmudev.org/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_footer_upsell_notice"
+	   href="https://wpmudev.com/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_footer_upsell_notice"
 	   id="dash-uptime-update-membership" rel="dialog">
 		<?php esc_html_e( 'Learn more', 'wds' ); ?>
 	</a>

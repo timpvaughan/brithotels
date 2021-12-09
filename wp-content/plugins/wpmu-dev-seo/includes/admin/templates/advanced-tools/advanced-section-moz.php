@@ -58,7 +58,7 @@ $image_url = Smartcrawl_White_Label::get()->get_wpmudev_hero_image( $image_url )
 					        class="sui-button sui-button-blue">
 
 						<span class="sui-loading-text"><?php esc_html_e( 'Connect', 'wds' ); ?></span>
-						<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+						<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 					</button>
 					<?php wp_nonce_field( 'wds-settings-nonce', '_wds_nonce' ); ?>
 				</div>

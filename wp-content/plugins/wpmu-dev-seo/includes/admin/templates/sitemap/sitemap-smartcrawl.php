@@ -41,7 +41,7 @@ if ( $native_sitemap_available ) {
 			        id="wds-switch-to-native-sitemap"
 			        class="sui-button sui-button-ghost">
 
-				<i class="sui-icon-defer" aria-hidden="true"></i>
+				<span class="sui-icon-defer" aria-hidden="true"></span>
 				<?php esc_html_e( 'Switch', 'wds' ); ?>
 			</button>
 

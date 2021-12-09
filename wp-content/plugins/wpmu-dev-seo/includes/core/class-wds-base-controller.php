@@ -17,20 +17,27 @@ abstract class Smartcrawl_Base_Controller {
 
 	/**
 	 * Do the thing!
-	 *
-	 * @return bool
 	 */
 	public function run() {
-		if (
-			$this->is_running()       // Already running
-			|| ! $this->should_run()  // Has no business running
-		) {
+		if ( $this->is_running() ) {
 			return false;
 		}
-
 		$this->is_running = true;
 
-		return $this->init();
+		// Some parts need to be run every time
+		$this->always();
+
+		if ( $this->should_run() ) {
+			// while the rest are run when should_run returns true
+			$this->init();
+			return true;
+		}
+
+		return false;
+	}
+
+	protected function always() {
+
 	}
 
 	/**

@@ -31,6 +31,8 @@ class Smartcrawl_Init {
 
 		/**
 		 * Load textdomain.
+		 *
+		 * TODO: move to a separate method
 		 */
 		if ( defined( 'WPMU_PLUGIN_DIR' ) && file_exists( WPMU_PLUGIN_DIR . '/wpmu-dev-seo.php' ) ) {
 			load_muplugin_textdomain( 'wds', dirname( SMARTCRAWL_PLUGIN_BASENAME ) . '/languages' );
@@ -38,10 +40,8 @@ class Smartcrawl_Init {
 			load_plugin_textdomain( 'wds', false, dirname( SMARTCRAWL_PLUGIN_BASENAME ) . '/languages' );
 		}
 
-		require_once SMARTCRAWL_PLUGIN_DIR . 'core/core-wpabstraction.php';
 		require_once SMARTCRAWL_PLUGIN_DIR . 'core/core.php';
 
-		Smartcrawl_Controller_Sitemap_Cron::get()->run();
 		Smartcrawl_Controller_Sitemap_Front::get()->run();
 		Smartcrawl_Controller_Sitemap_Native::get()->run();
 		Smartcrawl_Controller_Sitemap::get()->run();
@@ -67,6 +67,19 @@ class Smartcrawl_Init {
 		Smartcrawl_Controller_Media_Schema_Data::get()->run();
 		Smartcrawl_Controller_Upgrade_Page::get()->run();
 		Smartcrawl_Controller_Welcome::get()->run();
+		Smartcrawl_Controller_Schema_Types::get()->run();
+		Smartcrawl_Schema_Printer::run();
+		Smartcrawl_Controller_Lighthouse::get()->run();
+		Smartcrawl_Controller_Configs::get()->run();
+		Smartcrawl_Controller_Crawler::get()->run();
+		Smartcrawl_Network_Configs_Controller::get()->run();
+		Smartcrawl_Sitewide_Deprecation_Controller::get()->run();
+		Smartcrawl_Controller_Ajax_Search::get()->run();
+		Smartcrawl_Controller_Black_Friday::get()->run();
+		add_action( 'init', function () {
+			// WooCommerce is not available before init when smartcrawl is activated on a sub-site (not network active)
+			Smartcrawl_Controller_Woocommerce::get()->run();
+		} );
 
 		if ( is_admin() ) {
 			Smartcrawl_Recommended_Plugins::get()->run();
@@ -80,7 +93,7 @@ class Smartcrawl_Init {
 			Smartcrawl_Controller_Checkup_Progress::get()->run();
 			Smartcrawl_Network_Settings_Page_Controller::get()->run();
 		} else {
-			Smartcrawl_Redirection_Front::get()->run();
+			Smartcrawl_Controller_Redirection::get()->run();
 			Smartcrawl_Autolinks::get()->run();
 			Smartcrawl_OnPage::get()->run();
 			Smartcrawl_Social_Front::get()->run();
@@ -90,6 +103,7 @@ class Smartcrawl_Init {
 
 		// Boot up the hub controller.
 		Smartcrawl_Controller_Hub::serve();
+		Smartcrawl_Controller_Third_Party_Import::serve();
 	}
 
 }

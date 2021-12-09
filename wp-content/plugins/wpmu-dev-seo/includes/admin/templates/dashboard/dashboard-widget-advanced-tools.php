@@ -1,5 +1,5 @@
 <?php
-if ( ! smartcrawl_subsite_setting_page_enabled( 'wds_autolinks' ) ) {
+if ( ! Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_AUTOLINKS ) ) {
 	return;
 }
 
@@ -27,9 +27,9 @@ $robots_enabled = (boolean) Smartcrawl_Settings::get_setting( 'robots-txt' )
 <section id="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_ADVANCED_TOOLS ); ?>"
          class="sui-box wds-dashboard-widget">
 	<div class="sui-box-header">
-		<h3 class="sui-box-title">
-			<i class="sui-icon-wand-magic" aria-hidden="true"></i> <?php esc_html_e( 'Advanced Tools', 'wds' ); ?>
-		</h3>
+		<h2 class="sui-box-title">
+			<span class="sui-icon-wand-magic" aria-hidden="true"></span> <?php esc_html_e( 'Advanced Tools', 'wds' ); ?>
+		</h2>
 	</div>
 
 	<div class="sui-box-body">
@@ -41,7 +41,7 @@ $robots_enabled = (boolean) Smartcrawl_Settings::get_setting( 'robots-txt' )
 				<p>
 					<small><?php esc_html_e( 'Automatically redirect traffic from one URL to another.', 'wds' ); ?></small>
 				</p>
-				<a href="<?php echo esc_attr( $page_url ); ?>&tab=tab_url_redirection"
+				<a href="<?php echo esc_attr( $page_url ); ?>&tab=tab_url_redirection&add_redirect=1"
 				   class="sui-button sui-button-blue">
 					<?php esc_html_e( 'Add Redirect', 'wds' ); ?>
 				</a>
@@ -57,13 +57,14 @@ $robots_enabled = (boolean) Smartcrawl_Settings::get_setting( 'robots-txt' )
 				<a href="<?php echo esc_attr( $page_url ); ?>&tab=tab_moz"
 				   class="sui-button sui-button-ghost">
 
-					<i class="sui-icon-eye" aria-hidden="true"></i> <?php esc_html_e( 'View Report', 'wds' ); ?>
+					<span class="sui-icon-eye" aria-hidden="true"></span> <?php esc_html_e( 'View Report', 'wds' ); ?>
 				</a>
 			<?php else : ?>
 				<p>
 					<small><?php esc_html_e( 'Moz provides reports that tell you how your site stacks up against the competition with all of the important SEO measurement tools.', 'wds' ); ?></small>
 				</p>
 				<a href="<?php echo esc_attr( $page_url ); ?>&tab=tab_moz"
+				   aria-label="<?php esc_html_e( 'Connect your Moz account', 'wds' ); ?>"
 				   class="sui-button sui-button-blue">
 
 					<?php esc_html_e( 'Connect', 'wds' ); ?>
@@ -85,6 +86,7 @@ $robots_enabled = (boolean) Smartcrawl_Settings::get_setting( 'robots-txt' )
 					<small><?php esc_html_e( 'Add a robots.txt file to tell search engines what they can and can’t index, and where things are.', 'wds' ); ?></small>
 				</p>
 				<a href="<?php echo esc_attr( $page_url ); ?>&tab=tab_robots_editor"
+				   aria-label="<?php esc_html_e( 'Activate Robots.txt file', 'wds' ); ?>"
 				   class="sui-button sui-button-blue">
 					<?php esc_html_e( 'Activate', 'wds' ); ?>
 				</a>
@@ -94,10 +96,10 @@ $robots_enabled = (boolean) Smartcrawl_Settings::get_setting( 'robots-txt' )
 		<div class="wds-separator-top <?php echo ! $is_member ? 'wds-box-blocked-area wds-draw-down wds-draw-left' : 'wds-draw-left-padded'; ?>">
 			<small><strong><?php esc_html_e( 'Automatic Linking', 'wds' ); ?></strong></small>
 			<?php if ( ! $is_member ) : ?>
-				<a href="https://premium.wpmudev.org/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_autolinking_pro_tag"
+				<a href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_autolinking_pro_tag"
 				   target="_blank">
 					<span class="sui-tag sui-tag-pro sui-tooltip"
-					      data-tooltip="<?php esc_attr_e( 'Get SmartCrawl Pro today Free', 'wds' ); ?>">
+					      data-tooltip="<?php esc_attr_e( 'Try SmartCrawl Pro Free', 'wds' ); ?>">
 						<?php esc_html_e( 'Pro', 'wds' ); ?>
 					</span>
 				</a>
@@ -113,10 +115,11 @@ $robots_enabled = (boolean) Smartcrawl_Settings::get_setting( 'robots-txt' )
 				<button type="button"
 				        data-option-id="<?php echo esc_attr( $option_name ); ?>"
 				        data-flag="<?php echo 'autolinks'; ?>"
+				        aria-label="<?php esc_html_e( 'Activate autolinks component', 'wds' ); ?>"
 				        class="wds-activate-component wds-disabled-during-request sui-button sui-button-blue">
 
 					<span class="sui-loading-text"><?php esc_html_e( 'Activate', 'wds' ); ?></span>
-					<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+					<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 				</button>
 			<?php endif; ?>
 		</div>
@@ -125,10 +128,11 @@ $robots_enabled = (boolean) Smartcrawl_Settings::get_setting( 'robots-txt' )
 	<div class="<?php echo esc_attr( $footer_class ); ?>">
 		<div>
 			<a href="<?php echo esc_attr( $page_url ); ?>"
+			   aria-label="<?php esc_html_e( 'Configure advanced tools', 'wds' ); ?>"
 			   class="sui-button sui-button-ghost">
 
-				<i class="sui-icon-wrench-tool"
-				   aria-hidden="true"></i> <?php esc_html_e( 'Configure', 'wds' ); ?>
+				<span class="sui-icon-wrench-tool"
+				      aria-hidden="true"></span> <?php esc_html_e( 'Configure', 'wds' ); ?>
 			</a>
 		</div>
 
@@ -140,7 +144,7 @@ $robots_enabled = (boolean) Smartcrawl_Settings::get_setting( 'robots-txt' )
 				'dismissible' => false,
 				'image_name'  => 'mascot-message-advanced-tools',
 				'message'     => sprintf(
-					'%s <a target="_blank" class="sui-button sui-button-purple" href="https://premium.wpmudev.org/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_reports_upsell_notice">%s</a>',
+					'%s <a target="_blank" class="sui-button sui-button-purple" href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_reports_upsell_notice">%s</a>',
 					esc_html__( 'Upgrade to Pro and automatically link your articles both internally and externally with automatic linking - a favourite among SEO pros.', 'wds' ),
 					esc_html__( 'Try it for FREE today', 'wds' )
 				),

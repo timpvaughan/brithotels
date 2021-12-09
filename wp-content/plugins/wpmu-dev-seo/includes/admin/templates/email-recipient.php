@@ -18,8 +18,9 @@ $email = smartcrawl_get_array_value( $email_recipient, 'email' );
 	<span class="sui-recipient-email"><?php echo esc_html( $email ); ?></span>
 	<span>
 	<?php if ( $field_name ): ?>
-		<a type="button" class="sui-button-icon wds-remove-email-recipient">
-			<i class="sui-icon-trash" aria-hidden="true"></i>
+		<a type="button" class="sui-button-icon wds-remove-email-recipient" href="#"
+		   aria-label="<?php esc_html_e( 'Delete email recipient', 'wds' ); ?>">
+			<span class="sui-icon-trash" aria-hidden="true"></span>
 		</a>
 	<?php endif; ?>
 	</span>

@@ -31,10 +31,11 @@ class CBXWPEmailLoggerDashboardWidget {
 	 */
 	public function widget_display() {
 		$options = get_option( 'cbxwpemaillogger_dashboard_widget' );
-		$count   = isset( $options['count'] ) ? intval( $options['count'] ) : 20;
+		//$count   = isset( $options['count'] ) ? intval( $options['count'] ) : 20;
+		$count   = isset( $options['count'] ) ? intval( $options['count'] ) : 10;
 
 
-		$logs = CBXWPEmailLoggerHelper::getLogData( '', '', 'logs.id', 'DESC', $count, 1 );
+		$logs = CBXWPEmailLoggerHelper::getLogData( '', '', '', -1, 'logs.id', 'DESC', $count, 1 );
 
 
 		?>

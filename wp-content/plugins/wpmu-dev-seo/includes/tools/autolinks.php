@@ -34,7 +34,7 @@ class Smartcrawl_Autolinks extends Smartcrawl_Base_Controller { // phpcs:ignore 
 
 	public function should_run() {
 		return Smartcrawl_Settings::get_setting( 'autolinks' )
-		       && smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_AUTOLINKS );
+		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_AUTOLINKS );
 	}
 
 	/**

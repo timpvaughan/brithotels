@@ -26,7 +26,6 @@
 			_wds_nonce: _wds_welcome.nonce,
 		}, function (response) {
 			if (response.success) {
-
 				window.location.href = response.data.redirect_url;
 			}
 		});

@@ -37,7 +37,7 @@ $button_text = isset( $button_text ) ? $button_text : esc_html__( 'Save Settings
 			<button name="submit"
 			        type="submit"
 			        class="sui-button sui-button-blue">
-				<i class="sui-icon-save" aria-hidden="true"></i>
+				<span class="sui-icon-save" aria-hidden="true"></span>
 
 				<?php echo esc_html( $button_text ); ?>
 			</button>

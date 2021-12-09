@@ -112,13 +112,30 @@ class Smartcrawl_Meta_Value_Helper extends Smartcrawl_Type_Traverser {
 		$post = $this->get_post_or_fallback( $post_id );
 		if ( is_a( $post, 'WP_Post' ) ) {
 			$this->fallback_title = $this->prepare_value( get_the_title( $post ) );
-			$this->fallback_description = smartcrawl_get_trimmed_excerpt( $post->post_excerpt, $post->post_content );
+			$this->fallback_description = $this->get_trimmed_excerpt( $post );
 
 			$this->from_options( $this->get_post_type( $post ) );
 
 			// Now apply any overrides from the individual post's meta
 			$this->from_post_meta( $post );
 		}
+	}
+
+	/**
+	 * @param $post WP_Post
+	 *
+	 * @return mixed|string
+	 */
+	private function get_trimmed_excerpt( $post ) {
+		$from_meta = get_post_meta( $post->ID, '_wds_trimmed_excerpt', false );
+		if ( ! empty( $from_meta ) ) {
+			return $from_meta[0];
+		}
+
+		return smartcrawl_get_trimmed_excerpt(
+			$post->post_excerpt,
+			$post->post_content
+		);
 	}
 
 	private function from_options( $location ) {

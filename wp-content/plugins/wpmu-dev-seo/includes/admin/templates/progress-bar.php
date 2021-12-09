@@ -6,7 +6,7 @@ $progress_state = empty( $progress_state ) ? '' : $progress_state;
 <div class="wds-progress sui-progress-block" data-progress="<?php echo (int) $progress; ?>">
 	<div class="sui-progress">
 		<span class="sui-progress-icon" aria-hidden="true">
-			<i class="sui-icon-loader sui-loading"></i>
+			<span class="sui-icon-loader sui-loading"></span>
 		</span>
 
 		<div class="sui-progress-text">

@@ -1,7 +1,7 @@
 <?php
 $checkup_freq = empty( $checkup_freq ) ? false : $checkup_freq;
 $option_name = empty( $option_name ) ? '' : $option_name;
-$email_recipients = empty( $email_recipients ) ? array() : $email_recipients;
+$email_recipients = Smartcrawl_Checkup_Options::get_all_recipients();
 ?>
 <small><strong><?php esc_html_e( 'Recipients', 'wds' ); ?></strong></small>
 
@@ -21,6 +21,9 @@ $this->_render( 'email-recipients', array(
 
 <p></p>
 <small><strong><?php esc_html_e( 'Schedule', 'wds' ); ?></strong></small>
-<?php $this->_render( 'checkup/checkup-reporting-schedule', array(
-	'checkup_freq' => $checkup_freq,
+<?php $this->_render( 'reporting-schedule', array(
+	'component' => 'checkup',
+	'frequency' => $checkup_freq,
+	'dow_value' => Smartcrawl_Checkup_Options::reporting_dow(),
+	'tod_value' => Smartcrawl_Checkup_Options::reporting_tod(),
 ) ); ?>

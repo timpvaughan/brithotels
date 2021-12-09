@@ -66,7 +66,7 @@
 		$tab_status_checkboxes.each(function () {
 			toggle_archive_status.apply($(this));
 		});
-		$tab_status_checkboxes.change(toggle_archive_status);
+		$tab_status_checkboxes.on('change', toggle_archive_status);
 	}
 
 	function handle_accordion_item_click() {
@@ -120,6 +120,11 @@
 				return Wds.macroReplacement.do_replace(value, {}, random_item.replacements);
 			};
 		}, Wds.get('onpage', 'random_archives'));
+		hook_preview_and_indicators_for_tab('tab_buddypress', function (random_item) {
+			return function (value) {
+				return Wds.macroReplacement.do_replace(value, {}, random_item.replacements);
+			};
+		}, Wds.get('onpage', 'random_buddypress'));
 	}
 
 	function hook_preview_and_indicators_for_tab(tab_id, get_replacement_function, random_items) {

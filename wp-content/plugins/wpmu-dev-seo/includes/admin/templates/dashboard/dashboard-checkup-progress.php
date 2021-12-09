@@ -15,9 +15,9 @@ if ( ! $is_member ) {
 		'key'         => 'dash-seo-checkup-upsell',
 		'dismissible' => false,
 		'message'     => sprintf(
-			'%s <a target="_blank" class="sui-button sui-button-purple" href="https://premium.wpmudev.org/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_seocheckup_upsell_notice">%s</a>',
-			esc_html__( 'Upgrade to Pro to schedule automated checkups and send white label email reports directly to your clients. Never miss a beat with your search engine optimization.', 'wds' ),
-				esc_html__( 'Try it for FREE today', 'wds' )
+			'%s <a target="_blank" href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_seocheckup_upsell_notice">%s</a>',
+			esc_html__( "Did you know that with SmartCrawl Pro you can schedule automated SEO checkups and send white label email reports directly to your and your clients' inboxes?", 'wds' ),
+			esc_html__( 'Try Pro today free!', 'wds' )
 		),
 	) );
 }

@@ -5,7 +5,9 @@
 ?>
 
 <div class="moove-gdpr-button-holder">
-  <button class="mgbutton moove-gdpr-infobar-allow-all"><?php echo $content->button_label; ?></button>
+	<?php if ( isset( $content->has_accept ) && $content->has_accept ) : ?>
+	  <button class="mgbutton moove-gdpr-infobar-allow-all" aria-label="<?php echo $content->button_label; ?>"><?php echo $content->button_label; ?></button>
+	<?php endif; ?>
   <?php do_action( 'gdpr_info_bar_button_extensions' ); ?>
 </div>
 <!--  .button-container -->

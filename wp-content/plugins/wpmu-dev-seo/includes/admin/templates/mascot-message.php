@@ -19,7 +19,7 @@ $is_message_dismissed = smartcrawl_get_array_value( $dismissed_messages, $key ) 
 			<p>
 				<?php if ( $dismissible ) : ?>
 					<span class="wds-mascot-bubble-dismiss">
-						<i class="sui-icon-check" aria-hidden="true"></i>
+						<span class="sui-icon-check" aria-hidden="true"></span>
 					</span>
 				<?php endif; ?>
 				<?php echo wp_kses_post( $message ); ?>

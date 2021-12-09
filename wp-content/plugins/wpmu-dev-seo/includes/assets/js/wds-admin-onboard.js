@@ -52,13 +52,12 @@
 			Wds.Onboard.get_box_content().find(".sui-progress-state").text(
 				$item.attr("data-processing")
 			);
-			if ($item.is(":checked")) {
-				$.post(ajaxurl, {
-					action: "wds-boarding-toggle",
-					target: $item.attr("name"),
-					_wds_nonce: _wds_onboard.nonce
-				}).always(dfr.resolve);
-			} else setTimeout(dfr.resolve);
+			$.post(ajaxurl, {
+				action: "wds-boarding-toggle",
+				target: $item.attr("name"),
+				enable: $item.is(":checked") ? 1 : 0,
+				_wds_nonce: _wds_onboard.nonce
+			}).always(dfr.resolve);
 
 			dfr.done(function () {
 				Wds.Onboard.process_next($items, total, processed);
@@ -69,36 +68,14 @@
 			$.post(ajaxurl, {
 				action: "wds-boarding-skip"
 			}).always(function () {
+				window.location.reload();
 				SUI.closeModal();
 			});
 		},
-		toggle_enabled_actions: function () {
-			var $all = Wds.Onboard.get_checks(),
-				$button = $("button.wds-onboarding-setup"),
-				enabled = false
-			;
-			$all.each(function () {
-				if (!$(this).is(":checked")) return true;
-				enabled = true;
-				return false;
-			});
-			if (enabled) {
-				$button
-					.prop("disabled", false)
-					.removeClass("disabled")
-				;
-			} else {
-				$button
-					.prop("disabled", true)
-					.addClass("disabled")
-				;
-			}
-		}
 	};
 
 	$(document).on("click", "button.wds-onboarding-setup", Wds.Onboard.process_all);
 	$(document).on("click", "button.onboard-skip", Wds.Onboard.skip);
-	$(document).on("change", ".wds-onboarding-dialog :checkbox", Wds.Onboard.toggle_enabled_actions);
 	$(Wds.Onboard.open_dialog);
 
 })(jQuery);

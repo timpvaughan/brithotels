@@ -64,10 +64,10 @@ $robots_output = Smartcrawl_Controller_Robots::get()->get_robot_file_contents();
 	<div class="sui-box-settings-row">
 		<div class="sui-box-settings-col-1">
 			<label class="sui-settings-label"><?php esc_html_e( 'Customize', 'wds' ); ?></label>
-			<p class="sui-description">
+			<p class="sui-description wds-documentation-link">
 				<?php echo smartcrawl_format_link(
 					esc_html__( 'Customize the robots.txt output here. We have %s on a range of examples and options for your robots.txt file.', 'wds' ),
-					'https://premium.wpmudev.org/docs/wpmu-dev-plugins/smartcrawl/#robots-txt-editor',
+					'https://wpmudev.com/docs/wpmu-dev-plugins/smartcrawl/#robots-txt-editor',
 					esc_html__( 'full documentation' ),
 					'_blank'
 				); ?>
@@ -95,7 +95,7 @@ $robots_output = Smartcrawl_Controller_Robots::get()->get_robot_file_contents();
 		<div class="sui-box-settings-col-2">
 			<button type="submit" name="deactivate-robots-component"
 			        class="sui-button sui-button-ghost">
-				<i class="sui-icon-power-on-off" aria-hidden="true"></i>
+				<span class="sui-icon-power-on-off" aria-hidden="true"></span>
 				<?php esc_html_e( 'Deactivate', 'wds' ); ?>
 			</button>
 		</div>
@@ -103,7 +103,7 @@ $robots_output = Smartcrawl_Controller_Robots::get()->get_robot_file_contents();
 
 	<footer class="sui-box-footer">
 		<button name="submit" type="submit" class="sui-button sui-button-blue">
-			<i class="sui-icon-save" aria-hidden="true"></i>
+			<span class="sui-icon-save" aria-hidden="true"></span>
 			<?php esc_html_e( 'Save Settings', 'wds' ); ?>
 		</button>
 	</footer>

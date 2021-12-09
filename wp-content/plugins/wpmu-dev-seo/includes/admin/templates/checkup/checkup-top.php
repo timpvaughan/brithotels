@@ -18,10 +18,32 @@ if ( $error ) {
 	return;
 }
 
+$items = empty( $items ) ? array() : $items;
+if ( empty( $items ) ) {
+	return;
+}
+
+$last_checked_timestamp = empty( $last_checked_timestamp ) ? '' : $last_checked_timestamp;
+if ( empty( $last_checked_timestamp ) ) {
+	return;
+}
+
+$status = empty( $status ) ? '' : $status;
+$status_message = empty( $status_message ) ? '' : $status_message;
 $issue_count = empty( $issue_count ) ? 0 : $issue_count;
-$score_class = $issue_count > 0 ? 'sui-icon-info sui-warning' : 'sui-icon-check-tick sui-success';
-$opts = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_CHECKUP );
-$reporting_enabled = ! empty( $opts['checkup-cron-enable'] );
+$score_class = $status === 'success'
+	? 'sui-icon-check-tick sui-success'
+	: "sui-icon-info sui-$status";
+if ( $score === 100 ) {
+	$dot_count = 3;
+} elseif ( $score >= 80 ) {
+	$dot_count = 2;
+} elseif ( $score >= 60 ) {
+	$dot_count = 1;
+} else {
+	$dot_count = 0;
+}
+$reporting_enabled = Smartcrawl_Checkup_Options::is_cron_enabled();
 $cron = Smartcrawl_Controller_Cron::get();
 $frequencies = $cron->get_frequencies();
 $whitelabel_class = Smartcrawl_White_Label::get()->summary_class();
@@ -36,9 +58,22 @@ $whitelabel_class = Smartcrawl_White_Label::get()->summary_class();
 		<div class="sui-summary-details">
 			<div class="wds-checkup-summary">
 				<span class="sui-summary-large"><?php echo esc_html( intval( $score ) ); ?></span>
-				<i class="<?php echo esc_attr( $score_class ); ?>"></i>
+				<span class="<?php echo esc_attr( $score_class ); ?>" aria-hidden="true"></span>
 				<span class="sui-summary-percent">/100</span>
-				<span class="sui-summary-sub"><?php esc_html_e( 'Current SEO Score', 'wds' ); ?></span>
+				<span class="sui-summary-sub">
+					<?php echo esc_html( $status_message ); ?>
+					<br/>
+					<?php if ( $dot_count ) {
+						foreach ( range( 1, $dot_count ) as $filled_dot ) {
+							?><span class="wds-checkup-status-dot-full"></span><?php
+						}
+						if ( 3 - $dot_count > 0 ) {
+							foreach ( range( 1, 3 - $dot_count ) as $empty_dot ) {
+								?><span class="wds-checkup-status-dot"></span><?php
+							}
+						}
+					} ?>
+				</span>
 			</div>
 		</div>
 	</div>
@@ -56,7 +91,7 @@ $whitelabel_class = Smartcrawl_White_Label::get()->summary_class();
 					<?php if ( $issue_count > 0 ): ?>
 						<span class="sui-tag sui-tag-warning"><?php echo esc_html( $issue_count ); ?></span>
 					<?php else: ?>
-						<i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>
+						<span class="sui-icon-check-tick sui-success" aria-hidden="true"></span>
 						<small><?php esc_html_e( 'No issues', 'wds' ); ?></small>
 					<?php endif; ?>
 				</span>
@@ -66,7 +101,7 @@ $whitelabel_class = Smartcrawl_White_Label::get()->summary_class();
 				<span class="sui-list-label">
 					<?php esc_html_e( 'Scheduled Reports', 'wds' ); ?>
 					<?php if ( ! $is_member ) : ?>
-						<a href="https://premium.wpmudev.org/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_seocheckup_top_reports_pro_tag"
+						<a href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_seocheckup_top_reports_pro_tag"
 						   target="_blank">
 							<span class="sui-tag sui-tag-pro sui-tooltip sui-tooltip-constrained"
 							      style="--tooltip-width: 200px;"
@@ -82,9 +117,9 @@ $whitelabel_class = Smartcrawl_White_Label::get()->summary_class();
 							$monday = strtotime( 'this Monday' );
 							$first_of_month = strtotime( 'first day of this month' );
 							$midnight = strtotime( 'today' );
-							$checkup_frequency = smartcrawl_get_array_value( $opts, 'checkup-frequency' );
-							$checkup_dow = smartcrawl_get_array_value( $opts, 'checkup-dow' );
-							$checkup_tod = smartcrawl_get_array_value( $opts, 'checkup-tod' );
+							$checkup_frequency = Smartcrawl_Checkup_Options::reporting_frequency();
+							$checkup_dow = Smartcrawl_Checkup_Options::reporting_dow();
+							$checkup_tod = Smartcrawl_Checkup_Options::reporting_tod();
 							?>
 
 							<?php
@@ -112,10 +147,12 @@ $whitelabel_class = Smartcrawl_White_Label::get()->summary_class();
 							?>
 
 						<?php else : ?>
-							<button class="sui-button sui-button-blue wds-enable-reporting">
+							<button class="sui-button sui-button-blue wds-enable-reporting"
+							        aria-label="<?php esc_html_e( 'Enable checkup reporting', 'wds' ); ?>">
 								<?php esc_html_e( 'Enable', 'wds' ); ?>
 							</button>
 							<button class="sui-button sui-button-blue wds-disable-reporting"
+							        aria-label="<?php esc_html_e( 'Disable checkup reporting', 'wds' ); ?>"
 							        style="display: none;">
 								<?php esc_html_e( 'Disable', 'wds' ); ?>
 							</button>

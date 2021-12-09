@@ -1,3 +1,6 @@
+/**
+ * TODO: remove all pointer related code because we abandoned it
+ */
 jQuery(function ($) {
 	function open_pointer(id) {
 		var pointers = (_wds_pointers || {}).pointers;

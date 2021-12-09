@@ -48,20 +48,6 @@
 					<div class="row">
 						<div class="col">
 							<div class="page-content facilities">
-								<!--<p>All our high specification furnished interior designed bedrooms are equipped with the following</p>
-								<ul>
-									<li>Free High Speed Fibre Optic Wi-Fi</li>
-									<li>SMART 32” Internet Hospitality TVs with SKY</li>
-									<li>iPod Dock with alarm clock and radio</li>
-									<li>1200 Pocket Sprung Mattresses</li>
-									<li>Mini Fridge with complementary mineral water</li>
-									<li>Individually controlled Air Conditioning</li>
-									<li>3 setting hair dryer with full length mirror</li>
-									<li>Tea and coffee making facilities</li>
-									<li>Electronic locking safe</li>
-									<li>Satin chrome power sockets with USB Port</li>
-									<li>Telephone</li>
-								</ul>-->
 								<?php
 									while ( have_posts() ) :
 										the_post();
@@ -116,7 +102,7 @@
 								<img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/bed-icon.svg" class="img-fluid" alt="">
 								<h5>Comfortable Beds</h5>
 								<p>Custom made 1200 pocket sprung mattresses</p>
-							</div>							
+							</div>
 
 						</div>
 					</div>
@@ -191,9 +177,9 @@
 					</div>
 				</div>
 			</div>
-			
-			<?php get_template_part( 'template-parts/news-section', 'page' ); ?>			
-			
+
+			<?php get_template_part( 'template-parts/news-section', 'page' ); ?>
+
 			<?php
 				$facility_page     = intval( get_field( 'brithotels_page_facility', 'option' ) );
 				$facility_page_url = ( $facility_page > 0 ) ? get_permalink( $facility_page ) : '#';

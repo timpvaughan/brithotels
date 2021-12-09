@@ -4,7 +4,7 @@
  *
  * @category  Views
  * @package   gdpr-cookie-compliance
- * @author    Gaspar Nemes
+ * @author    Moove Agency
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,6 +27,7 @@ if ( isset( $_POST ) && isset( $_POST['moove_gdpr_nonce'] ) ) :
 				'moove_gdpr_floating_button_enable',
 				'moove_gdpr_infobar_visibility',
 				'moove_gdpr_reject_button_enable',
+				'moove_gdpr_accept_button_enable',
 				'moove_gdpr_settings_button_enable',
 				'moove_gdpr_close_button_enable',
 				'moove_gdpr_colour_scheme',
@@ -37,6 +38,13 @@ if ( isset( $_POST ) && isset( $_POST['moove_gdpr_nonce'] ) ) :
 				$moove_gdpr_infobar_visibility = 'visible';
 			endif;
 			$gdpr_options['moove_gdpr_infobar_visibility'] = $moove_gdpr_infobar_visibility;
+
+			// Cookie Banner Accept Button.
+			$moove_gdpr_accept_enable = '0';
+			if ( isset( $_POST['moove_gdpr_accept_button_enable'] ) ) :
+				$moove_gdpr_accept_enable = '1';
+			endif;
+			$gdpr_options['moove_gdpr_accept_button_enable'] = $moove_gdpr_accept_enable;
 
 			// Cookie Banner Reject Button.
 			$moove_gdpr_reject_enable = '0';
@@ -127,7 +135,8 @@ endif;
 					<?php
 					$content = isset( $gdpr_options[ 'moove_gdpr_info_bar_content' . $wpml_lang ] ) && $gdpr_options[ 'moove_gdpr_info_bar_content' . $wpml_lang ] ? maybe_unserialize( $gdpr_options[ 'moove_gdpr_info_bar_content' . $wpml_lang ] ) : false;
 					if ( ! $content ) :
-						$_content = __( '<p>We are using cookies to give you the best experience on our website.</p><p>You can find out more about which cookies we are using or switch them off in [setting]settings[/setting].</p>', 'gdpr-cookie-compliance' );
+						$_content = '<p>' . esc_html__( 'We are using cookies to give you the best experience on our website.', 'gdpr-cookie-compliance' ) .'</p>';
+						$_content .= '<p>' . sprintf( esc_html__( 'You can find out more about which cookies we are using or switch them off in [%s]settings[/%s].', 'gdpr-cookie-compliance' ), 'setting', 'setting' ) . '</p>';
 						$content  = $_content;
 					endif;
 					?>
@@ -141,7 +150,10 @@ endif;
 					?>
 					<p class="description">
 					<?php
-						$content = __( 'You can use the following shortcut to link the Cookie Settings Screen:<br><span><strong>[setting]</strong>settings<strong>[/setting]</strong></span>', 'gdpr-cookie-compliance' );
+						$content = __( 'You can use the following shortcut to link the Cookie Settings Screen:', 'gdpr-cookie-compliance' );
+						$content .= '<br><span><strong>[setting]</strong>';
+						$content .= __( 'settings', 'gdpr-cookie-compliance' );
+						$content .= '<strong>[/setting]</strong></span>';
 						apply_filters( 'gdpr_cc_keephtml', $content, true );
 					?>
 					</p>
@@ -153,8 +165,23 @@ endif;
 					<hr />
 				</td>
 			</tr>
-			
+
 			<tr>
+				<th scope="row">
+					<label for="moove_gdpr_accept_button_enable"><?php esc_html_e( 'Accept button', 'gdpr-cookie-compliance' ); ?></label>
+				</th>
+				<td>
+					<!-- GDPR Rounded switch -->
+					<label class="gdpr-checkbox-toggle">
+						<input type="checkbox" name="moove_gdpr_accept_button_enable" id="moove_gdpr_accept_button_enable" <?php echo isset( $gdpr_options['moove_gdpr_accept_button_enable'] ) ? ( intval( $gdpr_options['moove_gdpr_accept_button_enable'] ) === 1 ? 'checked' : ( ! isset( $gdpr_options['moove_gdpr_accept_button_enable'] ) ? 'checked' : '' ) ) : 'checked'; ?> >
+						<span class="gdpr-checkbox-slider" data-enable="<?php esc_html_e( 'Enabled', 'gdpr-cookie-compliance' ); ?>" data-disable="<?php esc_html_e( 'Disabled', 'gdpr-cookie-compliance' ); ?>"></span>
+					</label>
+					<p class="description" id="moove_gdpr_accept_button_enable-description" ><?php esc_html_e( "Accept button allows users to accept all cookies.", 'gdpr-cookie-compliance' ); ?></p>
+					<!--  .description -->
+				</td>
+			</tr>
+			
+			<tr class="gdpr-conditional-field" data-dependency="#moove_gdpr_accept_button_enable">
 				<th scope="row">
 					<label for="moove_gdpr_infobar_accept_button_label"><?php esc_html_e( 'Accept - Button Label', 'gdpr-cookie-compliance' ); ?></label>
 				</th>

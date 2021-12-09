@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * TODO: Change the name to crawler
+ */
 class Smartcrawl_Seo_Service extends Smartcrawl_Service { // phpcs:ignore -- We have two versions of this class
 
 	const ERR_BASE_API_ISSUE = 40;
@@ -40,7 +43,7 @@ class Smartcrawl_Seo_Service extends Smartcrawl_Service { // phpcs:ignore -- We 
 	}
 
 	public function get_service_base_url() {
-		$base_url = 'https://premium.wpmudev.org/';
+		$base_url = 'https://wpmudev.com/';
 
 		$api = apply_filters(
 			$this->get_filter( 'api-endpoint' ),
@@ -92,7 +95,7 @@ class Smartcrawl_Seo_Service extends Smartcrawl_Service { // phpcs:ignore -- We 
 		}
 
 		if ( 'emails' === $verb ) {
-			$emails = Smartcrawl_Checkup_Settings::get_email_recipients();
+			$emails = Smartcrawl_Checkup_Options::get_all_recipients();
 			if ( empty( $emails ) ) {
 				return false;
 			}

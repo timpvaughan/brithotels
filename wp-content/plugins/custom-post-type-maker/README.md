@@ -28,6 +28,22 @@ Help [translate this plugin](https://translate.wordpress.org/projects/wp-plugins
 
 ## Changelog
 
+## 1.1.15
+
+- Better sanitize taxonomy name as suggested by @ldeejay
+
+## 1.1.14
+
+- Compatibility with future version of WP
+
+## 1.1.13
+
+- Fix translations. Add .pot template file, reported by @wicko77
+
+## 1.1.12
+
+- Remove 'All' from taxonomy names as suggested by @gnowland
+
 ## 1.1.11
 
 - Update assets.

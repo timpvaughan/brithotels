@@ -4,9 +4,6 @@ $option_name = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
 $keep_settings = (boolean) smartcrawl_get_array_value( $options, 'keep_settings_on_uninstall' );
 $keep_data = (boolean) smartcrawl_get_array_value( $options, 'keep_data_on_uninstall' );
 $show_subsite_controls = is_multisite();
-
-$this->_render( 'settings/data-reset-modal' );
-$this->_render( 'settings/multisite-data-reset-modal' );
 ?>
 
 <div class="sui-box-settings-row">
@@ -89,15 +86,8 @@ $this->_render( 'settings/multisite-data-reset-modal' );
 					<?php esc_html_e( 'Use this option to manually delete settings and data from all the subsites.', 'wds' ); ?>
 				</p>
 			</div>
-			<button type="button"
-			        id="wds-multisite-data-reset-button"
-			        data-modal-open="wds-multisite-data-reset-modal"
-			        data-modal-open-focus="wds-multisite-data-reset-modal-close-button"
-			        data-modal-close-focus="wds-multisite-data-reset-button"
-			        class="sui-button sui-button-ghost sui-button-red">
 
-				<?php esc_html_e( 'Reset Subsites', 'wds' ); ?>
-			</button>
+			<div id="wds-multisite-reset-button-placeholder"></div>
 		</div>
 	</div>
 <?php endif; ?>
@@ -110,16 +100,7 @@ $this->_render( 'settings/multisite-data-reset-modal' );
 		</p>
 	</div>
 	<div class="sui-box-settings-col-2">
-		<button type="button"
-		        id="wds-data-reset-button"
-		        data-modal-open="wds-data-reset-modal"
-		        data-modal-open-focus="wds-data-reset-modal-close-button"
-		        data-modal-close-focus="wds-data-reset-button"
-		        class="sui-button sui-button-ghost">
-			<i class="sui-icon-refresh" aria-hidden="true"></i>
-
-			<?php esc_html_e( 'Reset', 'wds' ); ?>
-		</button>
+		<div id="wds-data-reset-button-placeholder"></div>
 
 		<p class="sui-description">
 			<?php esc_html_e( 'Note: This will instantly revert all settings to their default states and will remove all data.', 'wds' ); ?>

@@ -7,6 +7,8 @@
 
 /**
  * Frontend init class
+ *
+ * TODO: get rid of this class
  */
 class Smartcrawl_Front extends Smartcrawl_Base_Controller {
 	/**

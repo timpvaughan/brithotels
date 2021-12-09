@@ -1,13 +1,13 @@
 <?php
 /**
  * Plugin Name: SmartCrawl Pro
- * Plugin URI: http://premium.wpmudev.org/project/wpmu-dev-seo/
+ * Plugin URI: https://wpmudev.com/project/smartcrawl-wordpress-seo/
  * Description: Every SEO option that a site requires, in one easy bundle.
- * Version: 2.8.3
+ * Version: 2.16.0
  * Network: true
  * Text Domain: wds
  * Author: WPMU DEV
- * Author URI: http://premium.wpmudev.org
+ * Author URI: https://wpmudev.com
  * WDP ID: 167
  */
 
@@ -29,32 +29,27 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
-if ( ! defined( 'SMARTCRAWL_VERSION' ) ) {
-	define( 'SMARTCRAWL_VERSION', '2.8.3' );
-}
-
-if ( ! defined( 'SMARTCRAWL_SUI_VERSION' ) ) {
-	define( 'SMARTCRAWL_SUI_VERSION', '2.9.6' );
-}
-
 if ( ! class_exists( 'Smartcrawl_Loader' ) ) {
 	class Smartcrawl_Loader {
+		const LAST_VERSION_OPTION_ID = 'wds_last_version';
+		const VERSION_OPTION_ID = 'wds_version';
 
 		/**
 		 * Construct the Plugin object
 		 */
 		public function __construct() {
-			$this->plugin_init();
 		}
 
 		/**
 		 * Init Plugin
 		 */
 		public function plugin_init() {
-			require_once plugin_dir_path( __FILE__ ) . 'config.php';
+			require_once plugin_dir_path( __FILE__ ) . 'constants.php';
 
 			// Init plugin.
 			require_once SMARTCRAWL_PLUGIN_DIR . 'init.php';
+
+			add_action( 'plugins_loaded', array( $this, 'set_version_options' ) );
 		}
 
 		/**
@@ -63,14 +58,14 @@ if ( ! class_exists( 'Smartcrawl_Loader' ) ) {
 		 * @return void
 		 */
 		public static function activate() {
-			require_once plugin_dir_path( __FILE__ ) . 'config.php';
+			require_once plugin_dir_path( __FILE__ ) . 'constants.php';
 
 			// Init plugin
 			require_once SMARTCRAWL_PLUGIN_DIR . 'init.php';
 
 			Smartcrawl_Settings_Dashboard::get_instance()->defaults();
 
-			Smartcrawl_Checkup_Settings::get_instance()->defaults();
+			Smartcrawl_Health_Settings::get_instance()->defaults();
 
 			Smartcrawl_Onpage_Settings::get_instance()->defaults();
 
@@ -84,6 +79,11 @@ if ( ! class_exists( 'Smartcrawl_Loader' ) ) {
 
 			Smartcrawl_Settings_Settings::get_instance()->defaults();
 
+			$lighthouse = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_LIGHTHOUSE );
+			if ( $lighthouse->is_member() ) {
+				$lighthouse->set_lighthouse_status();
+			}
+
 			self::save_free_installation_timestamp();
 		}
 
@@ -96,6 +96,16 @@ if ( ! class_exists( 'Smartcrawl_Loader' ) ) {
 			$free_install_date = get_site_option( 'wds-free-install-date' );
 			if ( empty( $free_install_date ) ) {
 				update_site_option( 'wds-free-install-date', current_time( 'timestamp' ) );
+			}
+		}
+
+		public function set_version_options() {
+			$version = get_option( self::VERSION_OPTION_ID, false );
+			if ( ! $version || version_compare( $version, SMARTCRAWL_VERSION, '!=' ) ) {
+				update_option( self::LAST_VERSION_OPTION_ID, $version );
+				update_option( self::VERSION_OPTION_ID, SMARTCRAWL_VERSION );
+
+				do_action( 'wds_plugin_update', SMARTCRAWL_VERSION, $version );
 			}
 		}
 
@@ -114,7 +124,10 @@ if ( ! class_exists( 'Smartcrawl_Loader' ) ) {
 		 * @return void
 		 */
 		public static function deactivate() {
-			Smartcrawl_Controller_Sitemap_Cron::unschedule_event();
+		}
+
+		public static function get_last_version() {
+			return get_option( self::LAST_VERSION_OPTION_ID, false );
 		}
 
 		/**
@@ -146,8 +159,8 @@ register_deactivation_hook( __FILE__, array( 'Smartcrawl_Loader', 'deactivate' )
 if ( defined( 'SMARTCRAWL_CONDITIONAL_EXECUTION' ) && SMARTCRAWL_CONDITIONAL_EXECUTION ) {
 	add_action(
 		'plugins_loaded',
-		array( 'Smartcrawl_Loader', 'plugin_init' )
+		array( new Smartcrawl_Loader(), 'plugin_init' )
 	);
 } else {
-	$smartcrawl_loader = new Smartcrawl_Loader();
+	( new Smartcrawl_Loader() )->plugin_init();
 }

@@ -4,7 +4,7 @@
  *
  * @category  Views
  * @package   gdpr-cookie-compliance
- * @author    Gaspar Nemes
+ * @author    Moove Agency
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -37,6 +37,13 @@ if ( isset( $_POST ) && isset( $_POST['moove_gdpr_nonce'] ) ) :
 				endif;
 			endif;
 
+			$restricted_keys = array(
+				'moove_gdpr_floating_button_enable',
+				'moove_gdpr_modal_powered_by_disable',
+				'moove_gdpr_save_settings_button_enable',
+				'moove_gdpr_close_button_enable',
+				'moove_gdpr_colour_scheme',
+			);
 
 			$gdpr_options['moove_gdpr_modal_powered_by_disable'] = $value;
 			update_option( $option_name, $gdpr_options );
@@ -45,20 +52,41 @@ if ( isset( $_POST ) && isset( $_POST['moove_gdpr_nonce'] ) ) :
 				if ( 'moove_gdpr_info_bar_content' === $form_key ) :
 					$value                                  = wpautop( wp_unslash( $form_value ) );
 					$gdpr_options[ $form_key . $wpml_lang ] = $value;
-					update_option( $option_name, $gdpr_options );
-					$gdpr_options = get_option( $option_name );
 				elseif ( 'moove_gdpr_modal_strictly_secondary_notice' . $wpml_lang === $form_key ) :
 					$value                     = wpautop( wp_unslash( $form_value ) );
-					$gdpr_options[ $form_key ] = $value;
-					update_option( $option_name, $gdpr_options );
-					$gdpr_options = get_option( $option_name );
-				elseif ( 'moove_gdpr_floating_button_enable' !== $form_key && 'moove_gdpr_modal_powered_by_disable' !== $form_key ) :
+					$gdpr_options[ $form_key ] = $value;					
+				elseif ( ! in_array( $form_key, $restricted_keys ) ) :
 					$value                     = sanitize_text_field( wp_unslash( $form_value ) );
 					$gdpr_options[ $form_key ] = $value;
-					update_option( $option_name, $gdpr_options );
-					$gdpr_options = get_option( $option_name );
 				endif;
 			endforeach;
+
+			// Cookie Banner Save Settings Button.
+			$moove_save_settings_enable = '0';
+			if ( isset( $_POST['moove_gdpr_save_settings_button_enable'] ) ) :
+				$moove_save_settings_enable = '1';
+			endif;
+			$gdpr_options['moove_gdpr_save_settings_button_enable'] = $moove_save_settings_enable;
+			update_option( $option_name, $gdpr_options );
+
+			// Cookie Banner Enable All Button.
+			$moove_enable_all_button_enable = '0';
+			if ( isset( $_POST['moove_gdpr_enable_all_button_enable'] ) ) :
+				$moove_enable_all_button_enable = '1';
+			endif;
+			$gdpr_options['moove_gdpr_enable_all_button_enable'] = $moove_enable_all_button_enable;
+			update_option( $option_name, $gdpr_options );
+
+			// Cookie Banner Reject All Button.
+			$moove_reject_all_button_enable = '0';
+			if ( isset( $_POST['moove_gdpr_reject_all_button_enable'] ) ) :
+				$moove_reject_all_button_enable = '1';
+			endif;
+			$gdpr_options['moove_gdpr_reject_all_button_enable'] = $moove_reject_all_button_enable;
+			update_option( $option_name, $gdpr_options );
+
+
+			$gdpr_options = get_option( $option_name );
 		endif;
 		do_action( 'gdpr_cookie_filter_settings' );
 		?>
@@ -120,7 +148,20 @@ endif;
 				</td>
 			</tr>
 
-			<tr>
+			<tr >
+				<th scope="row">
+					<label for="moove_gdpr_save_settings_button_enable"><?php esc_html_e( 'Save Settings button', 'gdpr-cookie-compliance' ); ?></label>
+				</th>
+				<td>
+					<!-- GDPR Rounded switch -->
+					<label class="gdpr-checkbox-toggle">
+						<input type="checkbox" name="moove_gdpr_save_settings_button_enable" id="moove_gdpr_save_settings_button_enable" <?php echo isset( $gdpr_options['moove_gdpr_save_settings_button_enable'] ) ? ( intval( $gdpr_options['moove_gdpr_save_settings_button_enable'] ) === 1 ? 'checked' : ( ! isset( $gdpr_options['moove_gdpr_save_settings_button_enable'] ) ? 'checked' : '' ) ) : 'checked'; ?> >
+						<span class="gdpr-checkbox-slider" data-enable="<?php esc_html_e( 'Enabled', 'gdpr-cookie-compliance' ); ?>" data-disable="<?php esc_html_e( 'Disabled', 'gdpr-cookie-compliance' ); ?>"></span>
+					</label>
+				</td>
+			</tr>
+
+			<tr class="gdpr-conditional-field" data-dependency="#moove_gdpr_save_settings_button_enable">
 				<th scope="row">
 					<label for="moove_gdpr_modal_save_button_label"><?php esc_html_e( 'Save Settings - Button Label', 'gdpr-cookie-compliance' ); ?></label>
 				</th>
@@ -129,12 +170,47 @@ endif;
 				</td>
 			</tr>
 
-			<tr>
+			<tr >
+				<th scope="row">
+					<label for="moove_gdpr_enable_all_button_enable"><?php esc_html_e( 'Enable All button', 'gdpr-cookie-compliance' ); ?></label>
+				</th>
+				<td>
+					<!-- GDPR Rounded switch -->
+					<label class="gdpr-checkbox-toggle">
+						<input type="checkbox" name="moove_gdpr_enable_all_button_enable" id="moove_gdpr_enable_all_button_enable" <?php echo isset( $gdpr_options['moove_gdpr_enable_all_button_enable'] ) ? ( intval( $gdpr_options['moove_gdpr_enable_all_button_enable'] ) === 1 ? 'checked' : ( ! isset( $gdpr_options['moove_gdpr_enable_all_button_enable'] ) ? 'checked' : '' ) ) : 'checked'; ?> >
+						<span class="gdpr-checkbox-slider" data-enable="<?php esc_html_e( 'Enabled', 'gdpr-cookie-compliance' ); ?>" data-disable="<?php esc_html_e( 'Disabled', 'gdpr-cookie-compliance' ); ?>"></span>
+					</label>
+				</td>
+			</tr>
+
+			<tr class="gdpr-conditional-field" data-dependency="#moove_gdpr_enable_all_button_enable">
 				<th scope="row">
 					<label for="moove_gdpr_modal_allow_button_label"><?php esc_html_e( 'Enable All - Button Label', 'gdpr-cookie-compliance' ); ?></label>
 				</th>
 				<td>
 					<input name="moove_gdpr_modal_allow_button_label<?php echo esc_attr( $wpml_lang ); ?>" type="text" id="moove_gdpr_modal_allow_button_label" value="<?php echo isset( $gdpr_options[ 'moove_gdpr_modal_allow_button_label' . $wpml_lang ] ) && $gdpr_options[ 'moove_gdpr_modal_allow_button_label' . $wpml_lang ] ? esc_attr( $gdpr_options[ 'moove_gdpr_modal_allow_button_label' . $wpml_lang ] ) : esc_html__( 'Enable All', 'gdpr-cookie-compliance' ); ?>" class="regular-text">
+				</td>
+			</tr>
+
+			<tr >
+				<th scope="row">
+					<label for="moove_gdpr_reject_all_button_enable"><?php esc_html_e( 'Reject All button', 'gdpr-cookie-compliance' ); ?></label>
+				</th>
+				<td>
+					<!-- GDPR Rounded switch -->
+					<label class="gdpr-checkbox-toggle">
+						<input type="checkbox" name="moove_gdpr_reject_all_button_enable" id="moove_gdpr_reject_all_button_enable" <?php echo isset( $gdpr_options['moove_gdpr_reject_all_button_enable'] ) ? ( intval( $gdpr_options['moove_gdpr_reject_all_button_enable'] ) === 1 ? 'checked' : ( ! isset( $gdpr_options['moove_gdpr_reject_all_button_enable'] ) ? '' : '' ) ) : ''; ?> >
+						<span class="gdpr-checkbox-slider" data-enable="<?php esc_html_e( 'Enabled', 'gdpr-cookie-compliance' ); ?>" data-disable="<?php esc_html_e( 'Disabled', 'gdpr-cookie-compliance' ); ?>"></span>
+					</label>
+				</td>
+			</tr>
+
+			<tr class="gdpr-conditional-field" data-dependency="#moove_gdpr_reject_all_button_enable">
+				<th scope="row">
+					<label for="moove_gdpr_modal_allow_button_label"><?php esc_html_e( 'Reject All - Button Label', 'gdpr-cookie-compliance' ); ?></label>
+				</th>
+				<td>
+					<input name="moove_gdpr_modal_reject_button_label<?php echo esc_attr( $wpml_lang ); ?>" type="text" id="moove_gdpr_modal_reject_button_label" value="<?php echo isset( $gdpr_options[ 'moove_gdpr_modal_reject_button_label' . $wpml_lang ] ) && $gdpr_options[ 'moove_gdpr_modal_reject_button_label' . $wpml_lang ] ? esc_attr( $gdpr_options[ 'moove_gdpr_modal_reject_button_label' . $wpml_lang ] ) : esc_html__( 'Reject All', 'gdpr-cookie-compliance' ); ?>" class="regular-text">
 				</td>
 			</tr>
 

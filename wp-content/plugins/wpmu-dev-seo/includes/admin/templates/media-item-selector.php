@@ -38,15 +38,15 @@ if ( ! empty( $value ) ) {
 		</div>
 	</div>
 
-	<button class="sui-upload-button">
-		<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Upload file', 'wds' ); ?>
+	<button type="button" class="sui-upload-button">
+		<span class="sui-icon-upload-cloud" aria-hidden="true"></span> <?php esc_html_e( 'Upload file', 'wds' ); ?>
 	</button>
 
 	<div class="sui-upload-file">
 		<span><?php echo esc_html( $file_name ); ?></span>
 
-		<button aria-label="<?php esc_attr_e( 'Remove file', 'wds' ); ?>">
-			<i class="sui-icon-close" aria-hidden="true"></i>
+		<button type="button" aria-label="<?php esc_attr_e( 'Remove file', 'wds' ); ?>">
+			<span class="sui-icon-close" aria-hidden="true"></span>
 		</button>
 	</div>
 </div>

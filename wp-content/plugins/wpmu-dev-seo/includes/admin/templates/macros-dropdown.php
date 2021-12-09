@@ -2,7 +2,7 @@
 $macros = empty( $macros ) ? array() : $macros;
 ?>
 
-<select title="">
+<select title="" class="sui-variables">
 	<?php foreach ( $macros as $macro => $label ): ?>
 
 		<option value="<?php echo esc_attr( $macro ); ?>"

@@ -2,8 +2,8 @@
 Contributors: codeboxr, manchumahara
 Tags: wordpress smtp,wordpress email log,smtp
 Requires at least: 3.9
-Tested up to: 5.4.1
-Stable tag: 1.0.8
+Tested up to: 5.7.2
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,7 +13,12 @@ This plugin helps to send email using SMTP and other methods as well as logs ema
 
 Sending email to user's inbox is a great challenge now days as if you don't take extra measure your email may go to spam folder. CBX Email SMTP & Logger plugin comes to help on this and fix your email sending problem. This plugin helps to send email using SMTP and log any email sent from WordPress.
 
-See more details and usages guide check [here](https://codeboxr.com/product/cbx-email-logger-for-wordpress/)
+
+### CBX Email SMTP & Logger by [Codeboxr](https://codeboxr.com/product/cbx-email-logger-for-wordpress)
+
+>📺 [Live Demo](https://www.youtube.com/watch?v=mx3Aw0-UVew) | 🌟 [Upgrade to PRO](https://codeboxr.com/product/cbx-email-logger-for-wordpress/) | 📋 [Documentation](https://codeboxr.com/product/cbx-email-logger-for-wordpress/) | 👨‍💻 [Free Support](https://wordpress.org/plugins/cbxwpemaillogger/) | 🤴 [Pro Support](https://codeboxr.com/contact-us) | 📱 [Contact](https://codeboxr.com/contact-us/)
+
+[youtube https://www.youtube.com/watch?v=mx3Aw0-UVew]
 
 
 ### 🛄 Core Plugin Features ###
@@ -99,6 +104,27 @@ e.g.
 
 
 == Changelog ==
+
+= 2.0.0 =
+* [new] Test email sending now has attachment option to test attachment sending
+* [improvement] Attachments displays as icon in log listing
+
+= 1.0.11 =
+* [improvement] Email sending now more easy with default email, subject and body message
+* [improvement] Setting page ui improvements
+* [updated] Help & setting page header issue fixed (on scroll)
+
+= 1.0.10 =
+
+* [improvement] Plugin setting and other pages ui improvements (New Look)
+* [new] Add new menu helps & update
+* [updated] Plugin's compatibility with latest wp version
+
+
+= 1.0.9 =
+
+* [new] Add email source filter in log listing
+* [new] How to video tutorial added
 
 = 1.0.8 =
 

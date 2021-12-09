@@ -1,6 +1,8 @@
 <?php
 $active_tab = empty( $active_tab ) ? '' : $active_tab;
+$import_available = is_main_site();
 $show_data_settings = is_main_site();
+$configs_available = is_main_site();
 
 $this->_render( 'before-page-container' );
 ?>
@@ -9,15 +11,23 @@ $this->_render( 'before-page-container' );
 	<?php $this->_render( 'page-header', array(
 		'title'                 => esc_html__( 'SmartCrawl Settings', 'wds' ),
 		'documentation_chapter' => 'settings',
+		'utm_campaign'          => 'smartcrawl_settings_docs',
 	) ); ?>
 
-	<?php $this->_render( 'floating-notices' ); ?>
+	<?php $this->_render( 'floating-notices', array(
+		'keys' => array(
+			'wds-data-reset',
+			'wds-config-notice',
+		),
+	) ); ?>
 	<?php $this->_render( 'settings/settings-import-notice' ); ?>
 
 	<div class="wds-vertical-tabs-container sui-row-with-sidenav">
 		<?php $this->_render( 'settings/settings-sidenav', array(
 			'active_tab'         => $active_tab,
 			'show_data_settings' => $show_data_settings,
+			'configs_available'  => $configs_available,
+			'import_available'   => $import_available,
 		) ); ?>
 
 		<form action='<?php echo esc_attr( $_view['action_url'] ); ?>' method='post' class="wds-form">
@@ -43,6 +53,12 @@ $this->_render( 'before-page-container' );
 					),
 				),
 			) );
+
+			if ( $configs_available ) {
+				$this->_render( 'settings/settings-section-configs', array(
+					'is_active' => 'tab_configs' === $active_tab,
+				) );
+			}
 
 			$this->_render( 'vertical-tab', array(
 				'tab_id'        => 'tab_user_roles',
@@ -94,26 +110,28 @@ $this->_render( 'before-page-container' );
 			?>
 		</form>
 
-		<form method='post' enctype="multipart/form-data" class="wds-form">
-			<?php $this->settings_fields( $_view['option_name'] ); ?>
+		<?php if ( $import_available ): ?>
+			<form method='post' enctype="multipart/form-data" class="wds-form">
+				<?php $this->settings_fields( $_view['option_name'] ); ?>
 
-			<input type="hidden"
-			       name='<?php echo esc_attr( $_view['option_name'] ); ?>[<?php echo esc_attr( $_view['slug'] ); ?>-setup]'
-			       value="1"/>
-			<?php
-			$this->_render( 'vertical-tab', array(
-				'tab_id'       => 'tab_import_export',
-				'tab_name'     => __( 'Import / Export', 'wds' ),
-				'is_active'    => 'tab_import_export' === $active_tab,
-				'button_text'  => false,
-				'tab_sections' => array(
-					array(
-						'section_template' => 'settings/settings-section-import-export',
+				<input type="hidden"
+				       name='<?php echo esc_attr( $_view['option_name'] ); ?>[<?php echo esc_attr( $_view['slug'] ); ?>-setup]'
+				       value="1"/>
+				<?php
+				$this->_render( 'vertical-tab', array(
+					'tab_id'       => 'tab_import_export',
+					'tab_name'     => __( 'Import', 'wds' ),
+					'is_active'    => 'tab_import_export' === $active_tab,
+					'button_text'  => false,
+					'tab_sections' => array(
+						array(
+							'section_template' => 'settings/settings-section-import-export',
+						),
 					),
-				),
-			) );
-			?>
-		</form>
+				) );
+				?>
+			</form>
+		<?php endif; ?>
 	</div>
 
 	<?php $this->_render( 'footer' ); ?>

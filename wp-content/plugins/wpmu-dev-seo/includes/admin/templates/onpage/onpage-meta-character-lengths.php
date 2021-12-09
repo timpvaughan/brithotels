@@ -35,16 +35,14 @@ if ( $custom_max_limit <= 0 ) {
 			<?php esc_html_e( 'Default', 'wds' ); ?>
 
 			<input name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $toggle_name ); ?>]" <?php checked( $custom_char_lengths, false ); ?>
-			       value="0" type="radio"
-			       class="hidden"/>
+			       value="0" type="radio"/>
 		</label>
 
 		<label class="<?php echo $custom_char_lengths ? 'active' : ''; ?>">
 			<?php esc_html_e( 'Custom', 'wds' ); ?>
 
 			<input name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $toggle_name ); ?>]" <?php checked( $custom_char_lengths ); ?>
-			       value="1" type="radio"
-			       class="hidden"/>
+			       value="1" type="radio"/>
 		</label>
 	</div>
 
@@ -77,15 +75,25 @@ if ( $custom_max_limit <= 0 ) {
 		<div class="<?php echo $custom_char_lengths ? 'active' : ''; ?>">
 			<table class="sui-table">
 				<tr>
-					<td class="sui-table-item-title"><?php esc_html_e( 'Minimum', 'wds' ); ?></td>
-					<td><label><input type="number"
-					                  name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $min_field_name ); ?>]"
-					                  value="<?php echo esc_attr( $custom_min_limit ); ?>"
-					                  class="sui-form-control sui-input-sm"/></label></td>
+					<td class="sui-table-item-title">
+						<label for="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $min_field_name ); ?>]">
+							<?php esc_html_e( 'Minimum', 'wds' ); ?>
+						</label>
+					</td>
+					<td><input type="number"
+					           id="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $min_field_name ); ?>]"
+					           name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $min_field_name ); ?>]"
+					           value="<?php echo esc_attr( $custom_min_limit ); ?>"
+					           class="sui-form-control sui-input-sm"/></td>
 				</tr>
 				<tr>
-					<td class="sui-table-item-title"><?php esc_html_e( 'Maximum', 'wds' ); ?></td>
+					<td class="sui-table-item-title">
+						<label for="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $max_field_name ); ?>]">
+							<?php esc_html_e( 'Maximum', 'wds' ); ?>
+						</label>
+					</td>
 					<td><label><input type="number"
+					                  id="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $max_field_name ); ?>]"
 					                  name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $max_field_name ); ?>]"
 					                  value="<?php echo esc_attr( $custom_max_limit ); ?>"
 					                  class="sui-form-control sui-input-sm"/></label></td>

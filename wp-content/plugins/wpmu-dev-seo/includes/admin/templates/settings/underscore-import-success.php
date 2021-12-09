@@ -30,7 +30,7 @@
 
 		{{ if(deactivation_url) { }}
 		<a class="sui-button wds-import-main-action" href="{{= deactivation_url }}">
-			<i class="sui-icon-power-on-off" aria-hidden="true"></i>
+			<span class="sui-icon-power-on-off" aria-hidden="true"></span>
 
 			<?php esc_html_e( 'Deactivate', 'wds' ); ?> {{- plugin_name }}
 		</a>

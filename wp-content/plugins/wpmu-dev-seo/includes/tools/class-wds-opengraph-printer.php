@@ -119,6 +119,8 @@ class Smartcrawl_OpenGraph_Printer {
 	private function inject_type() {
 		if ( is_front_page() || is_home() ) {
 			$type = 'website';
+		} elseif ( $this->is_woo_product() ) {
+			$type = 'og:product';
 		} elseif ( is_singular() ) {
 			$type = 'article';
 		} else {
@@ -155,7 +157,9 @@ class Smartcrawl_OpenGraph_Printer {
 		$this->print_og_tag( 'og:description', $value_helper->get_description() );
 		$this->print_og_images( $value_helper->get_images() );
 
-		if ( is_singular() ) {
+		if ( $this->is_woo_product() ) {
+			$this->add_woo_product_tags( get_post() );
+		} elseif ( is_singular() ) {
 			$post = get_post();
 			$date = get_the_date( 'Y-m-d\TH:i:s', $post );
 			$this->print_og_tag( 'article:published_time', $date );
@@ -170,28 +174,70 @@ class Smartcrawl_OpenGraph_Printer {
 		return true;
 	}
 
-	public function print_og_images( $values ) {
-		if ( empty( $values ) ) {
+	private function is_woo_product() {
+		return smartcrawl_woocommerce_active()
+		       && function_exists( 'wc_get_product' )
+		       && is_singular( array( 'product' ) );
+	}
+
+	private function add_woo_product_tags( $post ) {
+		$product = wc_get_product( $post );
+		$woo_options = ( new Smartcrawl_Woocommerce_Data() )->get_options();
+		$woo_enabled = (bool) smartcrawl_get_array_value( $woo_options, 'woocommerce_enabled' );
+		$woo_og_enabled = (bool) smartcrawl_get_array_value( $woo_options, 'enable_open_graph' );
+
+		if ( $product && $woo_enabled && $woo_og_enabled ) {
+			$price = $this->get_product_price( $product );
+			if ( $price ) {
+				$this->print_og_tag( 'product:price:amount', $price );
+				$this->print_og_tag( 'product:price:currency', get_woocommerce_currency() );
+			}
+
+			$this->print_product_availability( $product );
+
+			$brand = Smartcrawl_Controller_Woocommerce::get()->get_brand( $product );
+			if ( $brand ) {
+				$this->print_og_tag( 'product:brand', $brand->name );
+			}
+		}
+	}
+
+	private function get_product_price( $product ) {
+		$price = $product->get_price();
+		if ( $price === '' ) {
+			return '';
+		}
+
+		if ( $product->is_type( 'variable' ) ) {
+			$lowest = $product->get_variation_price( 'min', false );
+			$highest = $product->get_variation_price( 'max', false );
+
+			return $lowest === $highest
+				? wc_format_decimal( $lowest, wc_get_price_decimals() )
+				: '';
+		} else {
+			return wc_format_decimal( $price, wc_get_price_decimals() );
+		}
+	}
+
+	public function print_og_images( $images ) {
+		if ( empty( $images ) ) {
 			return;
 		}
 
-		$values = is_array( $values ) ? $values : array( $values );
+		$images = is_array( $images ) && ! empty( $images )
+			? $images
+			: array();
 
 		$image_tags = array();
 		$included_urls = array();
-		foreach ( $values as $value ) {
-			$url = $width = $height = '';
+		foreach ( $images as $image ) {
+			$url = smartcrawl_get_array_value( $image, 0 );
+			$width = smartcrawl_get_array_value( $image, 1 );
+			$height = smartcrawl_get_array_value( $image, 2 );
 
-			if ( is_numeric( $value ) ) {
-				$attachment = wp_get_attachment_image_src( $value, 'full' );
-				if ( is_array( $attachment ) && count( $attachment ) >= 3 ) {
-					$url = $attachment[0];
-					$width = $attachment[1];
-					$height = $attachment[2];
-				}
-			} else {
-				$url = $value;
-				$attachment = smartcrawl_get_attachment_by_url( trim( $value ) );
+			if ( ! $width || ! $height ) {
+				$attachment = smartcrawl_get_attachment_by_url( trim( $url ) );
 				if ( $attachment ) {
 					$width = $attachment['width'];
 					$height = $attachment['height'];
@@ -229,5 +275,28 @@ class Smartcrawl_OpenGraph_Printer {
 		);
 
 		return $allowed_tags;
+	}
+
+	/**
+	 * @param WC_Product $product
+	 */
+	private function print_product_availability( $product ) {
+		$product_availability = $og_availability = false;
+		$stock_status = $product->get_stock_status();
+		if ( $stock_status === 'onbackorder' ) {
+			$product_availability = 'available for order';
+			$og_availability = 'backorder';
+		} elseif ( $stock_status === 'instock' ) {
+			$product_availability = $og_availability = 'instock';
+		} elseif ( $stock_status === 'outofstock' ) {
+			$product_availability = $og_availability = 'out of stock';
+		}
+
+		if ( $og_availability ) {
+			$this->print_og_tag( 'og:availability', $og_availability );
+		}
+		if ( $product_availability ) {
+			$this->print_og_tag( 'product:availability', $product_availability );
+		}
 	}
 }

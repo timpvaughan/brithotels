@@ -16,19 +16,7 @@ $this->_render( 'advanced-tools/advanced-automatic-linking-types', array(
 			<p class="sui-description"><?php esc_html_e( 'Choose additional custom keywords you want to target, and where to link them to.', 'wds' ); ?></p>
 		</div>
 
-		<div class="box-autolinks-custom-keywords-settings">
-			<div class="wds-replaceable">
-				<?php // phpcs:disable ?>
-				<label>
-				<textarea id='customkey'
-				          name='<?php echo esc_attr( $_view['option_name'] ); ?>[customkey]'
-				          class='wds-textarea'><?php echo esc_textarea( $custom_keywords ); ?></textarea>
-				</label>
-				<?php // phpcs:enable ?>
-			</div>
-
-			<?php $this->_render( 'advanced-tools/underscore-keywords-form' ); ?>
-		</div>
+		<div id="wds-custom-keyword-pairs"></div>
 	</div>
 </div>
 

@@ -44,12 +44,7 @@ class Smartcrawl_Sitemap_Index_Item {
 	 * @return string
 	 */
 	protected function format_timestamp( $timestamp ) {
-		$timestamp = intval( $timestamp ) > 0
-			? $timestamp
-			: time();
-		$offset = date( 'O', $timestamp );
-
-		return date( 'Y-m-d\TH:i:s', $timestamp ) . substr( $offset, 0, 3 ) . ':' . substr( $offset, - 2 );
+		return Smartcrawl_Sitemap_Utils::format_timestamp( $timestamp );
 	}
 
 	public function to_xml() {
@@ -64,7 +59,10 @@ class Smartcrawl_Sitemap_Index_Item {
 		$tags[] = sprintf( '<loc>%s</loc>', esc_url( $location ) );
 
 		// Last modified date
-		$tags[] = sprintf( '<lastmod>%s</lastmod>', $this->format_timestamp( $this->get_last_modified() ) );
+		$timestamp = $this->get_last_modified();
+		if ( $timestamp ) {
+			$tags[] = sprintf( '<lastmod>%s</lastmod>', $this->format_timestamp( $timestamp ) );
+		}
 
 		return sprintf( '<sitemap>%s</sitemap>', implode( "", $tags ) );
 	}

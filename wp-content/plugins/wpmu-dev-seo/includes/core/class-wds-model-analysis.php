@@ -109,8 +109,10 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 			$data = $this->get_post_data( self::DATA_READABILITY );
 		}
 
-		if ( empty( $data['raw_score'] ) && ! empty( $data['error'] ) ) {
-			return $data['error'];
+		if ( empty( $data['raw_score'] ) || ! isset( $data['score'] ) ) {
+			return empty( $data['error'] )
+				? __( 'Error calculating readability', 'wds' )
+				: $data['error'];
 		}
 
 		$map = $this->get_readability_levels_map();

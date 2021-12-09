@@ -1,20 +1,20 @@
 <?php
 $option_name = empty( $option_name ) ? '' : $option_name;
 $slugs = empty( $slugs ) ? array() : $slugs;
-$wds_sitewide_mode = empty( $wds_sitewide_mode ) ? false : $wds_sitewide_mode;
+$subsite_manager_role = empty( $subsite_manager_role ) ? false : $subsite_manager_role;
+$subsite_config_id = empty( $subsite_config_id ) ? '' : $subsite_config_id;
 $blog_tabs = empty( $blog_tabs ) ? array() : $blog_tabs;
 $dashboard_url = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings_Admin::TAB_DASHBOARD );
 $per_site_notice = empty( $per_site_notice ) ? '' : $per_site_notice;
+$collection = Smartcrawl_Config_Collection::get();
 
 $this->_render( 'before-page-container' );
 ?>
 <div id="container" class="<?php smartcrawl_wrap_class( 'wds-page-network-settings' ); ?>">
 
-	<div class="sui-header">
-		<h1 class="sui-header-title">
-			<?php esc_html_e( 'Network Settings', 'wds' ); ?>
-		</h1>
-	</div>
+	<?php $this->_render( 'page-header', array(
+		'title' => esc_html__( 'Network Settings', 'wds' ),
+	) ); ?>
 
 	<?php $this->_render( 'floating-notices' ); ?>
 
@@ -37,75 +37,103 @@ $this->_render( 'before-page-container' );
 
 				<div class="sui-box-body">
 					<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[save_blog_tabs]" value="1"/>
-					<span><?php esc_html_e( 'Configure how much control your sub-site admins have over their sites.', 'wds' ); ?></span>
 
-					<div class="sui-box-settings-row wds-separator-top">
+					<div class="sui-box-settings-row">
 						<div class="sui-box-settings-col-1">
-							<label class="sui-settings-label"><?php esc_html_e( 'Sub-site Admin Permissions', 'wds' ); ?></label>
+							<label class="sui-settings-label"><?php esc_html_e( 'Sub-site Settings', 'wds' ); ?></label>
 							<p class="sui-description">
-								<?php esc_html_e( 'Choose whether you want to control all your sub-site SEO settings, or allow sub-site admins to configure them.', 'wds' ); ?>
+								<?php esc_html_e( 'Configure how much control your sub-site admins have over their sites.', 'wds' ); ?>
 							</p>
 						</div>
 
 						<div class="sui-box-settings-col-2">
-
-							<div class="sui-side-tabs sui-tabs">
-								<?php if ( ! $wds_sitewide_mode ): ?>
-									<?php echo wp_kses_post( $per_site_notice ); ?>
-								<?php endif; ?>
-
-								<div data-tabs>
-									<label class="<?php echo $wds_sitewide_mode ? 'active' : ''; ?>">
-										<?php esc_html_e( 'Sitewide', 'wds' ); ?>
-										<input name="<?php printf( '%s[wds_sitewide_mode]', $option_name ) ?>" <?php checked( $wds_sitewide_mode ); ?>
-										       value="1"
-										       type="radio"
-										       class="hidden"/>
-									</label>
-
-									<label class="<?php echo $wds_sitewide_mode ? '' : 'active'; ?>">
-										<?php esc_html_e( 'Per Site', 'wds' ); ?>
-										<input name="<?php printf( '%s[wds_sitewide_mode]', $option_name ) ?>" <?php checked( $wds_sitewide_mode, false ); ?>
-										       value="0"
-										       type="radio"
-										       class="hidden"/>
-									</label>
+							<label class="sui-settings-label"
+							       for="wds-subsite-access">
+								<?php esc_html_e( 'Admin Access', 'wds' ); ?>
+							</label>
+							<p class="sui-description">
+								<?php esc_html_e( 'Choose whether Super Admins or Site Admins should control sub-site settings.', 'wds' ); ?>
+							</p>
+							<div class="sui-row">
+								<div class="sui-col-md-6">
+									<select id="wds-subsite-access"
+									        name="<?php echo esc_attr( $option_name ); ?>[wds_subsite_manager_role]"
+									        autocomplete="off"
+									        data-minimum-results-for-search="-1"
+									        class="sui-select">
+										<option <?php selected( 'admin', $subsite_manager_role ) ?>
+												value="admin">
+											<?php esc_html_e( 'Site Admins', 'wds' ); ?>
+										</option>
+										<option <?php selected( 'superadmin', $subsite_manager_role ) ?>
+												value="superadmin">
+											<?php esc_html_e( 'Super Admins', 'wds' ); ?>
+										</option>
+									</select>
 								</div>
+							</div>
 
-								<div data-panes>
-									<div class="sui-tab-boxed <?php echo $wds_sitewide_mode ? 'active' : ''; ?>">
-										<p class="sui-description"><?php esc_html_e( 'All sub-sites will inherit your network settings, and won’t be able to override them on a per site basis.', '' ); ?></p>
-									</div>
+							<div class="wds-separator-top">
+								<label class="sui-settings-label"
+								       for="wds-subsite-access">
+									<?php esc_html_e( 'Modules', 'wds' ); ?>
+								</label>
+								<p class="sui-description">
+									<?php esc_html_e( 'Choose which modules should be available on sub-sites.', 'wds' ); ?>
+								</p>
+								<?php
+								foreach ( $slugs as $item => $label ) {
+									$checkbox_name = sprintf( '%s[wds_blog_tabs][%s]', $option_name, $item );
+									?>
+									<label for="<?php echo esc_attr( $checkbox_name ); ?>"
+									       class="sui-checkbox">
+										<input type="checkbox" <?php checked( ! empty( $blog_tabs[ $item ] ) ); ?>
+										       name="<?php echo esc_attr( $checkbox_name ); ?>"
+										       value="yes"
+										       id="<?php echo esc_attr( $checkbox_name ); ?>"
+										       aria-labelledby="label-<?php echo esc_attr( $checkbox_name ); ?>"/>
+										<span aria-hidden="true"></span>
+										<span id="label-<?php echo esc_attr( $checkbox_name ); ?>">
+											<?php echo esc_html( $label ); ?>
+										</span>
+									</label><br/>
+									<?php
+								}
+								?>
+							</div>
+							<br/>
 
-									<div class="sui-tab-boxed <?php echo $wds_sitewide_mode ? '' : 'active'; ?>">
-										<p class="sui-description"><?php esc_html_e( 'Each sub-site will have its own SEO settings. Choose which modules you want sub-site admins to be able to use and configure.', '' ); ?></p>
+							<div class="wds-separator-top">
+								<label class="sui-settings-label"
+								       for="wds-subsite-config-id">
+									<?php esc_html_e( 'New Sub-sites', 'wds' ); ?>
+								</label>
+								<p class="sui-description">
+									<?php echo smartcrawl_format_link(
+										esc_html__( 'Select a config that you would like to apply to new sub-sites. Visit the %s page to manage all your configs.', 'wds' ),
+										admin_url( 'admin.php?page=wds_settings&tab=tab_configs' ),
+										esc_html__( 'Configs', 'wds' ),
+										'_blank'
+									); ?>
+								</p>
 
-										<?php
-										foreach ( $slugs as $item => $label ) {
-											$checkbox_name = sprintf( '%s[wds_blog_tabs][%s]', $option_name, $item );
-											?>
-											<label for="<?php echo esc_attr( $checkbox_name ); ?>"
-											       class="sui-checkbox">
-												<input type="checkbox" <?php checked( ! empty( $blog_tabs[ $item ] ) ); ?>
-												       name="<?php echo esc_attr( $checkbox_name ); ?>"
-												       value="yes"
-												       id="<?php echo esc_attr( $checkbox_name ); ?>"
-												       aria-labelledby="label-<?php echo esc_attr( $checkbox_name ); ?>"/>
-												<span aria-hidden="true"></span>
-												<span id="label-<?php echo esc_attr( $checkbox_name ); ?>">
-													<?php echo esc_html( $label ); ?>
-												</span>
-											</label><br/>
-											<?php
-										}
-										?>
-									</div>
-								</div>
+								<select id="wds-subsite-config-id"
+								        name="<?php echo esc_attr( $option_name ); ?>[wds_subsite_config_id]"
+								        data-minimum-results-for-search="-1"
+								        class="sui-select">
+									<option <?php selected( ! $subsite_config_id ); ?>
+											value="">
+										<?php esc_html_e( 'None', 'wds' ); ?>
+									</option>
 
-								<?php $this->_render( 'notice', array(
-									'class'   => 'wds-drastic-changes-notice',
-									'message' => esc_html__( 'Changing between Sitewide and Per Site modes means you are switching between two different SEO configurations. Be mindful, frequent drastic changes to SEO configurations on sub-sites can cause fluctuations in page rank.', 'wds' ),
-								) ); ?>
+									<?php foreach ( $collection->get_sorted_configs() as $config ): ?>
+										<option <?php selected( $subsite_config_id, $config->get_id() ) ?>
+												value="<?php echo $config->get_id(); ?>">
+
+											<?php echo $config->get_name(); ?>
+										</option>
+									<?php endforeach; ?>
+								</select>
 							</div>
 						</div>
 					</div>
@@ -115,7 +143,7 @@ $this->_render( 'before-page-container' );
 					<button name="submit"
 					        type="submit"
 					        class="sui-button sui-button-blue">
-						<i class="sui-icon-save" aria-hidden="true"></i>
+						<span class="sui-icon-save" aria-hidden="true"></span>
 
 						<?php esc_html_e( 'Save Changes', 'wds' ); ?>
 					</button>

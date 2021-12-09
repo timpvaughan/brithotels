@@ -46,16 +46,16 @@
 							<?php
 								the_custom_logo();
 							?>
-												
-							<div class="home-ratings">							
+
+							<div class="home-ratings">
 								<i class="las la-star"></i>
 								<i class="las la-star"></i>
 								<i class="las la-star"></i>
 							</div>
-							
+
 
                             <h1><?php echo $header_title; ?></h1>
-                            <a href="#hotel-list-wrap" class="btn hotel-list-book-now" id="hotel-list-book-now" title="Book a Brit Hotels Room">Book Now <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt="Book now"/></a>
+                            <a href="#hotels" class="btn hotel-list-book-now" id="hotel-list-book-now" title="Book a Brit Hotels Room">Book Now <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt="Book now"/></a>
                         </div>
                     </div>
                 </div>
@@ -73,7 +73,6 @@
 			<div class="fixed-menu hotel-dropdown">
 				<a href="#" class="toggle-menu" title="Toggle Brit Hotels Locations"><i class="las la-angle-up"></i> <?php esc_html_e('Hotels ', 'brithotels'); ?><i class="las la-star"></i><i class="las la-star"></i><i class="las la-star"></i> <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/hotel.svg" alt=""></a>
 				<ul class="hotel-dropdown-menu" role="navigation" aria-label="Main menu">
-					<li><a href="<?php echo get_home_url(2); ?>" title="Go to Brit Hotels London Court"><span><?php esc_html_e('London Court', 'brithotels'); ?></span></a></li>
 					<li><a href="<?php echo get_home_url(3); ?>" title="Go to Brit Hotels Elephant Castle"><span><?php esc_html_e('Elephant Castle', 'brithotels'); ?> <!--<br><span>(opening Aug 2019)</span>--></span></a></li>
 					<li><a href="#" title="Brit Hotels Earls Court Opens 2021"><span><?php esc_html_e('Earls Court', 'brithotels'); ?> <br><span>(opening 2021)</span></span></a></li>
 

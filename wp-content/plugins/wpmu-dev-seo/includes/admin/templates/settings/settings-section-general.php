@@ -148,7 +148,7 @@ $this->_render( 'toggle-group', array(
 
 				<button type="button"
 				        class="sui-button sui-button-ghost">
-					<i class="sui-icon-plus" aria-hidden="true"></i>
+					<span class="sui-icon-plus" aria-hidden="true"></span>
 
 					<?php esc_html_e( 'Add Another', 'wds' ); ?>
 				</button>

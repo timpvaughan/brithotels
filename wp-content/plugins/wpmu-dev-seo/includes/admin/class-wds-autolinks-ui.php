@@ -21,7 +21,7 @@ class Smartcrawl_Autolinks_UI extends Smartcrawl_Base_Controller {
 	}
 
 	public function should_run() {
-		return smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_AUTOLINKS );
+		return Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_AUTOLINKS );
 	}
 
 	/**

@@ -32,8 +32,8 @@ $option_name = 'wds_autolinks_options';
 	<?php $this->_render( 'links-dropdown', array(
 		'label' => esc_html__( 'Options', 'wds' ),
 		'links' => array(
-			'#edit'   => '<i class="sui-icon-pencil" aria-hidden="true"></i> ' . esc_html__( 'Edit', 'wds' ),
-			'#remove' => '<i class="sui-icon-trash" aria-hidden="true"></i> ' . esc_html__( 'Remove', 'wds' ),
+			'#edit'   => '<span class="sui-icon-pencil" aria-hidden="true"></span> ' . esc_html__( 'Edit', 'wds' ),
+			'#remove' => '<span class="sui-icon-trash" aria-hidden="true"></span> ' . esc_html__( 'Remove', 'wds' ),
 		),
 	) ); ?>
 

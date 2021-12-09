@@ -7,12 +7,16 @@
 
 /**
  * Cron controller
+ *
+ * TODO: make sure emails are sent from the plugin and are only sent when scans are triggered via cron
  */
 class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of this class
 
 	const ACTION_CRAWL = 'wds-cron-start_service';
 	const ACTION_CHECKUP = 'wds-cron-start_checkup';
 	const ACTION_CHECKUP_RESULT = 'wds-cron-checkup_result';
+	const ACTION_LIGHTHOUSE = 'wds-cron-start_lighthouse';
+	const ACTION_LIGHTHOUSE_RESULT = 'wds-cron-lighthouse_result';
 
 	/**
 	 * Singleton instance
@@ -82,14 +86,19 @@ class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of th
 		$copts = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SITEMAP );
 		if ( ! empty( $copts['crawler-cron-enable'] ) ) {
 			add_action( $this->get_filter( self::ACTION_CRAWL ), array( $this, 'start_crawl' ) );
-			$this->fix_legacy_round_runtimes( self::ACTION_CRAWL, $copts );
 		}
 
-		$chopts = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_CHECKUP );
-		if ( ! empty( $chopts['checkup-cron-enable'] ) ) {
-			$this->fix_legacy_round_runtimes( self::ACTION_CHECKUP, $chopts );
+		if ( Smartcrawl_Checkup_Options::is_cron_enabled() && Smartcrawl_Health_Settings::is_test_mode_checkup() ) {
 			add_action( $this->get_filter( self::ACTION_CHECKUP ), array( $this, 'start_checkup' ) );
 			add_action( $this->get_filter( self::ACTION_CHECKUP_RESULT ), array( $this, 'check_checkup_result' ) );
+		}
+
+		if ( Smartcrawl_Lighthouse_Options::is_cron_enabled() && Smartcrawl_Health_Settings::is_test_mode_lighthouse() ) {
+			add_action( $this->get_filter( self::ACTION_LIGHTHOUSE ), array( $this, 'start_lighthouse' ) );
+			add_action( $this->get_filter( self::ACTION_LIGHTHOUSE_RESULT ), array(
+				$this,
+				'check_lighthouse_result',
+			) );
 		}
 
 		$this->_is_running = true;
@@ -104,62 +113,6 @@ class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of th
 	 */
 	public function get_filter( $what ) {
 		return 'wds-controller-cron-' . $what;
-	}
-
-	/**
-	 * Checks for round time schedules and adjusts
-	 * schedule accordingly
-	 *
-	 * @param string $type Action type to check.
-	 * @param array $opts Action options.
-	 *
-	 * @return bool
-	 */
-	public function fix_legacy_round_runtimes( $type, $opts ) {
-		$prefix = self::ACTION_CRAWL === $type
-			? 'crawler'
-			: 'checkup';
-		$frequency = $this->get_valid_frequency(
-			! empty( $opts["{$prefix}-frequency"] ) ? $opts["{$prefix}-frequency"] : ''
-		);
-		$dow = $this->validate_dow( $frequency, (int) smartcrawl_get_array_value( $opts, "{$prefix}-dow" ) );
-		$tod = ! empty( $opts["{$prefix}-tod"] ) && in_array( (int) $opts["{$prefix}-tod"], range( 0, 23 ), true )
-			? (int) $opts["{$prefix}-tod"]
-			: 0;
-
-		if ( 0 === $dow && 0 === $tod && $this->is_round_next_runtime( $type ) ) {
-			// Reschedule.
-			Smartcrawl_Logger::warning( "Rescheduling detected rounded event {$prefix}" );
-			$comp_key = self::ACTION_CRAWL === $type
-				? Smartcrawl_Settings::COMP_SITEMAP
-				: Smartcrawl_Settings::COMP_CHECKUP;
-			$opts["{$prefix}-dow"] = rand( 0, 6 );
-			$opts["{$prefix}-tod"] = rand( 0, 24 );
-
-			Smartcrawl_Settings::update_component_options( $comp_key, $opts );
-			$this->unschedule( $type );
-			call_user_func( array( $this, "set_up_{$prefix}_schedule" ) );
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Checks if next runtime event schedule is round
-	 *
-	 * @param string $type Action type to check.
-	 *
-	 * @return bool
-	 */
-	public function is_round_next_runtime( $type ) {
-		$current = $this->get_next_event( $type );
-		if ( empty( $current ) ) {
-			return false;
-		}
-
-		return '00:00' === date( 'H:i', $current );
 	}
 
 	/**
@@ -248,6 +201,7 @@ class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of th
 		Smartcrawl_Logger::debug( 'Setting up schedules' );
 		$this->set_up_crawler_schedule();
 		$this->set_up_checkup_schedule();
+		$this->set_up_lighthouse_schedule();
 	}
 
 	/**
@@ -256,7 +210,7 @@ class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of th
 	 * @return bool
 	 */
 	public function set_up_crawler_schedule() {
-		Smartcrawl_Logger::debug( 'Setting up cralwer schedule' );
+		Smartcrawl_Logger::debug( 'Setting up crawler schedule' );
 
 		$options = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SITEMAP );
 
@@ -273,9 +227,7 @@ class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of th
 			( ! empty( $options['crawler-frequency'] ) ? $options['crawler-frequency'] : array() )
 		);
 		$dow = $this->validate_dow( $frequency, (int) smartcrawl_get_array_value( $options, 'crawler-dow' ) );
-		$tod = ! empty( $options['crawler-tod'] ) && in_array( (int) $options['crawler-tod'], range( 0, 23 ), true )
-			? (int) $options['crawler-tod']
-			: 0;
+		$tod = $this->validate_tod( (int) smartcrawl_get_array_value( $options, 'crawler-tod' ) );
 		$next = $this->get_estimated_next_event( $now, $frequency, $dow, $tod );
 
 		$msg = sprintf( "Attempt rescheduling crawl start ({$frequency},{$dow},{$tod}): {$next} (%s)", date( 'Y-m-d@H:i', $next ) );
@@ -303,7 +255,7 @@ class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of th
 	 * Gets estimated next event time based on parameters
 	 *
 	 * @param int $pivot Pivot time - base estimation relative to this (UNIX timestamp).
-	 * @param strng $frequency Valid frequency interval.
+	 * @param string $frequency Valid frequency interval.
 	 * @param int $dow Day of the week (0-6).
 	 * @param int $tod Time of day (0-23).
 	 *
@@ -460,9 +412,7 @@ class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of th
 	public function set_up_checkup_schedule() {
 		Smartcrawl_Logger::debug( 'Setting up checkup schedule' );
 
-		$options = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_CHECKUP );
-
-		if ( empty( $options['checkup-cron-enable'] ) ) {
+		if ( ! Smartcrawl_Checkup_Options::is_cron_enabled() || Smartcrawl_Health_Settings::is_test_mode_lighthouse() ) {
 			Smartcrawl_Logger::debug( 'Disabling checkup cron' );
 			$this->unschedule( self::ACTION_CHECKUP );
 
@@ -472,12 +422,10 @@ class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of th
 		$current = $this->get_next_event( self::ACTION_CHECKUP );
 		$now = time();
 		$frequency = $this->get_valid_frequency(
-			( ! empty( $options['checkup-frequency'] ) ? $options['checkup-frequency'] : array() )
+			Smartcrawl_Checkup_Options::reporting_frequency()
 		);
-		$dow = $this->validate_dow( $frequency, (int) smartcrawl_get_array_value( $options, 'checkup-dow' ) );
-		$tod = ! empty( $options['checkup-tod'] ) && in_array( (int) $options['checkup-tod'], range( 0, 23 ), true )
-			? (int) $options['checkup-tod']
-			: 0;
+		$dow = $this->validate_dow( $frequency, Smartcrawl_Checkup_Options::reporting_dow() );
+		$tod = $this->validate_tod( Smartcrawl_Checkup_Options::reporting_tod() );
 		$next = $this->get_estimated_next_event( $now, $frequency, $dow, $tod );
 
 		$msg = sprintf( "Attempt rescheduling checkup start ({$frequency},{$dow},{$tod}): {$next} (%s)", date( 'Y-m-d@H:i', $next ) );
@@ -499,6 +447,10 @@ class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of th
 		}
 
 		return true;
+	}
+
+	private function validate_tod( $tod ) {
+		return in_array( $tod, range( 0, 23 ), true ) ? $tod : 0;
 	}
 
 	private function validate_dow( $frequency, $dow ) {
@@ -570,7 +522,11 @@ class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of th
 
 		if ( (int) $status < 100 ) {
 			Smartcrawl_Logger::debug( 'Re-scheduling checkup status event' );
-			wp_schedule_single_event( time() + $this->get_checkup_ping_delay(), $this->get_filter( self::ACTION_CHECKUP_RESULT ), array( 'test' => rand() ) );
+			wp_schedule_single_event(
+				time() + $this->get_checkup_ping_delay(),
+				$this->get_filter( self::ACTION_CHECKUP_RESULT ),
+				array( 'test' => rand() )
+			);
 		}
 
 		return $status >= 100;
@@ -625,5 +581,85 @@ class Smartcrawl_Controller_Cron { // phpcs:ignore -- We have two versions of th
 	 * Clone
 	 */
 	private function __clone() {
+	}
+
+	public function set_up_lighthouse_schedule() {
+		Smartcrawl_Logger::debug( 'Setting up lighthouse schedule' );
+
+		if ( ! Smartcrawl_Lighthouse_Options::is_cron_enabled() || Smartcrawl_Health_Settings::is_test_mode_checkup() ) {
+			Smartcrawl_Logger::debug( 'Disabling lighthouse cron' );
+			$this->unschedule( self::ACTION_LIGHTHOUSE );
+			$this->unschedule( self::ACTION_LIGHTHOUSE_RESULT );
+
+			return false;
+		}
+
+		$current = $this->get_next_event( self::ACTION_LIGHTHOUSE );
+		$now = time();
+		$frequency = $this->get_valid_frequency(
+			Smartcrawl_Lighthouse_Options::reporting_frequency()
+		);
+		$dow = $this->validate_dow( $frequency, Smartcrawl_Lighthouse_Options::reporting_dow() );
+		$tod = $this->validate_tod( Smartcrawl_Lighthouse_Options::reporting_tod() );
+		$next = $this->get_estimated_next_event( $now, $frequency, $dow, $tod );
+
+		$msg = sprintf( "Attempt rescheduling lighthouse start ({$frequency},{$dow},{$tod}): {$next} (%s)", date( 'Y-m-d@H:i', $next ) );
+		if ( ! empty( $current ) ) {
+			$msg .= sprintf( " by replacing {$current} (%s)", date( 'Y-m-d@H:i', $current ) );
+		}
+		Smartcrawl_Logger::debug( $msg );
+
+		$diff = abs( $current - $next );
+		if ( $diff > 59 * 60 ) {
+			Smartcrawl_Logger::info( sprintf(
+				"Rescheduling lighthouse start from {$current} (%s) to {$next} (%s)",
+				date( 'Y-m-d@H:i', $current ),
+				date( 'Y-m-d@H:i', $next )
+			) );
+			$this->schedule( self::ACTION_LIGHTHOUSE, $next, $frequency );
+		} else {
+			Smartcrawl_Logger::info( 'Currently scheduled lighthouse matches our next sync estimate, leaving it alone' );
+		}
+
+		return true;
+	}
+
+	public function start_lighthouse() {
+		Smartcrawl_Logger::debug( 'Triggered automated lighthouse start action' );
+
+		/**
+		 * @var Smartcrawl_Lighthouse_Service $service
+		 */
+		$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_LIGHTHOUSE );
+		$service->start();
+
+		Smartcrawl_Logger::debug( 'Successfully started a lighthouse check' );
+		$this->schedule_lighthouse_result_check();
+
+		return true;
+	}
+
+	public function schedule_lighthouse_result_check() {
+		wp_schedule_single_event(
+			time() + 30,
+			$this->get_filter( self::ACTION_LIGHTHOUSE_RESULT ),
+			array( 'test' => rand() )
+		);
+	}
+
+	public function check_lighthouse_result() {
+		Smartcrawl_Logger::debug( 'Triggered lighthouse results check' );
+
+		/**
+		 * @var Smartcrawl_Lighthouse_Service $service
+		 */
+		$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_LIGHTHOUSE );
+		$service->stop();
+		$report_refreshed = $service->refresh_report();
+		if ( $report_refreshed ) {
+			$service->maybe_send_emails();
+		}
+
+		return $report_refreshed;
 	}
 }

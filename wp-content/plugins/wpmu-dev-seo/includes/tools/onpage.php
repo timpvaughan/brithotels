@@ -33,7 +33,7 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 
 	public function is_onpage_module_active() {
 		return Smartcrawl_Settings::get_setting( 'onpage' )
-		       && smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_ONPAGE )
+		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAGE )
 		       && $this->run_on_simplepress();
 	}
 
@@ -77,6 +77,11 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 
 		// This should now work with BuddyPress as well.
 		add_filter( 'bp_page_title', array( $this, 'smartcrawl_title' ), 10, 3 );
+
+		if ( $this->wp_robots_api_available() ) {
+			remove_filter( 'wp_robots', 'wp_robots_noindex_search' ); // SmartCrawl is going to handle the search archive
+			add_filter( 'wp_robots', array( $this, 'add_smartcrawl_robots_to_wp_robots' ) );
+		}
 	}
 
 	/**
@@ -157,7 +162,9 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 
 		$this->smartcrawl_canonical();
 		$this->smartcrawl_rel_links();
-		$this->smartcrawl_robots();
+		if ( ! $this->wp_robots_api_available() ) {
+			$this->smartcrawl_robots();
+		}
 		$this->smartcrawl_metadesc();
 
 		$this->print_meta_tags();
@@ -254,7 +261,7 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 			}
 		}
 
-		if ( ! empty( $canonical ) ) {
+		if ( ! empty( $canonical ) && ! is_wp_error( $canonical ) ) {
 			$this->print_html_tag( '<link rel="canonical" href="' . esc_attr( $canonical ) . '" />' . "\n" );
 		}
 
@@ -329,16 +336,7 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		return true;
 	}
 
-	/**
-	 * Output meta robots tag
-	 */
-	private function smartcrawl_robots() {
-		$smartcrawl_options = Smartcrawl_Settings::get_options();
-
-		if ( ! apply_filters( 'wds_process_robots', true ) ) {
-			return false;
-		}
-
+	private function get_robots_string() {
 		$helper = $this->get_robot_value_helper();
 		$helper->traverse();
 		$robots = $helper->get_value();
@@ -351,21 +349,44 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 			$robots = str_replace( 'index,follow,', '', $robots );
 		}
 
-		foreach ( array( 'noodp', 'noydir', 'noarchive', 'nosnippet' ) as $robot ) {
-			if ( isset( $smartcrawl_options[ $robot ] ) && $smartcrawl_options[ $robot ] ) {
-				if ( ! empty( $robots ) && substr( $robots, - 1 ) !== ',' ) {
-					$robots .= ',';
-				}
-				$robots .= $robot;
-			}
+		return rtrim( $robots, ',' );
+	}
+
+	/**
+	 * Output meta robots tag
+	 */
+	private function smartcrawl_robots() {
+		if ( $this->robots_processing_disabled() ) {
+			return false;
 		}
 
-		$robots = rtrim( $robots, ',' );
-		if ( '' !== $robots && 1 === (int) get_option( 'blog_public' ) ) {
+		$robots = $this->get_robots_string();
+		if ( $this->is_blog_public() && '' !== $robots ) {
 			$this->print_html_tag( '<meta name="robots" content="' . esc_attr( $robots ) . '"/>' . "\n" );
 		}
 
 		return true;
+	}
+
+	public function add_smartcrawl_robots_to_wp_robots( $wp_robots ) {
+		if (
+			! $this->is_blog_public() // If user has an override at the blog level
+			|| $this->robots_processing_disabled() // or robots processing is disabled
+		) {
+			// leave everything to WP
+			return $wp_robots;
+		}
+
+		$sc_robots_string = $this->get_robots_string();
+		if ( empty( $sc_robots_string ) ) {
+			return $wp_robots;
+		}
+
+		$sc_robots = explode( ',', $sc_robots_string );
+		foreach ( $sc_robots as $directive ) {
+			$wp_robots[ $directive ] = true;
+		}
+		return $wp_robots;
 	}
 
 	private function get_robot_value_helper() {
@@ -403,9 +424,7 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		// if Smartcrawl_Settings::TAB_SETTINGS is allowed.
 		//
 		// This logic follows the pattern used in Smartcrawl_Settings._populate_options
-		$smartcrawl_options = is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) || ! smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_SETTINGS )
-			? get_site_option( Smartcrawl_Settings::TAB_SITEMAP . '_options', array() )
-			: get_option( Smartcrawl_Settings::TAB_SITEMAP . '_options', array() );
+		$smartcrawl_options = get_option( Smartcrawl_Settings::TAB_SITEMAP . '_options', array() );
 
 		$metas = array();
 
@@ -469,5 +488,21 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		foreach ( $metas as $meta ) {
 			$this->print_html_tag( "{$meta}\n" );
 		}
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function robots_processing_disabled() {
+		return ! apply_filters( 'wds_process_robots', true );
+	}
+
+	private function wp_robots_api_available() {
+		global $wp_version;
+		return version_compare( $wp_version, '5.7', '>=' );
+	}
+
+	private function is_blog_public() {
+		return 1 === (int) get_option( 'blog_public' );
 	}
 }

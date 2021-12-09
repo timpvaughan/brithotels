@@ -60,11 +60,11 @@ $this->_render( 'metabox/metabox-advanced-indexing', array(
 	<button type="button"
 	        class="sui-button sui-button-blue wds-save-static-home-settings">
 		<span class="sui-loading-text">
-			<i class="sui-icon-save" aria-hidden="true"></i>
+			<span class="sui-icon-save" aria-hidden="true"></span>
 
 			<?php echo esc_html__( 'Save Settings', 'wds' ); ?>
 		</span>
 
-		<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+		<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 	</button>
 </footer>

@@ -41,6 +41,16 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 		// Start with old values for all the options
 		$result = self::get_specific_options( $this->option_name );
 
+		$save_woo = smartcrawl_get_array_value( $input, 'save_woo' );
+		if ( $save_woo ) {
+			$woo_input = smartcrawl_get_array_value( $input, 'woo-settings' );
+			if ( $woo_input ) {
+				$woo_data = new Smartcrawl_Woocommerce_Data();
+				$woo_data->save_data( json_decode( $woo_input, true ) );
+				return $result;
+			}
+		}
+
 		$save_redirects = isset( $input['save_redirects'] ) && $input['save_redirects'];
 		if ( $save_redirects ) {
 			$this->save_redirects( $input );
@@ -155,9 +165,12 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 	 * @param array $input Raw input.
 	 */
 	public function save_redirects( $input ) {
-		$urls = ! empty( $input['urls'] ) && is_array( $input['urls'] )
-			? $input['urls']
-			: array();
+		if ( ! empty( $input['urls'] ) ) {
+			$urls = json_decode( $input['urls'], true );
+		}
+		$urls = empty( $urls )
+			? array()
+			: $urls;
 		$redirection_model = new Smartcrawl_Model_Redirection();
 
 		$new_urls = array();
@@ -497,12 +510,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 	 * Default settings
 	 */
 	public function defaults() {
-
-		if ( is_multisite() && SMARTCRAWL_SITEWIDE ) {
-			$this->options = get_site_option( $this->option_name );
-		} else {
-			$this->options = get_option( $this->option_name );
-		}
+		$this->options = get_option( $this->option_name );
 
 		if ( empty( $this->options['ignorepost'] ) ) {
 			$this->options['ignorepost'] = '';
@@ -532,11 +540,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 			$this->options['single_link_limit'] = '';
 		}
 
-		if ( is_multisite() && SMARTCRAWL_SITEWIDE ) {
-			update_site_option( $this->option_name, $this->options );
-		} else {
-			update_option( $this->option_name, $this->options );
-		}
+		update_option( $this->option_name, $this->options );
 	}
 
 	/**
@@ -603,5 +607,4 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 
 		return array_merge( $post_types, $taxonomies );
 	}
-
 }

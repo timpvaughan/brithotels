@@ -4,7 +4,7 @@
  *
  * @category  Views
  * @package   gdpr-cookie-compliance
- * @author    Gaspar Nemes
+ * @author    Moove Agency
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,27 +27,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'How can I link to the pop-up settings screen?', 'gdpr-cookie-compliance' ); ?></h3>
+				<h3><?php esc_html_e( 'How can I link directly to the Cookie Settings pop-up screen?', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
-				<p><?php esc_html_e( 'You can use the following link to display the Cookie Settings Screen window:', 'gdpr-cookie-compliance' ); ?></p>
-				<p><?php esc_html_e( '[Relative Path – RECOMMENDED]', 'gdpr-cookie-compliance' ); ?></p>
+				<p><?php esc_html_e( 'You can use the following to display the Cookie Settings Screen window:', 'gdpr-cookie-compliance' ); ?></p>
+				<p><?php esc_html_e( 'Relative Path (RECOMMENDED)', 'gdpr-cookie-compliance' ); ?></p>
 				<code>/#gdpr_cookie_modal</code>
-				<p><?php esc_html_e( '[Absolute Path]', 'gdpr-cookie-compliance' ); ?></p>
+				<p><?php esc_html_e( 'Absolute Path', 'gdpr-cookie-compliance' ); ?></p>
 				<code><?php echo esc_url( home_url() ); ?>/#gdpr_cookie_modal</code><br />
 				<code><?php echo esc_url( home_url() ); ?>/your-internal-page/#gdpr_cookie_modal</code>
-			</div>
-			<!--  .gdpr-faq-accordion-content -->
-		</div>
-		<!--  .gdpr-faq-toggle -->
-
-		<div class="gdpr-faq-toggle">
-			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'The scripts added to the plugin settings are not visible in the page source code.', 'gdpr-cookie-compliance' ); ?></h3>
-			</div>
-			<div class="gdpr-faq-accordion-content" >
-				<p><?php esc_html_e( 'Our plugin loads scripts using JavaScript, which is why you cannot find them when viewing the source code of the page.', 'gdpr-cookie-compliance' ); ?></p>
-				<p><?php esc_html_e( 'To view the scripts, you can use the Developer Console in Chrome browser (Inspect Element feature).', 'gdpr-cookie-compliance' ); ?></p>
 			</div>
 			<!--  .gdpr-faq-accordion-content -->
 		</div>
@@ -55,7 +43,34 @@ if ( ! defined( 'ABSPATH' ) ) {
     
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'What are "Strictly Necessary Cookies"?', 'gdpr-cookie-compliance' ); ?></h3>
+				<h3><?php esc_html_e( 'Can I use direct links to “Accept” or “Reject” cookies?', 'gdpr-cookie-compliance' ); ?></h3>
+			</div>
+			<div class="gdpr-faq-accordion-content" >
+				<p><?php esc_html_e( 'You can use the following links to accept or reject cookies straight-away. ', 'gdpr-cookie-compliance' ); ?></p>
+				<p><?php esc_html_e( 'To ACCEPT all cookies', 'gdpr-cookie-compliance' ); ?></p>
+				<code>/#gdpr-accept-cookies</code>
+				<p><?php esc_html_e( 'To REJECT cookies', 'gdpr-cookie-compliance' ); ?></p>
+				<code>/#gdpr-reject-cookies</code>
+			</div>
+			<!--  .gdpr-faq-accordion-content -->
+		</div>
+		<!--  .gdpr-faq-toggle -->    
+
+		<div class="gdpr-faq-toggle">
+			<div class="gdpr-faq-accordion-header">
+				<h3><?php esc_html_e( 'The scripts added to the plugin settings are not visible in the page source code.', 'gdpr-cookie-compliance' ); ?></h3>
+			</div>
+			<div class="gdpr-faq-accordion-content" >
+				<p><?php esc_html_e( 'Our plugin loads scripts using JavaScript which is why you cannot find them when viewing the page source code.', 'gdpr-cookie-compliance' ); ?></p>
+				<p><?php esc_html_e( 'To view the scripts you can use the Developer Console in Chrome browser (Inspect Element feature).', 'gdpr-cookie-compliance' ); ?></p>
+			</div>
+			<!--  .gdpr-faq-accordion-content -->
+		</div>
+		<!--  .gdpr-faq-toggle -->
+    
+		<div class="gdpr-faq-toggle">
+			<div class="gdpr-faq-accordion-header">
+				<h3><?php esc_html_e( 'What are "Strictly Necessary Cookies / Essential Cookies"?', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
 				<p><?php esc_html_e( 'The "Strictly Necessary Cookies", sometimes called Essential Cookies, are cookies that are necessary for your site to function properly.', 'gdpr-cookie-compliance' ); ?></p>
@@ -82,11 +97,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'Does the plugin support subdomains?', 'gdpr-cookie-compliance' ); ?></h3>
+				<h3><?php esc_html_e( 'Does the plugin support subdomains or subfolders on multisite network?', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
-				<p><?php esc_html_e( 'Unfortunately not, subdomains are treated as separate domains by browsers and the plugin is unable to alter cookies stored by another domain.', 'gdpr-cookie-compliance' ); ?></p>
-				<p><?php esc_html_e( 'If your multisite setup uses subdomain version, each subsite will be recognised as a separate domain by browsers and will create separate cookies for each subdomain.', 'gdpr-cookie-compliance' ); ?></p>
+				<p><?php esc_html_e( 'Yes, the plugin supports subdomains on the same WordPress Multisite Network as part of our Premium Add-on', 'gdpr-cookie-compliance' ); ?></p>
+				<p><?php esc_html_e( 'We can sync users consent across your multisite network as long as your subsites are using the same domain and either folder or subdomain structure.' ); ?></p>
+				<p><?php esc_html_e( 'For example, if user agrees to cookies on one subsite (example.com/one/ or one.example.com), then we can automatically sync their consent and cookies will be accepted on the other subsites too (example.com/two/ or two.example.com).' ); ?></p>
+				<p><?php esc_html_e( 'There is only one exception where we cannot sync users consent between subsites and that’s when you’re using different domains (subdomains are fine). Browsers will treat each domain as separate entity and our plugin will be unable to alter cookies stored by the other domain. This is a security feature in browsers to prevent hacking.' ); ?></p>  
       </div>
 			<!--  .gdpr-faq-accordion-content -->
 		</div>
@@ -114,25 +131,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 		<!--  .gdpr-faq-toggle -->
 
-		<div class="gdpr-faq-toggle">
-			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'Does this plugin stop all cookies from being stored?', 'gdpr-cookie-compliance' ); ?></h3>
-			</div>
-			<div class="gdpr-faq-accordion-content" >
-				<p><?php esc_html_e( 'This plugin only restricts cookies for scripts that you have setup in the Plugin Settings. If you want to block all cookies, you have to add all scripts that use cookies into the Settings of this plugin.', 'gdpr-cookie-compliance' ); ?></p>
-			</div>
-			<!--  .gdpr-faq-accordion-content -->
-		</div>
-		<!--  .gdpr-faq-toggle -->
-
-    		<div class="gdpr-faq-toggle">
+    	<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
 				<h3><?php esc_html_e( 'What information does the Consent Log store and where is it stored?', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
 				<p><?php esc_html_e( 'The Consent Log features stores all data in your WordPress website database.', 'gdpr-cookie-compliance' ); ?></p>
 				<p><?php esc_html_e( 'The data stored includes: Consent Date, User IP address, Cookies Accepted and User Email (for logged-in users).', 'gdpr-cookie-compliance' ); ?></p>
-				<p><?php esc_html_e( 'You can see the preview of', 'gdpr-cookie-compliance' ); ?> <a href="https://ps.w.org/gdpr-cookie-compliance/assets/screenshot-36.png?rev=2263873" class="gdpr_admin_link" target="_blank"><?php esc_html_e( 'Consent Log here', 'gdpr-cookie-compliance' ); ?></a> .</p>
+				<p><?php esc_html_e( 'You can see the preview of', 'gdpr-cookie-compliance' ); ?> <a href="https://ps.w.org/gdpr-cookie-compliance/assets/screenshot-36.png?rev=2263873" class="gdpr_admin_link" target="_blank"><?php esc_html_e( 'Consent Log here', 'gdpr-cookie-compliance' ); ?></a>.</p>
 			</div>
 			<!--  .gdpr-faq-accordion-content -->
 		</div>
@@ -150,7 +156,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 		<!--  .gdpr-faq-toggle -->		
 	</div>
-	<!-- #gdpr_cbm_faq  -->
+	<!-- #gdpr_cbm_faq -->
 
 	<div id="gdpr_cbm_dh" class="gdpr-help-content-block">
 		<p><?php esc_html_e( 'Here you can find the default hooks & custom scripts available in our plugin.', 'gdpr-cookie-compliance' ); ?></p>
@@ -272,7 +278,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'Enable Force Reload', 'gdpr-cookie-compliance' ); ?></h3>
+				<h3><?php esc_html_e( 'Enable force reload', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
 				<?php ob_start(); ?>
@@ -284,9 +290,48 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<!--  .gdpr-faq-accordion-content -->
 		</div>
 		<!--  .gdpr-faq-toggle -->
+    
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'PHP Cookie checker', 'gdpr-cookie-compliance' ); ?></h3>
+				<h3><?php esc_html_e( 'Prevent ajax script injection', 'gdpr-cookie-compliance' ); ?></h3>
+			</div>
+			<div class="gdpr-faq-accordion-content" >
+				<p><?php esc_html_e( 'By default, our plugin uses AJAX script injection to function properly, however, this may sometimes cause high server load. For that reason, you can disable the AJAX script and enable static script injection using the following hook. You will also need to purge all caches for the hook to start working.', 'gdpr-cookie-compliance' ); ?></p>
+				<?php ob_start(); ?>
+				add_action( 'gdpr_cc_prevent_ajax_script_inject', '__return_true' );
+				<?php $code = trim( ob_get_clean() ); ?>
+				<textarea id="<?php echo esc_attr( uniqid( strtotime( 'now' ) ) ); ?>"><?php apply_filters( 'gdpr_cc_keephtml', $code, true ); ?></textarea>
+				<div class="gdpr-code"></div><!--  .gdpr-code -->
+			</div>
+			<!--  .gdpr-faq-accordion-content -->
+		</div>
+		<!--  .gdpr-faq-toggle -->	    
+
+		<div class="gdpr-faq-toggle">
+			<div class="gdpr-faq-accordion-header">
+				<h3><?php esc_html_e( 'Set custom z-index', 'gdpr-cookie-compliance' ); ?></h3>
+			</div>
+			<div class="gdpr-faq-accordion-content" >
+				<p><?php esc_html_e( 'If you find that our GDPR Cookie Compliance Banner or the Settings Screen is covered by another element on your site, you can add the following to your functions.php', 'gdpr-cookie-compliance' ); ?></p>
+				<?php ob_start(); ?>
+        add_action('moove_gdpr_inline_styles','gdpr_cookie_css_extension_zindex',10,3);
+        function gdpr_cookie_css_extension_zindex( $styles, $primary, $secondary ) {
+          $styles .= '#moove_gdpr_cookie_info_bar { z-index: 99999999; }';
+          $styles .= 'body.moove_gdpr_overflow #moove_gdpr_cookie_info_bar { z-index: 9900; }';
+          $styles .= 'body.moove_gdpr_overflow .gdpr_lightbox { z-index: 999999999; }';
+          return $styles;
+        }
+				<?php $code = trim( ob_get_clean() ); ?>
+				<textarea id="<?php echo esc_attr( uniqid( strtotime( 'now' ) ) ); ?>"><?php apply_filters( 'gdpr_cc_keephtml', $code, true ); ?></textarea>
+				<div class="gdpr-code"></div><!--  .gdpr-code -->
+			</div>
+			<!--  .gdpr-faq-accordion-content -->
+		</div>
+		<!--  .gdpr-faq-toggle -->		    
+    
+		<div class="gdpr-faq-toggle">
+			<div class="gdpr-faq-accordion-header">
+				<h3><?php esc_html_e( 'PHP cookie checker', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
 				<?php ob_start(); ?>
@@ -308,7 +353,44 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'Extend Styles', 'gdpr-cookie-compliance' ); ?></h3>
+				<h3><?php esc_html_e( 'JavaScript consent variables', 'gdpr-cookie-compliance' ); ?></h3>
+			</div>
+			<div class="gdpr-faq-accordion-content" >
+				<?php ob_start(); ?>
+				add_action( 'wp_enqueue_scripts', function() {
+					$strict 					= false;
+					$consent_cookies 	= array();
+					if ( function_exists( 'gdpr_cookie_is_accepted' ) && gdpr_cookie_is_accepted( 'strict' ) ) :
+					  $strict = true;
+					  $contet_cookies[] = 'strict';
+					endif;
+
+					if ( function_exists( 'gdpr_cookie_is_accepted' ) && gdpr_cookie_is_accepted( 'thirdparty' ) ) :
+					  $thirdparty = true;
+					  $contet_cookies[] = 'thirdparty';
+					endif;
+
+					if ( function_exists( 'gdpr_cookie_is_accepted' ) && gdpr_cookie_is_accepted( 'advanced' ) ) :
+					  $advanced = true;
+					  $contet_cookies[] = 'advanced';
+					endif;
+
+					wp_localize_script( 'jquery', 'gdpr_consent__strict', $strict );
+					wp_localize_script( 'jquery', 'gdpr_consent__thirdparty', $thirdparty );
+					wp_localize_script( 'jquery', 'gdpr_consent__advanced', $advanced );
+					wp_localize_script( 'jquery', 'gdpr_consent__cookies', implode( '|', $contet_cookies ) );
+				});
+				<?php $code = trim( ob_get_clean() ); ?>
+				<textarea id="<?php echo esc_attr( uniqid( strtotime( 'now' ) ) ); ?>"><?php apply_filters( 'gdpr_cc_keephtml', $code, true ); ?></textarea>
+				<div class="gdpr-code"></div><!--  .gdpr-code -->
+			</div>
+			<!--  .gdpr-faq-accordion-content -->
+		</div>
+		<!--  .gdpr-faq-toggle -->
+
+		<div class="gdpr-faq-toggle">
+			<div class="gdpr-faq-accordion-header">
+				<h3><?php esc_html_e( 'Extend styles', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
 				<?php ob_start(); ?>
@@ -316,7 +398,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				function gdpr_cookie_css_extension( $styles, $primary, $secondary ) {
 					$styles .= '#main-header { z-index: 999; }';
 					$styles .= '#top-header { z-index: 1000 }';
-					$styles .= '.lity {z-index: 99999999;}';
+					$styles .= '.gdpr_lightbox {z-index: 99999999;}';
 					return $styles;
 				}
 				<?php $code = trim( ob_get_clean() ); ?>
@@ -325,28 +407,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<!--  .gdpr-faq-accordion-content -->
 		</div>
-		<!--  .gdpr-faq-toggle -->		
-
-		<div class="gdpr-faq-toggle">
-			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'Set custom z-index', 'gdpr-cookie-compliance' ); ?></h3>
-			</div>
-			<div class="gdpr-faq-accordion-content" >
-				<p><?php esc_html_e( 'If you find that our GDPR Cookie Compliance Banner or the Settings Screen is covered by another element on your site, you can add the following to your functions.php', 'gdpr-cookie-compliance' ); ?></p>
-				<?php ob_start(); ?>
-				add_action('moove_gdpr_inline_styles','gdpr_cookie_css_extension_zindex',10,3);
-				function gdpr_cookie_css_extension_zindex( $styles, $primary, $secondary ) {
-					$styles .= '#moove_gdpr_cookie_info_bar { z-index: 99999999; }';
-					$styles .= '.lity { z-index: 999999999; }';
-					return $styles;
-				}
-				<?php $code = trim( ob_get_clean() ); ?>
-				<textarea id="<?php echo esc_attr( uniqid( strtotime( 'now' ) ) ); ?>"><?php apply_filters( 'gdpr_cc_keephtml', $code, true ); ?></textarea>
-				<div class="gdpr-code"></div><!--  .gdpr-code -->
-			</div>
-			<!--  .gdpr-faq-accordion-content -->
-		</div>
-		<!--  .gdpr-faq-toggle -->		
+		<!--  .gdpr-faq-toggle -->
 
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
@@ -410,7 +471,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'Define CDN URL for Lity library', 'gdpr-cookie-compliance' ); ?></h3>
+				<h3><?php esc_html_e( 'Define CDN URLs', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
 				<?php ob_start(); ?>
@@ -429,11 +490,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
+				<h3><?php esc_html_e( 'Remove jQuery script dependency', 'gdpr-cookie-compliance' ); ?></h3>
+			</div>
+			<div class="gdpr-faq-accordion-content" >
+				<?php ob_start(); ?>
+					add_filter('gdpr_main_script_depends_on', 'gdpr_main_script_remove_jquery_deps');
+					function gdpr_main_script_remove_jquery_deps( $deps ) {
+						return array();
+					}
+				<?php $code = trim( ob_get_clean() ); ?>
+				<textarea id="<?php echo esc_attr( uniqid( strtotime( 'now' ) ) ); ?>"><?php apply_filters( 'gdpr_cc_keephtml', $code, true ); ?></textarea>
+				<div class="gdpr-code"></div><!--  .gdpr-code -->
+			</div>
+			<!--  .gdpr-faq-accordion-content -->
+		</div>
+		<!--  .gdpr-faq-toggle -->		
+
+		<div class="gdpr-faq-toggle">
+			<div class="gdpr-faq-accordion-header">
 				<h3><?php esc_html_e( 'Define custom cookie attribute (SameSite)', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
 				<?php ob_start(); ?>
-				// <?php esc_html_e( 'Default value: SameSite=Lax', 'gdpr-cookie-compliance' ); ?> <br />
+				// <?php esc_html_e( 'Default value: SameSite=Lax', 'gdpr-cookie-compliance' ); ?> 
 				add_action('gdpr_cookie_custom_attributes',function(){
 					return 'SameSite=None; Secure';
 				});
@@ -461,6 +540,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 							}
 						});
 					</script>
+				}
+				<?php $code = trim( ob_get_clean() ); ?>
+				<textarea id="<?php echo esc_attr( uniqid( strtotime( 'now' ) ) ); ?>"><?php apply_filters( 'gdpr_cc_keephtml', $code, true ); ?></textarea>
+				<div class="gdpr-code"></div><!--  .gdpr-code -->
+			</div>
+			<!--  .gdpr-faq-accordion-content -->
+		</div>
+		<!--  .gdpr-faq-toggle -->	
+
+		<div class="gdpr-faq-toggle">
+			<div class="gdpr-faq-accordion-header">
+				<h3><?php esc_html_e( 'Delay script execution', 'gdpr-cookie-compliance' ); ?></h3>
+			</div>
+			<div class="gdpr-faq-accordion-content" >
+				<?php ob_start(); ?>
+				add_filter( 'gdpr_init_script_delay', 'gdpr_delay_script_execution', 20, 1 );
+				function gdpr_delay_script_execution( $ms ) {
+					return 5000; // 5000 ms = 5 seconds.
 				}
 				<?php $code = trim( ob_get_clean() ); ?>
 				<textarea id="<?php echo esc_attr( uniqid( strtotime( 'now' ) ) ); ?>"><?php apply_filters( 'gdpr_cc_keephtml', $code, true ); ?></textarea>
@@ -518,7 +615,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'Disable Script Caching', 'gdpr-cookie-compliance' ); ?></h3>
+				<h3><?php esc_html_e( 'Disable script caching', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
 				<?php ob_start(); ?>
@@ -536,28 +633,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'Prevent ajax script injection', 'gdpr-cookie-compliance' ); ?></h3>
-			</div>
-			<div class="gdpr-faq-accordion-content" >
-				<p><strong><?php esc_html_e( 'Note', 'gdpr-cookie-compliance' ); ?>:</strong> <?php esc_html_e( 'By default, our plugin uses AJAX script injection to function properly, however, this may sometimes cause high server load. For that reason, you can disable the AJAX script and enable static script injection using the following hook. Please note you will also need to purge all caches for the hook to start working.', 'gdpr-cookie-compliance' ); ?></p>
-				<?php ob_start(); ?>
-				add_action( 'gdpr_cc_prevent_ajax_script_inject', '__return_true' );
-				<?php $code = trim( ob_get_clean() ); ?>
-				<textarea id="<?php echo esc_attr( uniqid( strtotime( 'now' ) ) ); ?>"><?php apply_filters( 'gdpr_cc_keephtml', $code, true ); ?></textarea>
-				<div class="gdpr-code"></div><!--  .gdpr-code -->
-			</div>
-			<!--  .gdpr-faq-accordion-content -->
-		</div>
-		<!--  .gdpr-faq-toggle -->	
-		
-
-		<div class="gdpr-faq-toggle">
-			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'Custom Tracking Code on language sites (WPML, qTranslate, WP Multilang, Polylang)', 'gdpr-cookie-compliance' ); ?></h3>
+				<h3><?php esc_html_e( 'Custom tracking code on language sites (WPML, qTranslate, WP Multilang, Polylang)', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
 				<?php ob_start(); ?>
-				// The SCRIPT caching should be disabled if you have separate scripts / site!
+				// Script caching should be disabled if you have separate scripts / site
 				add_filter('gdpr_cookie_script_cache','gdpr_prevent_script_cache');
 				function gdpr_prevent_script_cache() {
 					return array();
@@ -565,7 +645,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				// Force reload required because of PHP functions
 				add_action( 'gdpr_force_reload', '__return_true' );
 
-				// Custom Scripts based on front-end language
+				// Custom scripts based on front-end language
 				add_action('wp_head', 'my_gdpr_script_inject' );
 				function my_gdpr_script_inject() {
 					// PHP Cookie checker, replace the 'thirdparty' to 'advanced' if you need to load the scripts for "Advanced cookies"
@@ -592,7 +672,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'Disable comments until cookies are not accepted', 'gdpr-cookie-compliance' ); ?></h3>
+				<h3><?php esc_html_e( 'Disable comments until cookies are accepted', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
 				<?php ob_start(); ?>
@@ -621,32 +701,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 		<!--  .gdpr-faq-toggle -->	
 
-		
-
-		<div class="gdpr-faq-toggle">
-			<div class="gdpr-faq-accordion-header">
-				<h3><?php esc_html_e( 'Prevent loading Lity Lightbox by JavaScript', 'gdpr-cookie-compliance' ); ?></h3>
-			</div>
-			<div class="gdpr-faq-accordion-content" >
-				<p><strong><?php esc_html_e( 'Note', 'gdpr-cookie-compliance' ); ?>:</strong> <?php esc_html_e( 'By default our plugin first checks (using JavaScript) if the Lity lightbox is defined and used by your theme or any of the active plugins. If the lightbox is not loaded our plugin will load the lightbox from the plugin folder by JavaScript.', 'gdpr-cookie-compliance' ); ?></p>
-				<p><?php esc_html_e( 'You can use the following filter to prevent this JavaScript checking feature and enqueue the lightbox assets using PHP.', 'gdpr-cookie-compliance' ); ?> </p>
-				<hr />
-				<?php ob_start(); ?>
-				add_action( 'gdpr_enqueue_lity_nojs', '__return_false' );
-				<?php $code = trim( ob_get_clean() ); ?>
-				<textarea id="<?php echo esc_attr( uniqid( strtotime( 'now' ) ) ); ?>"><?php apply_filters( 'gdpr_cc_keephtml', $code, true ); ?></textarea>
-				<div class="gdpr-code"></div><!--  .gdpr-code -->
-			</div>
-			<!--  .gdpr-faq-accordion-content -->
-		</div>
-		<!--  .gdpr-faq-toggle -->	
-
 		<div class="gdpr-faq-toggle">
 			<div class="gdpr-faq-accordion-header">
 				<h3><?php esc_html_e( 'GDPR Cookie Compliance Settings Page - Permissions', 'gdpr-cookie-compliance' ); ?></h3>
 			</div>
 			<div class="gdpr-faq-accordion-content" >
-				<p><strong><?php esc_html_e( 'Note', 'gdpr-cookie-compliance' ); ?>:</strong> <?php esc_html_e( 'Default capability: manage_options', 'gdpr-cookie-compliance' ); ?></p>
+				<p><?php esc_html_e( 'Default capability: manage_options', 'gdpr-cookie-compliance' ); ?></p>
 				<hr />
 				<?php ob_start(); ?>
 				add_action( 'gdpr_options_page_cap', function( $capability = 'manage_options' ){
@@ -659,22 +719,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<!--  .gdpr-faq-accordion-content -->
 		</div>
 		<!--  .gdpr-faq-toggle -->	
-
-
-		
-
 	</div>
-	<!-- #gdpr_cbm_faq  -->
+	<!-- #gdpr_cbm_faq -->
 
 	<div id="gdpr_cbm_ph" class="gdpr-help-content-block">
 		<?php do_action( 'gdpr_tab_cbm_ph' ); ?>
 	</div>
-	<!-- #gdpr_cbm_ph  -->
+	<!-- #gdpr_cbm_ph -->
 
 	<div id="gdpr_cbm_ps" class="gdpr-help-content-block">
 		<?php do_action( 'gdpr_tab_cbm_ps' ); ?>
 	</div>
-	<!-- #gdpr_cbm_ph  -->
+	<!-- #gdpr_cbm_ph -->
 
 </div>
 <!--  .gdpr-help-content-cnt -->

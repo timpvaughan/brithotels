@@ -34,7 +34,6 @@
 				'contact-form-7' => esc_html__('Contact Form 7', 'cbxwpemaillogger')
 			);
 
-
 			return apply_filters('cbxwpemaillogger_known_src', $src);
 		}//end email_known_src
 
@@ -470,6 +469,9 @@
 		 * Get logs data
 		 *
 		 * @param string $search
+		 * @param string $logdate
+		 * @param string $emailsource
+		 * @param int $status
 		 * @param string $orderby
 		 * @param string $order
 		 * @param int    $perpage
@@ -477,7 +479,7 @@
 		 *
 		 * @return array|null|object
 		 */
-		public static function getLogData( $search = '', $logdate = '', $orderby = 'logs.id', $order = 'DESC', $perpage = 20, $page = 1 ) {
+		public static function getLogData( $search = '', $logdate = '', $emailsource = '', $status = -1, $orderby = 'logs.id', $order = 'DESC', $perpage = 20, $page = 1 ) {
 
 			global $wpdb;
 
@@ -493,6 +495,22 @@
 				}
 
 				$where_sql .= $wpdb->prepare( " logs.subject LIKE '%%%s%%' OR logs.email_data LIKE '%%%s%%' ", $search, $search );
+			}
+
+			if ( $emailsource != '' ) {
+				if ( $where_sql != '' ) {
+					$where_sql .= ' AND ';
+				}
+
+				$where_sql .= $wpdb->prepare( " logs.src_tracked = %s ", $emailsource );
+			}
+
+			if ( $status != -1 ) {
+				if ( $where_sql != '' ) {
+					$where_sql .= ' AND ';
+				}
+
+				$where_sql .= $wpdb->prepare( " logs.status = %d ", $status );
 			}
 
 			if ( $logdate != '' ) {
@@ -538,10 +556,11 @@
 		 *
 		 * @param string $search
 		 * @param string $logdate
+		 * @param string $emailsource
 		 *
 		 * @return null|string
 		 */
-		public static function getLogDataCount( $search = '', $logdate = '' ) {
+		public static function getLogDataCount( $search = '', $logdate = '', $emailsource = '', $status = -1) {
 
 			global $wpdb;
 			$table_cbxwpemaillogger = $wpdb->prefix . 'cbxwpemaillogger_log';
@@ -557,6 +576,22 @@
 				}
 
 				$where_sql .= $wpdb->prepare( " logs.subject LIKE '%%%s%%' OR logs.email_data LIKE '%%%s%%' ", $search, $search );
+			}
+
+			if ( $emailsource != '' ) {
+				if ( $where_sql != '' ) {
+					$where_sql .= ' AND ';
+				}
+
+				$where_sql .= $wpdb->prepare( " logs.src_tracked = %s ", $emailsource );
+			}
+
+			if ( $status != -1 ) {
+				if ( $where_sql != '' ) {
+					$where_sql .= ' AND ';
+				}
+
+				$where_sql .= $wpdb->prepare( " logs.status = %d ", $status );
 			}
 
 			if ( $logdate != '' ) {
@@ -603,4 +638,22 @@
 		}//end settings_clean_label_for
 
 
+		/**
+		 * Add utm params to any url
+		 *
+		 * @param string $url
+		 *
+		 * @return string
+		 */
+		public static function url_utmy($url = ''){
+			if($url== '') return $url;
+
+			$url = add_query_arg(array(
+				'utm_source'    => 'plgsidebarinfo',
+				'utm_medium'    => 'plgsidebar',
+				'utm_campaign'  => 'wpfreemium',
+			), $url );
+
+			return $url;
+		}//end url_utmy
 	}//end class CBXWPEmailLoggerHelper

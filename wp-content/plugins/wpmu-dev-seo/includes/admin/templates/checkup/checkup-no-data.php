@@ -9,8 +9,8 @@ $this->_render( 'disabled-component-inner', array(
 	),
 	'image'           => 'seocheckup-disabled.svg',
 	'button_icon'     => 'sui-icon-plus',
+	'button_url'      => '#',
 	'button_text'     => esc_html__( 'Run Checkup', 'wds' ),
-	'button_url'      => Smartcrawl_Checkup_Settings::checkup_url(),
 	'button_disabled' => $in_progress,
 	'premium_feature' => false,
 ) );

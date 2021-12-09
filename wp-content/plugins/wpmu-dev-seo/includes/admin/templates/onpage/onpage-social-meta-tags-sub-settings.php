@@ -68,7 +68,7 @@ $macros = empty( $macros ) ? array() : $macros;
 		     style="<?php echo $single_image && $images_available ? 'display:none;' : ''; ?>">
 			<a href="#add" id="<?php echo esc_attr( $images_field_id ); ?>"
 			   title="<?php esc_attr_e( 'Add image', 'wds' ); ?>">
-				<i class="sui-icon-upload-cloud" aria-hidden="true"></i>
+				<span class="sui-icon-upload-cloud" aria-hidden="true"></span>
 			</a>
 		</div>
 		<?php foreach ( $current_images as $image ): ?>
@@ -93,7 +93,7 @@ $macros = empty( $macros ) ? array() : $macros;
 				type="checkbox"
 				value="1"
 				name='<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $disable_first_image_id ); ?>]'
-				aria-labelledby="<?php echo esc_attr( $disable_first_image_id ); ?>-label"/>
+				aria-label="<?php esc_html_e( 'Disable use of first image in content.', 'wds' ); ?>"/>
 
 		<span aria-hidden="true"></span>
 

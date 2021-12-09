@@ -67,8 +67,6 @@ class Smartcrawl_Sitemap_Settings extends Smartcrawl_Settings_Admin {
 		}
 
 		$booleans = array(
-			'ping-google',
-			'ping-bing',
 			'sitemap-images',
 			'sitemap-stylesheet',
 			'sitemap-dashboard-widget',
@@ -81,6 +79,9 @@ class Smartcrawl_Sitemap_Settings extends Smartcrawl_Settings_Admin {
 				$result[ $bool ] = true;
 			}
 		}
+
+		$result['ping-google'] = ! empty( $input['auto-notify-search-engines'] );
+		$result['ping-bing'] = ! empty( $input['auto-notify-search-engines'] );
 
 		// Array Booleans.
 		foreach ( array_keys( $this->_get_post_types_options() ) as $post_type ) {
@@ -162,8 +163,6 @@ class Smartcrawl_Sitemap_Settings extends Smartcrawl_Settings_Admin {
 			unset( $input['sitemap_ignore_post_ids'] );
 		}
 
-		$result['split-sitemap'] = ! empty( $input['split-sitemap'] );
-
 		$per_sitemap = (int) smartcrawl_get_array_value( $input, 'items-per-sitemap' );
 		if ( $per_sitemap <= 0 ) {
 			$per_sitemap = Smartcrawl_Sitemap_Utils::DEFAULT_ITEMS_PER_SITEMAP;
@@ -185,11 +184,23 @@ class Smartcrawl_Sitemap_Settings extends Smartcrawl_Settings_Admin {
 		}
 		$result['items-per-sitemap'] = $per_sitemap;
 
-		// The following values are set directly by calling update_option and are not coming from the settings page
-		$result['sitemap-split-automatically'] = (boolean) smartcrawl_get_array_value( $input, 'sitemap-split-automatically' );
-		$result['sitemap-post-count'] = (int) smartcrawl_get_array_value( $input, 'sitemap-post-count' );
+		$result = array_merge(
+			$result,
+			$this->process_news_settings( $input )
+		);
 
 		return $result;
+	}
+
+	private function process_news_settings( $input ) {
+		$json = smartcrawl_get_array_value( $input, 'news-settings' );
+		$data = json_decode( $json, true );
+		if ( empty( $data ) ) {
+			return array();
+		}
+
+		$to_settings = new Smartcrawl_News_Sitemap_Data();
+		return $to_settings->data_to_settings( $data );
 	}
 
 	/**
@@ -256,7 +267,7 @@ class Smartcrawl_Sitemap_Settings extends Smartcrawl_Settings_Admin {
 		);
 
 		if ( function_exists( 'groups_get_groups' ) ) { // We have BuddyPress groups, so let's get some settings.
-			$groups = groups_get_groups( array( 'per_page' => SMARTCRAWL_BP_GROUPS_LIMIT ) );
+			$groups = groups_get_groups();
 			$arguments['groups'] = ! empty( $groups['groups'] ) ? $groups['groups'] : array();
 			$arguments['exclude_groups'] = array();
 			foreach ( $arguments['groups'] as $group ) {
@@ -329,7 +340,7 @@ class Smartcrawl_Sitemap_Settings extends Smartcrawl_Settings_Admin {
 	}
 
 	public function get_title() {
-		return __( 'Sitemap', 'wds' );
+		return __( 'Sitemaps', 'wds' );
 	}
 
 	public function trigger_crawl_after_activation() {
@@ -412,10 +423,6 @@ class Smartcrawl_Sitemap_Settings extends Smartcrawl_Settings_Admin {
 		$arguments = array(
 			'post_types'         => array(),
 			'taxonomies'         => array(),
-			'engines'            => array(
-				'ping-google' => __( 'Google', 'wds' ),
-				'ping-bing'   => __( 'Bing', 'wds' ),
-			),
 			'checkbox_options'   => array(
 				'yes' => __( 'Yes', 'wds' ),
 			),
@@ -456,9 +463,6 @@ class Smartcrawl_Sitemap_Settings extends Smartcrawl_Settings_Admin {
 				? implode( ',', $ignore_post_ids )
 				: '';
 		}
-
-		$arguments['automatically_switched'] = (boolean) Smartcrawl_Sitemap_Utils::get_sitemap_option( 'sitemap-split-automatically' );
-		$arguments['total_post_count'] = (int) Smartcrawl_Sitemap_Utils::get_sitemap_option( 'sitemap-post-count' );
 		$arguments['override_native'] = Smartcrawl_Sitemap_Utils::override_native();
 
 		wp_enqueue_script( Smartcrawl_Controller_Assets::SITEMAPS_PAGE_JS );
@@ -469,11 +473,7 @@ class Smartcrawl_Sitemap_Settings extends Smartcrawl_Settings_Admin {
 	 * Default settings
 	 */
 	public function defaults() {
-		if ( is_multisite() && SMARTCRAWL_SITEWIDE ) {
-			$this->options = get_site_option( $this->option_name );
-		} else {
-			$this->options = get_option( $this->option_name );
-		}
+		$this->options = get_option( $this->option_name );
 
 		$dir = wp_upload_dir();
 		$path = trailingslashit( $dir['basedir'] );
@@ -542,21 +542,26 @@ class Smartcrawl_Sitemap_Settings extends Smartcrawl_Settings_Admin {
 		if ( ! isset( $this->options['crawler-tod'] ) ) {
 			$this->options['crawler-tod'] = rand( 0, 23 );
 		}
-		if ( ! isset( $this->options['split-sitemap'] ) ) {
-			$this->options['split-sitemap'] = false;
-		}
 		if ( ! isset( $this->options['items-per-sitemap'] ) ) {
 			$this->options['items-per-sitemap'] = Smartcrawl_Sitemap_Utils::DEFAULT_ITEMS_PER_SITEMAP;
 		}
 		if ( ! isset( $this->options['override-native'] ) ) {
 			$this->options['override-native'] = true;
 		}
-
-		if ( is_multisite() && SMARTCRAWL_SITEWIDE ) {
-			update_site_option( $this->option_name, $this->options );
-		} else {
-			update_option( $this->option_name, $this->options );
+		if ( ! isset( $this->options['enable-news-sitemap'] ) ) {
+			$this->options['enable-news-sitemap'] = false;
 		}
+		if ( ! isset( $this->options['news-publication'] ) ) {
+			$this->options['news-publication'] = get_bloginfo( 'name' );
+		}
+		if ( ! isset( $this->options['news-sitemap-included-post-types'] ) ) {
+			$this->options['news-sitemap-included-post-types'] = array( 'post' );
+		}
+		if ( ! isset( $this->options['news-sitemap-excluded-post-ids'] ) ) {
+			$this->options['news-sitemap-excluded-post-ids'] = array();
+		}
+
+		update_option( $this->option_name, $this->options );
 	}
 
 	protected function _get_view_defaults() {

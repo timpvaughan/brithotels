@@ -229,8 +229,6 @@ class Smartcrawl_Settings_Settings extends Smartcrawl_Settings_Admin {
 			add_action( 'admin_notices', array( $this, 'import_notice' ) );
 		}
 
-		Smartcrawl_Controller_IO::serve();
-
 		parent::init();
 	}
 
@@ -241,8 +239,8 @@ class Smartcrawl_Settings_Settings extends Smartcrawl_Settings_Admin {
 	private function display_single_site_import_notice() {
 		// Always display on non-multisite
 		return ! is_multisite()
-		       // or when site-wide flag is off and the current site is the main network site
-		       || ( is_main_site() && ! smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) );
+		       // or when the current site is the main network site
+		       || is_main_site();
 	}
 
 	/**
@@ -317,7 +315,7 @@ class Smartcrawl_Settings_Settings extends Smartcrawl_Settings_Admin {
 				__( 'Schema', 'wds' ), 'disable-schema', true, $disable_schema
 			),
 			'social'    => $this->plugin_module_args( __( 'Social', 'wds' ), 'social' ),
-			'sitemap'   => $this->plugin_module_args( __( 'Sitemap', 'wds' ), 'sitemap' ),
+			'sitemap'   => $this->plugin_module_args( __( 'Sitemaps', 'wds' ), 'sitemap' ),
 			'autolinks' => $this->plugin_module_args( __( 'Advanced Tools', 'wds' ), 'autolinks' ),
 		);
 
@@ -383,7 +381,7 @@ class Smartcrawl_Settings_Settings extends Smartcrawl_Settings_Admin {
 			}
 
 			if ( empty( $this->options['sitemap'] ) ) {
-				$this->options['sitemap'] = 0;
+				$this->options['sitemap'] = 1;
 			}
 
 			if ( empty( $this->options['onpage'] ) ) {
@@ -396,15 +394,15 @@ class Smartcrawl_Settings_Settings extends Smartcrawl_Settings_Admin {
 		}
 
 		if ( empty( $this->options['seo_metabox_permission_level'] ) ) {
-			$this->options['seo_metabox_permission_level'] = ( is_multisite() ? 'manage_network' : 'list_users' );
+			$this->options['seo_metabox_permission_level'] = 'list_users';
 		}
 
 		if ( empty( $this->options['urlmetrics_metabox_permission_level'] ) ) {
-			$this->options['urlmetrics_metabox_permission_level'] = ( is_multisite() ? 'manage_network' : 'list_users' );
+			$this->options['urlmetrics_metabox_permission_level'] = 'list_users';
 		}
 
 		if ( empty( $this->options['seo_metabox_301_permission_level'] ) ) {
-			$this->options['seo_metabox_301_permission_level'] = ( is_multisite() ? 'manage_network' : 'list_users' );
+			$this->options['seo_metabox_301_permission_level'] = 'list_users';
 		}
 
 		if ( empty( $this->options['access-id'] ) ) {
@@ -416,10 +414,10 @@ class Smartcrawl_Settings_Settings extends Smartcrawl_Settings_Admin {
 		}
 
 		if ( ! isset( $this->options['analysis-seo'] ) ) {
-			$this->options['analysis-seo'] = false;
+			$this->options['analysis-seo'] = true;
 		}
 		if ( ! isset( $this->options['analysis-readability'] ) ) {
-			$this->options['analysis-readability'] = false;
+			$this->options['analysis-readability'] = true;
 		}
 		if ( ! isset( $this->options['extras-admin_bar'] ) ) {
 			$this->options['extras-admin_bar'] = true;
@@ -428,6 +426,11 @@ class Smartcrawl_Settings_Settings extends Smartcrawl_Settings_Admin {
 		apply_filters( 'wds_defaults', $this->options );
 
 		self::update_specific_options( $this->option_name, $this->options );
+
+		$blog_tabs = get_site_option( 'wds_blog_tabs', false );
+		if ( $blog_tabs === false ) {
+			smartcrawl_activate_all_blog_tabs();
+		}
 	}
 
 	public function import_notice() {

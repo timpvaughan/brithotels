@@ -19,18 +19,6 @@
 ?>
 
 <div class="wrap">
-	<div class="cbxwpemaillogger_brand_wrap">
-		<h2 class="h1">
-			<img src="<?php echo CBXWPEMAILLOGGER_ROOT_URL . 'assets/images/icon_20.png'; ?>">	 CBX Email SMTP & Logger
-			<p class="cbxwpemaillogger_brand_extra">
-				<span class="cbxwpemaillogger_brand_version">
-					<?php echo sprintf(esc_html__('Version: %s', 'cbxwpemaillogger'), CBXWPEMAILLOGGER_PLUGIN_VERSION); ?>
-				</span>
-				<a target="_blank" class="cbxwpemaillogger_brand_documentation" href="https://codeboxr.com/product/cbx-email-logger-for-wordpress/"><?php esc_html_e('Documentation', 'cbxwpemaillogger'); ?></a>
-			</p>
-
-		</h2>
-	</div>
 	<h1 class="wp-heading-inline">
 		<?php echo sprintf( esc_html__( 'Email Log ID: %d', 'cbxwpemaillogger' ), $id ); ?>
 	</h1>

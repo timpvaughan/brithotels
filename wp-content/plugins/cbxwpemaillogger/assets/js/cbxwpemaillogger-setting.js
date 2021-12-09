@@ -4,10 +4,11 @@
 	$(document).ready(function () {
 
 		//Initiate Color Picker
-		$('.wp-color-picker-field').wpColorPicker();
-		//add chooser
-		//$(".chosen-select").chosen();
-		$(".selecttwo-select").select2({
+		$('.wp-color-picker-field').wpColorPicker({
+
+		});
+
+		$('.selecttwo-select').select2({
 			placeholder: cbxwpemaillogger_setting.please_select,
 			allowClear: false
 		});
@@ -20,59 +21,49 @@
 		});
 
 		// Switches option sections
-		$('.cbxwpemaillogger_group').hide();
+
 		var activetab = '';
-		if (typeof (localStorage) != 'undefined') {
+		if (typeof (localStorage) !== 'undefined') {
 			//get
-			activetab = localStorage.getItem("cbxwpemailloggeractivetab");
+			activetab = localStorage.getItem('cbxwpemailloggeractivetab');
 		}
 
 		//if url has section id as hash then set it as active or override the current local storage value
 		if (window.location.hash) {
 			if ($(window.location.hash).hasClass('cbxwpemaillogger_group')) {
 				activetab = window.location.hash;
-				if (typeof (localStorage) != 'undefined') {
-					localStorage.setItem("cbxwpemailloggeractivetab", activetab);
+				if (typeof (localStorage) !== 'undefined') {
+					localStorage.setItem('cbxwpemailloggeractivetab', activetab);
 				}
 			}
-
 		}
 
-
-		if (activetab != '' && $(activetab).length && $(activetab).hasClass('cbxwpemaillogger_group')) {
+		if (activetab !== '' && $(activetab).length && $(activetab).hasClass('cbxwpemaillogger_group')) {
+			$('.cbxwpemaillogger_group').hide();
 			$(activetab).fadeIn();
-		} else {
-			$('.cbxwpemaillogger_group:first').fadeIn();
 		}
 
-		$('.cbxwpemaillogger_group .collapsed').each(function () {
-			$(this).find('input:checked').parent().parent().parent().nextAll().each(
-				function () {
-					if ($(this).hasClass('last')) {
-						$(this).removeClass('hidden');
-						return false;
-					}
-					$(this).filter('.hidden').removeClass('hidden');
-				});
-		});
 
-		if (activetab != '' && $(activetab + '-tab').length) {
+		if (activetab !== '' && $(activetab + '-tab').length) {
+			$('.nav-tab-wrapper a.nav-tab').removeClass('nav-tab-active');
 			$(activetab + '-tab').addClass('nav-tab-active');
-		} else {
-			$('.nav-tab-wrapper a:first').addClass('nav-tab-active');
 		}
 
-		$('.nav-tab-wrapper a').click(function (evt) {
-			$('.nav-tab-wrapper a').removeClass('nav-tab-active');
-			$(this).addClass('nav-tab-active').blur();
+		$('.nav-tab-wrapper a').on('click', function(e) {
+			e.preventDefault();
+
+			var $this = $(this);
+
+			$('.nav-tab-wrapper a.nav-tab').removeClass('nav-tab-active');
+			$this.addClass('nav-tab-active').blur();
+
 			var clicked_group = $(this).attr('href');
-			if (typeof (localStorage) != 'undefined') {
-				//set
-				localStorage.setItem("cbxwpemailloggeractivetab", $(this).attr('href'));
+
+			if (typeof(localStorage) !== 'undefined') {
+				localStorage.setItem('cbxwpemailloggeractivetab', $(this).attr('href'));
 			}
 			$('.cbxwpemaillogger_group').hide();
 			$(clicked_group).fadeIn();
-			evt.preventDefault();
 		});
 
 
@@ -85,7 +76,7 @@
 			var file_frame = wp.media.frames.file_frame = wp.media({
 				title: cbxwpemaillogger_setting.upload_title,
 				button: {
-					text: scbxwpemaillogger_setting.please_select
+					text: cbxwpemaillogger_setting.please_select
 				},
 				multiple: false
 			});
@@ -102,7 +93,7 @@
 
 		//sort photos
 		/*var adjustment_photo;
-		$(".multicheck_fields").sortable({
+		$('.multicheck_fields').sortable({
 			vertical         : true,
 			handle           : '.multicheck_field_handle',
 			containerSelector: '.multicheck_fields',
@@ -112,7 +103,7 @@
 
 		//sort photos
 		//var adjustment_photo;
-		$(".multicheck_fields_sortable").sortable({
+		$('.multicheck_fields_sortable').sortable({
 			vertical: true,
 			handle: '.multicheck_field_handle',
 			//containerSelector: '.multicheck_fields',
@@ -156,15 +147,27 @@
 
 		});
 
+		//one click save setting for the current tab
+		$('#save_settings').on('click', function (e){
+			e.preventDefault();
+
+			//var $this = $(this);
+
+			var $current_tab = $('.nav-tab.nav-tab-active');
+			var $tab_id = $current_tab.data('tabid');
+
+			$('#'+$tab_id).find('.submit_cbxwpemaillogger').trigger('click');
+		});
+
 		//extra for email plugin
 
-		$(".form-table-fields-parent").sortable({
+		$('.form-table-fields-parent').sortable({
 			vertical: true,
 			handle: '.form-table-fields-parent-item-sort',
 			//containerSelector: '.form-table-fields-parent',
 			itemSelector: '.form-table-fields-parent-item',
 			//placeholder      : '<p class="multicheck_field_placeholder"/>',
-			placeholder: 'form-table-fields-parent-item-placeholder',
+			placeholder: 'form-table-fields-parent-item-placeholder'
 		});
 
 		//open close the input fields
@@ -182,14 +185,14 @@
 			var $parent = $this.closest('.form-table-fields-parent-item');
 			//$parent.remove();
 			Ply.dialog({
-				"confirm-step": {
-					ui: "confirm",
+				'confirm-step': {
+					ui: 'confirm',
 					data: {
 						text: cbxwpemaillogger_setting.deleteconfirm,
 						ok: cbxwpemaillogger_setting.deleteconfirmok, // button text
 						cancel: cbxwpemaillogger_setting.deleteconfirmcancel
 					},
-					backEffect: "3d-flip[-180,180]"
+					backEffect: '3d-flip[-180,180]'
 				}
 			}).always(function (ui) {
 				if (ui.state) {
@@ -214,18 +217,18 @@
             var $section_name   = $this.data('section_name');
             var $option_name    = $this.data('option_name');
             var $field_name     = $this.data('field_name');
-            var $busy           = parseInt($this.data('busy'));
-            var $index          = parseInt($this.data('index'));
+            var $busy           = Number($this.data('busy'));
+            var $index          = Number($this.data('index'));
 
 			if (!$busy) {
 				$this.data('busy', 1);
 
 				$.ajax({
-					type: "post",
-					dataType: "json",
+					type: 'post',
+					dataType: 'json',
 					url: cbxwpemaillogger_setting.ajaxurl,
 					data: {
-						action: "cbxwpemaillogger_add_new_field",
+						action: 'cbxwpemaillogger_add_new_field',
 						section_name: $section_name,
 						option_name: $option_name,
 						field_name: $field_name,
@@ -233,9 +236,9 @@
                         index: $index
 					},
 					success: function (data, textStatus, XMLHttpRequest) {
-						/*Ply.dialog("alert", data.message);
+						/*Ply.dialog('alert', data.message);
 
-						if (parseInt(data.success) == 1) {
+						if (Number(data.success) == 1) {
 							$this.closest('tr').remove();
 						}*/
 
@@ -243,7 +246,7 @@
 						$items.append(data['html']);
 
 						$this.data('busy', 0);
-						$this.data('index', parseInt(data['index']));
+						$this.data('index', Number(data['index']));
 
                         $('.cbx-hideshowpassword').hidePassword(true);
 

@@ -179,6 +179,19 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 		if ( ! $post ) {
 			return;
 		}
+
+		/**
+		 * TODO: quick and dirty implementation, once we have a separate Smartcrawl_Product class, we won't need the following check here
+		 */
+		if ( $this->is_woo_product( $post ) ) {
+			$product_robots = $this->get_woo_product_robots( $post );
+
+			if ( $product_robots ) {
+				$this->value = $product_robots;
+				return;
+			}
+		}
+
 		$post_id = $post->ID;
 		$robots[] = $this->is_singular_noindex( $post_id ) ? 'noindex' : 'index';
 		$robots[] = $this->is_singular_nofollow( $post_id ) ? 'nofollow' : 'follow';
@@ -189,6 +202,29 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 		}
 
 		$this->value = implode( ',', $robots );
+	}
+
+	private function is_woo_product( $post ) {
+		return smartcrawl_woocommerce_active()
+		       && $post->post_type === 'product';
+	}
+
+	private function get_woo_product_robots( $post ) {
+		$data = new Smartcrawl_Woocommerce_Data();
+		$woo_options = $data->get_options();
+		$woo_enabled = smartcrawl_get_array_value( $woo_options, 'woocommerce_enabled' );
+		$noindex_hidden_products = smartcrawl_get_array_value( $woo_options, 'noindex_hidden_products' );
+		$product = wc_get_product( $post );
+		if (
+			$woo_enabled
+			&& $noindex_hidden_products
+			&& $product
+			&& $product->get_catalog_visibility() === 'hidden'
+		) {
+			return 'noindex,nofollow';
+		}
+
+		return false;
 	}
 
 	private function is_singular_noindex( $post_id ) {

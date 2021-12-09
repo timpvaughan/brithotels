@@ -13,6 +13,12 @@
 		// Modules
 		hook_analysis();
 		hook_onpage();
+
+		jQuery(function () {
+			$('#wds_sitemap-priority').SUIselect2({
+				dropdownParent: $('#wds_sitemap-priority').closest('.sui-box-settings-col-2'),
+			});
+		});
 	}
 
 	$(init);

@@ -5,9 +5,9 @@ $schema_yt_api_key = empty( $schema_yt_api_key ) ? '' : $schema_yt_api_key;
 <div class="sui-form-field">
 	<p class="sui-description">
 		<?php echo smartcrawl_format_link(
-			esc_html__( 'SmartCrawl will use %s to fetch video data automatically.', 'wds' ),
-			'https://developers.google.com/youtube/registering_an_application',
-			'YouTubeAPI',
+			esc_html__( 'To learn more about how to connect to Youtube, see our %s.', 'wds' ),
+			'https://wpmudev.com/docs/wpmu-dev-plugins/smartcrawl/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=schema-enabling-the-youtube-api#enabling-the-youtube-api',
+			'Documentation',
 			'_blank'
 		); ?>
 	</p>

@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * TODO: remove this service class we don't use it anywhere
+ */
 class Smartcrawl_Uptime_Service extends Smartcrawl_Service {
 
 	public function get_known_verbs() {
@@ -37,7 +40,7 @@ class Smartcrawl_Uptime_Service extends Smartcrawl_Service {
 	public function get_service_base_url() {
 		return defined( 'WPMUDEV_CUSTOM_API_SERVER' ) && WPMUDEV_CUSTOM_API_SERVER
 			? WPMUDEV_CUSTOM_API_SERVER
-			: 'https://premium.wpmudev.org/';
+			: 'https://wpmudev.com/';
 	}
 
 	public function get_request_arguments( $verb ) {

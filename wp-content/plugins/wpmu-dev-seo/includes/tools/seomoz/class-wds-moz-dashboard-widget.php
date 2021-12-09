@@ -2,6 +2,8 @@
 
 /**
  * Init WDS SEOMoz Dashboard Widget
+ *
+ * TODO: get rid of this widget and move the information it contains to an SC dashboard widget
  */
 class Smartcrawl_Moz_Dashboard_Widget extends Smartcrawl_Base_Controller {
 
@@ -13,7 +15,7 @@ class Smartcrawl_Moz_Dashboard_Widget extends Smartcrawl_Base_Controller {
 	private static $_instance;
 
 	public function should_run() {
-		return smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_AUTOLINKS )
+		return Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_AUTOLINKS )
 		       && Smartcrawl_Settings::get_setting( 'access-id' )
 		       && Smartcrawl_Settings::get_setting( 'secret-key' );
 	}

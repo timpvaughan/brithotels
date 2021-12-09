@@ -131,7 +131,7 @@ class MacroReplacement {
 			}
 		};
 
-		load_required['%%ct_(desc_){0,1}([a-z_]*)%%'] = (matches) => {
+		load_required['%%ct_(desc_){0,1}([a-z_\-]*)%%'] = (matches) => {
 			let field = 'name';
 			if (matches.length === 3 && matches[1] === 'desc_') {
 				field = 'description';

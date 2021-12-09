@@ -111,9 +111,13 @@
 			var $root = $select.closest(root_selector);
 
 			$.each($root.find('.wds-conditional-inside'), function (index, conditional_el) {
-				var $conditional_el = $(conditional_el);
+				var $conditional_el = $(conditional_el),
+					conditional_data = $conditional_el.data('conditional-val');
+				if (!conditional_data) {
+					return;
+				}
 
-				if ($conditional_el.data('conditional-val') == $select.val()) {
+				if (conditional_data.split('|').includes($select.val())) {
 					$conditional_el.show();
 				} else {
 					$conditional_el.hide();
@@ -126,7 +130,7 @@
 		$.each($selects, function (index, select) {
 			show_conditional_elements($(select));
 
-			$(select).change(function () {
+			$(select).on('change', function () {
 				show_conditional_elements($(this));
 				return false;
 			});
@@ -169,7 +173,7 @@
 			$dropdowns.removeClass('open');
 		}
 
-		$('body').click(function (e) {
+		$('body').on('click', function (e) {
 			var $this = $(e.target),
 				$el = $this.closest('.wds-links-dropdown');
 
@@ -203,14 +207,14 @@
 			library: {type: 'image'}
 		});
 
-		$button.click(function (e) {
+		$button.on('click', function (e) {
 			if (e && e.preventDefault) e.preventDefault();
 			wp.media.frames.wds_media_url[idx].open();
 
 			return false;
 		});
 
-		$close_button.click(function (e) {
+		$close_button.on('click', function (e) {
 			if (e && e.preventDefault) e.preventDefault();
 
 			$filename.html('');
@@ -258,7 +262,7 @@
 				file_input: $root.find('input[type="file"]'),
 				upload_button: $root.find('.sui-upload-button'),
 				file_details: $root.find('.sui-upload-file'),
-				file_name: $root.find('.sui-upload-file span'),
+				file_name: $root.find('.sui-upload-file > span'),
 				clear_button: $root.find('.sui-upload-file button')
 			};
 		}
@@ -404,12 +408,16 @@
 		$element.find('.sui-progress-bar span').width(value + '%');
 	};
 
-	window.Wds.open_dialog = function (id, focus_after_closed, focus_after_open) {
+	window.Wds.open_dialog = function (id, focus_after_closed, focus_after_open, closeOnEsc) {
 		if (!focus_after_closed) {
 			focus_after_closed = 'container';
 		}
 
-		SUI.openModal(id, focus_after_closed, focus_after_open);
+		if (closeOnEsc === 'undefined') {
+			closeOnEsc = true;
+		}
+
+		SUI.openModal(id, focus_after_closed, focus_after_open, false, closeOnEsc);
 	};
 
 	window.Wds.close_dialog = function () {
@@ -423,7 +431,7 @@
 				macro = $select.val();
 
 			$input
-				.val(jQuery.trim($input.val()) + ' ' + macro)
+				.val($input.val().trim() + ' ' + macro)
 				.trigger('change')
 				.trigger('input');
 		});
@@ -479,7 +487,7 @@
 	};
 
 	window.Wds.floating_message = function () {
-		jQuery('.wds-floating-notice-trigger').click();
+		jQuery('.wds-floating-notice-trigger').trigger('click');
 	};
 
 	window.Wds.show_floating_message = function (id, message, type) {
@@ -609,4 +617,20 @@
 		});
 	};
 
+	window.Wds.reporting_schedule = function () {
+		function change_frequency() {
+			var $radio = $(this),
+				frequency = $radio.val(),
+				$dow_selects = $('.wds-dow').hide();
+
+			$dow_selects.find('select').prop('disabled', true);
+			$dow_selects.filter('.' + frequency).show();
+			$dow_selects.filter('.' + frequency).find('select').prop('disabled', false);
+		}
+
+		$(document).on('change', '.wds-frequency-tabs .sui-tab-item > input[type="radio"]', change_frequency);
+		$('.wds-frequency-tabs .sui-tab-item > input[type="radio"]:checked').each(function () {
+			change_frequency.apply(this);
+		});
+	};
 })(jQuery);

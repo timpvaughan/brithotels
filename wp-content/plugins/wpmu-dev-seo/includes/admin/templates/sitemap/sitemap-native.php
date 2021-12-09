@@ -33,7 +33,7 @@ $this->_render( 'notice', array(
 			        id="wds-switch-to-smartcrawl-sitemap"
 			        class="sui-button sui-button-ghost">
 
-				<i class="sui-icon-defer" aria-hidden="true"></i>
+				<span class="sui-icon-defer" aria-hidden="true"></span>
 				<?php esc_html_e( 'Switch', 'wds' ); ?>
 			</button>
 

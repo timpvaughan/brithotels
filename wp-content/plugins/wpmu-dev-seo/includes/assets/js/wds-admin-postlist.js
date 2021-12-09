@@ -1,16 +1,19 @@
 ;(function ($, undefined) {
+	function trim(str) {
+		return (str || "").trim();
+	}
 
 	window.Wds = window.Wds || {};
 
 	window.Wds.Postlist = window.Wds.Postlist || {
-		
+
 		/**
 		 * Simple post representation
 		 *
 		 * @param {Integer} post_id (Optional)
 		 */
 		Post: function (post_id) {
-			
+
 			var _post_id = parseInt(post_id, 10) || undefined,
 				_title = '',
 				_type = '',
@@ -114,10 +117,10 @@
 					_post_id = pid;
 					// Send post request
 					$.post(ajaxurl, {
-							action: 'wds-load_exclusion-post_data',
-							id: pid,
-							_wds_nonce: _wds_postlist.nonce
-						}, _.noop, 'json')
+						action: 'wds-load_exclusion-post_data',
+						id: pid,
+						_wds_nonce: _wds_postlist.nonce
+					}, _.noop, 'json')
 						.done(function (data) {
 							set(data);
 						})
@@ -177,6 +180,7 @@
 
 			function init_dropdown() {
 				_exclusion_dropdown.SUIselect2({
+					dropdownParent: _dialog,
 					dropdownCssClass: 'sui-select-dropdown',
 					minimumInputLength: 3,
 					ajax: {
@@ -219,9 +223,13 @@
 			this._cache = {};
 			this._meta = {};
 
-			this.get_type = function () { return this._type; };
+			this.get_type = function () {
+				return this._type;
+			};
 
-			this.is_loading = function () { return _.isEmpty(this.get_meta()); };
+			this.is_loading = function () {
+				return _.isEmpty(this.get_meta());
+			};
 
 			/**
 			 * Adds a post by its ID to internal list and cache
@@ -464,7 +472,7 @@
 			 * Converts box content to internal post list representation
 			 */
 			var box_to_list = function () {
-				var raw = _.map(_$box.val().split(','), $.trim),
+				var raw = _.map(_$box.val().split(','), trim),
 					ps = []
 				;
 				_loaded = false;
@@ -474,7 +482,7 @@
 
 					ps.push(pid);
 				});
-				
+
 				if (!ps.length) {
 					_loaded = true;
 				} else {
@@ -517,7 +525,7 @@
 			};
 
 		},
-		
+
 		exclude: function ($el) {
 			var list = new Wds.Postlist.List($el, 'exclude');
 			list.boot();

@@ -29,7 +29,7 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 	 *
 	 * @var string
 	 */
-	public $capability = 'list_users';
+	public $capability = 'manage_options';
 
 	/**
 	 * Name of the options corresponding to this page
@@ -84,12 +84,7 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 	 * Constructor
 	 */
 	protected function __construct() {
-		if ( is_multisite() && SMARTCRAWL_SITEWIDE ) {
-			$this->capability = 'manage_network_options';
-		}
-
 		$this->init();
-
 	}
 
 	/**
@@ -97,18 +92,13 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 	 */
 	public function init() {
 		$this->options = self::get_specific_options( $this->option_name );
-		if ( is_multisite() && defined( 'SMARTCRAWL_SITEWIDE' ) && SMARTCRAWL_SITEWIDE ) {
+		if ( is_multisite() && smartcrawl_subsite_manager_role() === 'superadmin' ) {
 			$this->capability = 'manage_network_options';
 		}
 
 		add_action( 'init', array( $this, 'defaults' ), 999 );
 		add_action( 'admin_body_class', array( $this, 'add_body_class' ), 20 );
-
-		if ( is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) ) {
-			add_action( 'network_admin_menu', array( $this, 'add_page' ) );
-		} else {
-			add_action( 'admin_menu', array( $this, 'add_page' ) );
-		}
+		add_action( 'admin_menu', array( $this, 'add_page' ) );
 	}
 
 	private function is_current_screen() {
@@ -128,17 +118,7 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 	 * @return string Unescaped admin URL, or tab anchor on failure
 	 */
 	public static function admin_url( $tab ) {
-		$single_site_url = esc_url_raw( add_query_arg( 'page', $tab, admin_url( 'admin.php' ) ) );
-		if ( ! is_multisite() ) {
-			return $single_site_url;
-		}
-
-		$network_admin_url = esc_url_raw( add_query_arg( 'page', $tab, network_admin_url( 'admin.php' ) ) );
-		$sitewide = smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' );
-
-		return $sitewide
-			? $network_admin_url
-			: $single_site_url;
+		return esc_url_raw( add_query_arg( 'page', $tab, admin_url( 'admin.php' ) ) );
 	}
 
 	/**
@@ -203,23 +183,8 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 			return true;
 		}
 
-		// Always good in network
-		if ( is_network_admin() ) {
-			return true;
-		}
-
-		// If we're sitewide, we're good *in network admin* pages
-		if ( smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) ) {
-			return smartcrawl_is_switch_active( 'DOING_AJAX' )
-				? true
-				: is_network_admin();
-		}
-
-		// We're network install and not sitewide.
-		// Now let's see what's up.
-
-		// SEO checkup not supported on sub-sites
-		if ( $tab === self::TAB_CHECKUP ) {
+		// SEO health not supported on sub-sites
+		if ( $tab === self::TAB_HEALTH ) {
 			return is_main_site();
 		}
 
@@ -239,18 +204,6 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 	 */
 	public function admin_styles() {
 		wp_enqueue_style( Smartcrawl_Controller_Assets::APP_CSS );
-	}
-
-	/**
-	 * Initiates a checkup run
-	 */
-	public function run_checkup() {
-		if ( current_user_can( 'manage_options' ) ) {
-			$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_CHECKUP );
-			$service->start();
-		}
-		wp_safe_redirect( esc_url( remove_query_arg( array( 'run-checkup', '_wds_nonce' ) ) ) );
-		die;
 	}
 
 	/**
@@ -305,6 +258,11 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 		$sui_class = smartcrawl_sui_class();
 		if ( $this->is_current_screen() && strpos( $classes, $sui_class ) === false ) {
 			$classes .= " {$sui_class} ";
+
+			$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE );
+			if ( $service->is_member() ) {
+				$classes .= " wds-is-member";
+			}
 		}
 
 		return $classes;

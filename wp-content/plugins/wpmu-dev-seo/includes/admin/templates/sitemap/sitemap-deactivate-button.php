@@ -18,11 +18,11 @@ $button_description = empty( $button_description ) ? '' : $button_description;
 		        id="wds-deactivate-sitemap-module"
 		        class="sui-button sui-button-ghost">
 			<span class="sui-loading-text">
-				<i class="sui-icon-power-on-off" aria-hidden="true"></i>
+				<span class="sui-icon-power-on-off" aria-hidden="true"></span>
 				<?php esc_html_e( 'Deactivate', 'wds' ); ?>
 			</span>
 
-			<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+			<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 		</button>
 
 		<?php if ( $button_description ): ?>

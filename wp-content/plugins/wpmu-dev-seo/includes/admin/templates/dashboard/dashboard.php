@@ -4,6 +4,8 @@
  *
  * @package wpmu-dev-seo
  */
+
+$configs_available = is_main_site();
 ?>
 <?php $this->_render( 'before-page-container' ); ?>
 
@@ -11,52 +13,52 @@
 	<?php $this->_render( 'page-header', array(
 		'title'                 => esc_html__( 'Dashboard', 'wds' ),
 		'documentation_chapter' => 'dashboard',
+		'utm_campaign'          => 'smartcrawl_dashboard_docs',
 	) ); ?>
 
-	<?php $this->_render( 'floating-notices' ); ?>
+	<?php $this->_render( 'floating-notices', array(
+		'keys' => array( 'wds-config-notice' ),
+	) ); ?>
 
 	<div class="sui-row">
 		<div class="sui-col-md-12">
-			<?php Smartcrawl_Checkup_Renderer::render( 'dashboard/dashboard-top' ); ?>
+			<?php
+			if ( Smartcrawl_Health_Settings::is_test_mode_checkup() ) {
+				Smartcrawl_Checkup_Renderer::render( 'dashboard/dashboard-top' );
+			} else {
+				Smartcrawl_Lighthouse_Dashboard_Renderer::render( 'dashboard/dashboard-top-lighthouse' );
+			}
+			?>
 		</div>
 
 		<div class="sui-col">
 			<?php
-			if ( smartcrawl_can_show_dash_widget_for( Smartcrawl_Settings_Settings::TAB_CHECKUP ) ) {
+			if ( Smartcrawl_Health_Settings::is_test_mode_checkup() ) {
 				Smartcrawl_Checkup_Renderer::render( 'dashboard/dashboard-widget-seo-checkup' );
+			} else {
+				Smartcrawl_Lighthouse_Dashboard_Renderer::render( 'dashboard/dashboard-widget-lighthouse' );
+			}
+			$this->_render( 'dashboard/dashboard-widget-content-analysis' );
+			$this->_render( 'dashboard/dashboard-widget-social' );
+			$this->_render( 'dashboard/dashboard-widget-schema' );
+			if ( Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SETTINGS )
+			     && $configs_available ) {
+				$this->_render( 'dashboard/dashboard-widget-configs' );
 			}
 			?>
-			<?php $this->_render( 'dashboard/dashboard-widget-content-analysis' ); ?>
-			<?php
-			if ( smartcrawl_can_show_dash_widget_for( Smartcrawl_Settings_Settings::TAB_SOCIAL ) ) {
-				$this->_render( 'dashboard/dashboard-widget-social' );
-			}
-			?>
-			<?php $this->_render( 'dashboard/dashboard-widget-schema' ); ?>
 		</div>
 
 		<div class="sui-col">
-			<?php $this->_render( 'dashboard/dashboard-widget-upgrade' ); ?>
 			<?php
-			if ( smartcrawl_can_show_dash_widget_for( Smartcrawl_Settings_Settings::TAB_ONPAGE ) ) {
-				$this->_render( 'dashboard/dashboard-widget-onpage' );
-			}
+			$this->_render( 'dashboard/dashboard-widget-upgrade' );
+			$this->_render( 'dashboard/dashboard-widget-onpage' );
+			$this->_render( 'dashboard/dashboard-widget-sitemap' );
+			$this->_render( 'dashboard/dashboard-widget-advanced-tools' );
+			$this->_render( 'dashboard/dashboard-widget-reports' );
 			?>
-			<?php
-			if ( smartcrawl_can_show_dash_widget_for( Smartcrawl_Settings_Settings::TAB_SITEMAP ) ) {
-				$this->_render( 'dashboard/dashboard-widget-sitemap' );
-			}
-			?>
-			<?php
-			if ( smartcrawl_can_show_dash_widget_for( Smartcrawl_Settings_Settings::TAB_AUTOLINKS ) ) {
-				$this->_render( 'dashboard/dashboard-widget-advanced-tools' );
-			}
-			?>
-			<?php $this->_render( 'dashboard/dashboard-widget-reports' ); ?>
 		</div>
 	</div>
 
-	<?php $this->_render( 'upsell-modal' ); ?>
 	<?php do_action( 'wds-dshboard-after_settings' ); ?>
 
 	<?php $this->_render( 'dashboard/dashboard-cross-sell-footer' ); ?>

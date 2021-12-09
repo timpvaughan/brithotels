@@ -54,7 +54,7 @@ $is_locale_english = Smartcrawl_Settings::is_locale_english();
 		<div class="sui-summary-segment">
 			<div class="sui-summary-details">
 				<span class="sui-summary-large"><?php echo esc_html( $readability_score ); ?></span>
-				<i class="<?php echo esc_attr( $icon_class ); ?>"></i>
+				<span class="<?php echo esc_attr( $icon_class ); ?>"></span>
 				<?php if ( $total_possible_score ) : ?>
 					<span class="sui-summary-percent">/<?php echo esc_html( $total_possible_score ); ?></span>
 				<?php endif; ?>
@@ -71,12 +71,12 @@ $is_locale_english = Smartcrawl_Settings::is_locale_english();
 			<button class="sui-button sui-button-ghost wds-refresh-analysis wds-analysis-readability wds-disabled-during-request"
 			        type="button" <?php echo esc_attr( $refresh_analysis_disabled ); ?>>
 				<span class="sui-loading-text">
-					<i class="sui-icon-update" aria-hidden="true"></i>
+					<span class="sui-icon-update" aria-hidden="true"></span>
 
 					<?php esc_html_e( 'Refresh', 'wds' ); ?>
 				</span>
 
-				<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+				<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 			</button>
 		</div>
 	</div>

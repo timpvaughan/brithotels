@@ -62,7 +62,7 @@ $email_recipients = empty( $email_recipients ) ? array() : $email_recipients;
 		'key'         => 'seo-checkup-upsell',
 		'dismissible' => false,
 		'message'     => sprintf(
-			'%s <a target="_blank" href="https://premium.wpmudev.org/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_sitemap_reporting_upsell_notice">%s</a>',
+			'%s <a target="_blank" href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_sitemap_reporting_upsell_notice">%s</a>',
 			esc_html__( 'Unlock automated crawls of your URLs to always stay on top of any issues with SmartCrawl Pro. Get Sitemap Reports as part of a WPMU DEV membership along with other pro plugins and services, 24/7 support and much more', 'wds' ),
 			esc_html__( '- Try it all FREE today', 'wds' )
 		),

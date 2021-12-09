@@ -68,7 +68,11 @@ class Smartcrawl_Network_Settings_Page_Controller extends Smartcrawl_Admin_Page 
 
 			update_site_option( 'wds_blog_tabs', $tabs );
 
-			update_site_option( 'wds_sitewide_mode', (int) ! empty( $input['wds_sitewide_mode'] ) );
+			$manager_role = smartcrawl_get_array_value( $input, 'wds_subsite_manager_role' );
+			update_site_option( 'wds_subsite_manager_role', sanitize_text_field( $manager_role ) );
+
+			$config_id = smartcrawl_get_array_value( $input, 'wds_subsite_config_id' );
+			update_site_option( 'wds_subsite_config_id', sanitize_text_field( $config_id ) );
 
 			wp_safe_redirect(
 				esc_url_raw( add_query_arg( 'settings-updated', 'true', $this->url() ) )
@@ -77,40 +81,27 @@ class Smartcrawl_Network_Settings_Page_Controller extends Smartcrawl_Admin_Page 
 		}
 	}
 
-	private function is_sitewide() {
-		return smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' );
-	}
-
 	public function add_page() {
-		if ( $this->is_sitewide() ) {
-			// If we are sitewide we already have a main page to add our submenu to
-			$this->add_network_settings_page( 'wds_wizard' );
-		} else {
-			$dashboard = Smartcrawl_Settings_Dashboard::get_instance();
-			add_menu_page(
-				'',
-				$dashboard->get_title(),
-				$this->capability(),
-				self::MENU_SLUG,
-				'',
-				$dashboard->get_icon()
-			);
-			$this->add_network_settings_page( self::MENU_SLUG );
-			add_submenu_page(
-				self::MENU_SLUG,
-				'',
-				'',
-				$this->capability(),
-				'wds_dummy'
-			);
-		}
+		$dashboard = Smartcrawl_Settings_Dashboard::get_instance();
+		add_menu_page(
+			'',
+			$dashboard->get_title(),
+			$this->capability(),
+			self::MENU_SLUG,
+			'',
+			$dashboard->get_icon()
+		);
+		$this->add_network_settings_page( self::MENU_SLUG );
+		add_submenu_page(
+			self::MENU_SLUG,
+			'',
+			'',
+			$this->capability(),
+			'wds_dummy'
+		);
 	}
 
 	public function add_css() {
-		if ( $this->is_sitewide() ) {
-			return;
-		}
-
 		?>
 		<style>
 			#adminmenu a[href="wds_dummy"] {
@@ -138,12 +129,13 @@ class Smartcrawl_Network_Settings_Page_Controller extends Smartcrawl_Admin_Page 
 			Smartcrawl_Settings::TAB_ONPAGE    => __( 'Title & Meta', 'wds' ),
 			Smartcrawl_Settings::TAB_SCHEMA    => __( 'Schema', 'wds' ),
 			Smartcrawl_Settings::TAB_SOCIAL    => __( 'Social', 'wds' ),
-			Smartcrawl_Settings::TAB_SITEMAP   => __( 'Sitemap', 'wds' ),
+			Smartcrawl_Settings::TAB_SITEMAP   => __( 'Sitemaps', 'wds' ),
 			Smartcrawl_Settings::TAB_AUTOLINKS => __( 'Advanced Tools', 'wds' ),
 			Smartcrawl_Settings::TAB_SETTINGS  => __( 'Settings', 'wds' ),
 		);
 		$arguments['blog_tabs'] = Smartcrawl_Settings_Settings::get_blog_tabs();
-		$arguments['wds_sitewide_mode'] = smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' );
+		$arguments['subsite_manager_role'] = get_site_option( 'wds_subsite_manager_role' );
+		$arguments['subsite_config_id'] = get_site_option( 'wds_subsite_config_id' );
 		$arguments['option_name'] = 'wds_settings_options';
 		$arguments['per_site_notice'] = $this->per_site_notice();
 

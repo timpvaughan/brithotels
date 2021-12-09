@@ -69,41 +69,6 @@ class Smartcrawl_Sitemap_Utils {
 	}
 
 	/**
-	 * Attempt to set time limit
-	 *
-	 * @param int $amount Optional extension amount.
-	 *
-	 * @return bool
-	 */
-	public static function set_time_limit( $amount = 120 ) {
-		$amount = empty( $amount ) || ! is_numeric( $amount )
-			? 120
-			: (int) $amount;
-		// Check manual override.
-		if ( defined( 'SMARTCRAWL_SITEMAP_SKIP_TIME_LIMIT_SETTING' ) && SMARTCRAWL_SITEMAP_SKIP_TIME_LIMIT_SETTING ) {
-			return false;
-		}
-
-		// Check safe mode.
-		$is_safe_mode = strtolower( ini_get( 'safe_mode' ) );
-		if ( ! empty( $is_safe_mode ) && 'off' !== $is_safe_mode ) {
-			Smartcrawl_Logger::debug( 'Safe mode on, skipping time limit set.' );
-
-			return false;
-		}
-
-		// Check disabled state.
-		$disabled = array_map( 'trim', explode( ',', ini_get( 'disable_functions' ) ) );
-		if ( in_array( 'set_time_limit', $disabled, true ) ) {
-			Smartcrawl_Logger::debug( 'Time limit setting disabled, skipping.' );
-
-			return false;
-		}
-
-		return set_time_limit( $amount );
-	}
-
-	/**
 	 * Ignore URLs storage getter
 	 *
 	 * @return array Ignore sitemap URLs.
@@ -157,40 +122,28 @@ class Smartcrawl_Sitemap_Utils {
 			return false;
 		}
 
-		$smartcrawl_options = Smartcrawl_Settings::get_options();
-		if ( empty( $smartcrawl_options['sitemapurl'] ) ) {
-			return false;
-		}
-
 		$result = array();
 		$now = time();
+		$smartcrawl_options = Smartcrawl_Settings::get_options();
 
 		if ( $forced || ! empty( $smartcrawl_options['ping-google'] ) ) {
 			do_action( 'wds_before_search_engine_update', 'google' );
-			$resp = wp_remote_get( 'http://www.google.com/webmasters/tools/ping?sitemap=' . esc_url( smartcrawl_get_sitemap_url() ) );
-			$result['google'] = array(
-				'response' => $resp,
-				'time'     => $now,
+			wp_remote_get(
+				'http://www.google.com/webmasters/tools/ping?sitemap=' . esc_url( smartcrawl_get_sitemap_url() ),
+				array( 'blocking' => false )
 			);
-			if ( is_wp_error( $resp ) ) {
-				do_action( 'wds_after_search_engine_update', 'google', false, $resp );
-			} else {
-				do_action( 'wds_after_search_engine_update', 'google', (bool) ( 200 === (int) wp_remote_retrieve_response_code( $resp ) ), $resp );
-			}
+			$result['google'] = array( 'time' => $now );
+			do_action( 'wds_after_search_engine_update', 'google', true, array() );
 		}
 
 		if ( $forced || ! empty( $smartcrawl_options['ping-bing'] ) ) {
 			do_action( 'wds_before_search_engine_update', 'bing' );
-			$resp = wp_remote_get( 'http://www.bing.com/webmaster/ping.aspx?sitemap=' . esc_url( smartcrawl_get_sitemap_url() ) );
-			$result['bing'] = array(
-				'response' => $resp,
-				'time'     => $now,
+			wp_remote_get(
+				'http://www.bing.com/webmaster/ping.aspx?sitemap=' . esc_url( smartcrawl_get_sitemap_url() ),
+				array( 'blocking' => false )
 			);
-			if ( is_wp_error( $resp ) ) {
-				do_action( 'wds_after_search_engine_update', 'bing', false, $resp );
-			} else {
-				do_action( 'wds_after_search_engine_update', 'bing', (bool) ( 200 === (int) wp_remote_retrieve_response_code( $resp ) ), $resp );
-			}
+			$result['bing'] = array( 'time' => $now );
+			do_action( 'wds_after_search_engine_update', 'bing', true, array() );
 		}
 
 		update_option( self::ENGINE_NOTIFICATION_OPTION_ID, $result );
@@ -218,7 +171,7 @@ class Smartcrawl_Sitemap_Utils {
 
 	public static function sitemap_enabled() {
 		return Smartcrawl_Settings::get_setting( 'sitemap' )
-		       && smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_SITEMAP );
+		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SITEMAP );
 	}
 
 	public static function sitemap_images_enabled() {
@@ -250,14 +203,6 @@ class Smartcrawl_Sitemap_Utils {
 
 	public static function get_max_items_per_sitemap() {
 		return Smartcrawl_Sitemap_Utils::DEFAULT_ITEMS_PER_SITEMAP;
-	}
-
-	public static function split_sitemaps_enabled() {
-		return (boolean) self::get_sitemap_option( 'split-sitemap' );
-	}
-
-	public static function set_split_sitemap( $is_split ) {
-		return self::set_sitemap_option( 'split-sitemap', $is_split );
 	}
 
 	public static function get_sitemap_option( $key ) {
@@ -324,5 +269,19 @@ class Smartcrawl_Sitemap_Utils {
 
 	public static function prime_cache( $blocking ) {
 		wp_remote_get( smartcrawl_get_sitemap_url(), array( 'blocking' => $blocking ) );
+	}
+
+	public static function crawler_available() {
+		return is_main_site()
+		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SITEMAP );
+	}
+
+	public static function format_timestamp( $timestamp ) {
+		$timestamp = intval( $timestamp ) > 0
+			? $timestamp
+			: time();
+		$offset = date( 'O', $timestamp );
+
+		return date( 'Y-m-d\TH:i:s', $timestamp ) . substr( $offset, 0, 3 ) . ':' . substr( $offset, - 2 );
 	}
 }

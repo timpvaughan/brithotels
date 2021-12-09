@@ -4,7 +4,7 @@
  *
  * @category GDPR_View
  * @package   gdpr-cookie-compliance
- * @author    Gaspar Nemes
+ * @author    Moove Agency
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @category Class
  * @package  GDPR_View
- * @author   Gaspar Nemes
+ * @author   Moove Agency
  */
 class GDPR_View {
 	/**

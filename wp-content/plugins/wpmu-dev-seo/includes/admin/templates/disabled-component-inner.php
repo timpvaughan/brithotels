@@ -14,7 +14,7 @@ $button_disabled = empty( $button_disabled ) ? false : $button_disabled;
 $image_url = sprintf( '%s/assets/images/%s', SMARTCRAWL_PLUGIN_URL, $image );
 $image_url = Smartcrawl_White_Label::get()->get_wpmudev_hero_image( $image_url );
 
-$upgrade_url = 'https://premium.wpmudev.org/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=' . $upgrade_tag;
+$upgrade_url = 'https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=' . $upgrade_tag;
 ?>
 <div class="wds-disabled-component">
 	<?php if ( $image_url ): ?>
@@ -48,12 +48,12 @@ $upgrade_url = 'https://premium.wpmudev.org/project/smartcrawl-wordpress-seo/?ut
 			<a class="sui-button sui-button-blue <?php echo $button_disabled ? 'disabled' : ''; ?>"
 			   href="<?php echo esc_attr( $button_url ); ?>">
 				<?php if ( $button_icon ): ?>
-					<i class="<?php echo esc_attr( $button_icon ); ?>" aria-hidden="true"></i>
+					<span class="<?php echo esc_attr( $button_icon ); ?>" aria-hidden="true"></span>
 				<?php endif; ?>
 				<?php echo esc_html( $button_text ); ?>
 			</a>
 		<?php else : ?>
-			<input name="submit" class="sui-button sui-button-blue"
+			<input name="submit" class="sui-button sui-button-blue <?php echo $button_disabled ? 'disabled' : ''; ?>"
 			       value="<?php echo esc_attr( $button_text ); ?>"
 			       type="submit"/>
 		<?php endif; ?>

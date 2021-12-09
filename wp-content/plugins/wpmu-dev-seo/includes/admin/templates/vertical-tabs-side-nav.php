@@ -13,26 +13,27 @@ $active_tab = empty( $active_tab ) ? '' : $active_tab;
 			$tag_class = smartcrawl_get_array_value( $tab, 'tag_class' );
 			$tick = smartcrawl_get_array_value( $tab, 'tick' );
 			$tick_class = smartcrawl_get_array_value( $tab, 'tick_class' );
-			$tick_class = empty( $tick_class ) ? 'sui-info' : $tick_class;
+			$tick_class = empty( $tick_class ) ? 'sui-success' : $tick_class;
 			?>
 			<li class="sui-vertical-tab <?php echo esc_attr( $tab_id ); ?> <?php echo $active_tab === $tab_id ? esc_attr( 'current' ) : ''; ?>">
 
-				<a role="button" data-target="<?php echo esc_attr( $tab_id ); ?>" href="#">
-					<?php echo esc_html( $tab_name ); ?>
+				<a role="button" data-target="<?php echo esc_attr( $tab_id ); ?>" href="#"
+				   aria-label="<?php printf( esc_html__( '%s tab', 'wds' ), wp_strip_all_tags( $tab_name ) ) ?>">
+					<?php echo wp_kses_post( $tab_name ); ?>
 				</a>
 
-				<i class="sui-icon-loader sui-loading"
+				<span class="sui-icon-loader sui-loading"
 				   aria-hidden="true"
-				   style="<?php echo $spinner ? '' : 'display:none;'; ?>"></i>
+				   style="<?php echo $spinner ? '' : 'display:none;'; ?>"></span>
 
 				<span class="sui-tag <?php echo esc_attr( $tag_class ); ?>"
 				      style="<?php echo $tag_value ? '' : 'display:none;'; ?>">
 					<?php echo esc_html( $tag_value ); ?>
 				</span>
 
-				<i class="sui-icon-check-tick <?php echo esc_attr( $tick_class ); ?>"
+				<span class="sui-icon-check-tick <?php echo esc_attr( $tick_class ); ?>"
 				   aria-hidden="true"
-				   style="<?php echo $tick ? '' : 'display:none;'; ?>"></i>
+				   style="<?php echo $tick ? '' : 'display:none;'; ?>"></span>
 			</li>
 		<?php endforeach; ?>
 	</ul>

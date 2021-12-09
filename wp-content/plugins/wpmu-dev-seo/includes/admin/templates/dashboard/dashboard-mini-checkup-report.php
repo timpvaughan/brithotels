@@ -1,6 +1,7 @@
 <?php
 $issue_count = empty( $issue_count ) ? 0 : $issue_count;
-$page_url = ! empty( $page_url ) ? $page_url : Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_CHECKUP );
+$page_url = ! empty( $page_url ) ? $page_url : Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_HEALTH );
+$lighthouse_url = $page_url . '&tab=tab_settings#seo-test-mode';
 $has_errors = ! empty( $error );
 ?>
 
@@ -25,15 +26,18 @@ $has_errors = ! empty( $error );
 
 <?php if ( ! $has_errors ): ?>
 	<div class="wds-space-between">
-		<a href="<?php echo esc_attr( $page_url ); ?>&tab=tab_checkup"
+		<a href="<?php echo esc_attr( $page_url ); ?>"
+		   aria-label="<?php esc_html_e( 'View SEO checkup report', 'wds' ); ?>"
 		   class="sui-button sui-button-ghost">
 
-			<i class="sui-icon-eye" aria-hidden="true"></i> <?php esc_html_e( 'View Report', 'wds' ); ?>
+			<span class="sui-icon-eye" aria-hidden="true"></span> <?php esc_html_e( 'View Report', 'wds' ); ?>
 		</a>
 		<small>
-			<?php echo empty( $reporting_enabled )
-				? esc_html__( 'Automatic checkups are disabled', 'wds' )
-				: esc_html__( 'Automatic checkups are enabled', 'wds' ); ?>
+			<?php echo smartcrawl_format_link(
+				esc_html__( 'Switch to %s.', 'wds' ),
+				$lighthouse_url,
+				esc_html__( 'Lighthouse SEO audits', 'wds' )
+			); ?>
 		</small>
 	</div>
 <?php endif; ?>

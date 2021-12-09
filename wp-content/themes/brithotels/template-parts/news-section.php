@@ -26,12 +26,12 @@
 					<h2>Offers</h2>
 					<p>BOOK NOW and enjoy complimentary early check-in*</p><p>* Subject to availability </p>
 				</div>
-				
+
 						<?php
 							$book_now_url = get_field('_book_now', $current_post_id);
 						?>
-                        <a href="<?php echo $book_now_url; ?>" class="btn centered" target="_blank">Book Now <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt=""></a>				
-				
+            <a href="<?php echo $book_now_url; ?>" class="btn centered" target="_blank">Book Now <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt=""></a>
+
 			</div>
 		</div>
 	</div>
@@ -48,12 +48,12 @@
 					<?php if($sub_heading1 != ''): ?>
 						<p><?php echo $sub_heading1; ?></p>
 					<?php endif; ?>
-					
+
 						<?php
 							$book_now_url = get_field('_book_now', $current_post_id);
 						?>
-                        <a href="<?php echo $book_now_url; ?>" class="btn" target="_blank">Book Now <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt=""></a>				
-					
+            <a href="<?php echo $book_now_url; ?>" class="btn" target="_blank">Book Now <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt=""></a>
+
 				</div>
 			</div>
 			<div class="col-lg-4">
@@ -64,12 +64,12 @@
 					<?php if($sub_heading2 != ''): ?>
 						<p><?php echo $sub_heading2; ?></p>
 					<?php endif; ?>
-					
+
 						<?php
 							$book_now_url = get_field('_book_now', $current_post_id);
 						?>
-                        <a href="<?php echo $book_now_url; ?>" class="btn" target="_blank">Book Now <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt=""></a>				
-										
+            <a href="<?php echo $book_now_url; ?>" class="btn" target="_blank">Book Now <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt=""></a>
+
 				</div>
 			</div>
 			<div class="col-lg-4">
@@ -80,12 +80,12 @@
 					<?php if($sub_heading3 != ''): ?>
 						<p><?php echo $sub_heading3; ?></p>
 					<?php endif; ?>
-					
+
 						<?php
 							$book_now_url = get_field('_book_now', $current_post_id);
 						?>
-                        <a href="<?php echo $book_now_url; ?>" class="btn" target="_blank">Book Now <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt=""></a>				
-										
+            <a href="<?php echo $book_now_url; ?>" class="btn" target="_blank">Book Now <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon/book.svg" alt=""></a>
+
 				</div>
 			</div>
 		</div>

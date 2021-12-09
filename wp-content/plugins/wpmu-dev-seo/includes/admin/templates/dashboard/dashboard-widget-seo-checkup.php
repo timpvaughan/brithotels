@@ -4,10 +4,10 @@ if ( ! $checkup_available ) {
 	return;
 }
 
-$page_url = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_CHECKUP );
-$checkup_url = Smartcrawl_Settings_Dashboard::checkup_url();
+$page_url = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_HEALTH );
+$lighthouse_url = $page_url . '&tab=tab_settings#seo-test-mode';
 $options = Smartcrawl_Settings::get_options();
-$reporting_enabled = smartcrawl_get_array_value( $options, 'checkup-cron-enable' );
+$reporting_enabled = Smartcrawl_Checkup_Options::is_cron_enabled();
 $last_checked = ! empty( $last_checked_timestamp );
 $in_progress = empty( $in_progress ) ? false : true;
 $option_name = Smartcrawl_Settings::TAB_SETTINGS . '_options';
@@ -21,14 +21,15 @@ $checkup_issues_tooltip = _n(
 	'wds'
 );
 $checkup_issues_tooltip = sprintf( $checkup_issues_tooltip, $issue_count );
+$has_errors = ! empty( $error );
 ?>
 <section id="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_SEO_CHECKUP ); ?>"
          data-dependent="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_TOP_STATS ); ?>"
          class="sui-box wds-dashboard-widget">
 	<div class="sui-box-header">
-		<h3 class="sui-box-title">
-			<i class="sui-icon-smart-crawl" aria-hidden="true"></i><?php esc_html_e( 'SEO Checkup', 'wds' ); ?>
-		</h3>
+		<h2 class="sui-box-title">
+			<span class="sui-icon-smart-crawl" aria-hidden="true"></span><?php esc_html_e( 'SEO Checkup', 'wds' ); ?>
+		</h2>
 
 		<?php if ( $issue_count > 0 ) : ?>
 			<div class="sui-actions-left">
@@ -38,17 +39,19 @@ $checkup_issues_tooltip = sprintf( $checkup_issues_tooltip, $issue_count );
 				</span>
 			</div>
 		<?php elseif ( $in_progress ): ?>
-			<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+			<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 		<?php endif; ?>
 
-		<?php if ( $items ): ?>
+		<?php if ( $items || $has_errors ): ?>
 			<div class="sui-actions-right">
-				<a href="<?php echo esc_attr( $checkup_url ); ?>"
-				   class="sui-button sui-button-blue">
-					<i class="sui-icon-plus" aria-hidden="true"></i>
-
-					<?php esc_html_e( 'Run checkup', 'wds' ); ?>
-				</a>
+				<button aria-label="<?php esc_html_e( 'Run SEO checkup', 'wds' ); ?>"
+				        class="sui-button sui-button-blue wds-start-checkup">
+					<span class="sui-loading-text">
+						<span class="sui-icon-plus" aria-hidden="true"></span>
+						<?php esc_html_e( 'Run checkup', 'wds' ); ?>
+					</span>
+					<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
+				</button>
 			</div>
 		<?php endif; ?>
 	</div>
@@ -67,18 +70,21 @@ $checkup_issues_tooltip = sprintf( $checkup_issues_tooltip, $issue_count );
 	</div>
 	<?php if ( ! $last_checked && ! $in_progress ): ?>
 		<div class="sui-box-footer">
-			<a href="<?php echo esc_attr( $checkup_url ); ?>"
-			   class="sui-button sui-button-blue">
-				<i class="sui-icon-plus" aria-hidden="true"></i>
-
-				<?php esc_html_e( 'Run checkup', 'wds' ); ?>
-			</a>
+			<button class="sui-button sui-button-blue wds-start-checkup">
+				<span class="sui-loading-text">
+					<span class="sui-icon-plus" aria-hidden="true"></span>
+					<?php esc_html_e( 'Run checkup', 'wds' ); ?>
+				</span>
+				<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
+			</button>
 
 			<span>
 				<small>
-					<?php echo empty( $reporting_enabled )
-						? esc_html__( 'Automatic checkups are disabled', 'wds' )
-						: esc_html__( 'Automatic checkups are enabled', 'wds' ); ?>
+					<?php echo smartcrawl_format_link(
+						esc_html__( 'Switch to %s.', 'wds' ),
+						$lighthouse_url,
+						esc_html__( 'Lighthouse SEO audits', 'wds' )
+					); ?>
 				</small>
 			</span>
 		</div>

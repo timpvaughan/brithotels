@@ -28,6 +28,7 @@ $missing_urls_tag = sprintf( $missing_urls_tag, $missing_urls );
 	</div>
 <?php else: ?>
 	<div class="wds-right">
-		<small><?php esc_html_e( 'No issues', 'wds' ); ?></small>
+		<span class="sui-icon-check-tick sui-success sui-md"
+		      aria-hidden="true"></span> <small><?php esc_html_e( 'No issues', 'wds' ); ?></small>
 	</div>
 <?php endif; ?>

@@ -1,13 +1,12 @@
+(function ($) {
 
-( function( $ ) {
+	$(function () {
 
-	$( function() {
-
-		$( '.toggle-contextual-help' ).click( function () {
-			$( '#contextual-help-link' ).trigger( 'click' );
+		$('.toggle-contextual-help').on('click', function () {
+			$('#contextual-help-link').trigger('click');
 			return false;
-		} );
+		});
 
-	} );
+	});
 
-} )( jQuery );
+})(jQuery);

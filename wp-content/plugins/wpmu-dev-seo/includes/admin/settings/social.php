@@ -27,7 +27,7 @@ class Smartcrawl_Social_Settings extends Smartcrawl_Settings_Admin {
 			$result['wds_social-setup'] = true;
 		}
 
-		$result['disable-schema'] = ! empty( $input['disable-schema'] );
+		$result['disable-schema'] = $this->disable_schema( $input );
 
 		$urls = array(
 			'facebook_url',
@@ -199,12 +199,12 @@ class Smartcrawl_Social_Settings extends Smartcrawl_Settings_Admin {
 			'pinterest_url'       => '',
 			'youtube_url'         => '',
 			// Twitter
-			'twitter-card-enable' => false,
+			'twitter-card-enable' => true,
 			'twitter-card-type'   => '',
 			// Pinterest
 			'pinterest-verify'    => '',
 			// OpenGraph
-			'og-enable'           => false,
+			'og-enable'           => true,
 			// Facebook-specific
 			'fb-app-id'           => '',
 		);
@@ -223,10 +223,15 @@ class Smartcrawl_Social_Settings extends Smartcrawl_Settings_Admin {
 			}
 		}
 
-		if ( is_multisite() && SMARTCRAWL_SITEWIDE ) {
-			update_site_option( $this->option_name, $options );
+		update_option( $this->option_name, $options );
+	}
+
+	private function disable_schema( $input ) {
+		if ( isset( $input['disable-schema'] ) ) {
+			return ! empty( $input['disable-schema'] );
 		} else {
-			update_option( $this->option_name, $options );
+			$previous = Smartcrawl_Settings::get_component_options( $this->name );
+			return (bool) smartcrawl_get_array_value( $previous, 'disable-schema' );
 		}
 	}
 

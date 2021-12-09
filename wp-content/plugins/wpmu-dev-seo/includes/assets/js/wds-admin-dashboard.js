@@ -8,7 +8,7 @@
 			_wds_nonce: _wds_dashboard.nonce
 		}, function (data) {
 			if ((data || {}).success) {
-				if (!$.isArray(box_id)) {
+				if (!Array.isArray(box_id)) {
 					box_id = [box_id];
 				}
 
@@ -23,6 +23,7 @@
 		}, 'json').always(function () {
 			update_page_status();
 			load_accordions();
+			load_score_circles();
 		});
 	}
 
@@ -104,15 +105,32 @@
 		});
 	}
 
+	function load_score_circles() {
+		$('.sui-circle-score:not(.loaded)').each(function () {
+			SUI.loadCircleScore(this);
+		});
+	}
+
+	function lighthouse_accordion_item_click(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		var health_url = _wds_dashboard.health_page_url + '&device=' + _wds_dashboard.lighthouse_widget_device;
+		redirect_to_check(event, health_url);
+	}
+
 	function checkup_accordion_item_click(event) {
 		event.preventDefault();
 		event.stopPropagation();
 
-		var checkup_page = _wds_dashboard.full_checkup_url,
-			checkup_item = $(event.target).closest('.wds-check-item');
+		redirect_to_check(event, _wds_dashboard.health_page_url);
+	}
 
-		if (checkup_item.length && checkup_page) {
-			window.location.href = checkup_page + '&check=' + checkup_item.attr('id');
+	function redirect_to_check(event, health_page) {
+		var checkup_item = $(event.target).closest('.sui-accordion-item');
+
+		if (checkup_item.length && health_page) {
+			window.location.href = health_page + '&check=' + checkup_item.attr('id');
 		}
 	}
 
@@ -143,6 +161,43 @@
 			.on('click', checkup_accordion_item_click);
 	}
 
+	function hook_lighthouse_accordion_item_click() {
+		$('#wds-lighthouse div.sui-accordion-item-header')
+			.off('click')
+			.on('click', lighthouse_accordion_item_click);
+	}
+
+	function start_new_checkup() {
+		var $button = $(this);
+		$button.addClass('wds-run-test-onload');
+		return $.post(ajaxurl, {
+			action: 'wds-start-checkup',
+			_wds_checkup_nonce: _wds_dashboard.checkup_nonce
+		}, function (data) {
+			if (data.success) {
+				window.location.href = _wds_dashboard.health_page_url;
+			} else {
+				$button.removeClass('wds-run-test-onload');
+			}
+		}, 'json');
+	}
+
+	function start_new_lighthouse_test() {
+		var $button = $(this);
+		$button.addClass('wds-run-test-onload');
+
+		return $.post(ajaxurl, {
+			action: 'wds-lighthouse-start-test',
+			_wds_nonce: _wds_dashboard.lighthouse_nonce
+		}, function (data) {
+			if (data.success) {
+				window.location.href = _wds_dashboard.health_page_url;
+			} else {
+				$button.removeClass('wds-run-test-onload');
+			}
+		}, 'json');
+	}
+
 	function init() {
 		reload_boxes();
 		load_accordions();
@@ -151,10 +206,13 @@
 		window.Wds.dismissible_message();
 
 		$(document)
+			.on('click', '.wds-start-checkup', start_new_checkup)
+			.on('click', '.wds-lighthouse-start-test', start_new_lighthouse_test)
 			.on('click', '.wds-activate-component', activate_component);
 
 		$(update_checkup_progress);
 		hook_checkup_accordion_item_click();
+		hook_lighthouse_accordion_item_click();
 	}
 
 	$(init);

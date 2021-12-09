@@ -4,7 +4,7 @@
  *  Plugin Name: GDPR Cookie Compliance (CCPA, PIPEDA ready)
  *  Plugin URI: https://wordpress.org/plugins/gdpr-cookie-compliance/
  *  Description: Our plugin is useful in preparing your site for the following data protection and privacy regulations: GDPR, PIPEDA, CCPA, AAP, LGPD and others.
- *  Version: 4.3.5
+ *  Version: 4.6.3
  *  Author: Moove Agency
  *  Domain Path: /languages
  *  Author URI: https://www.mooveagency.com
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
 
-define( 'MOOVE_GDPR_VERSION', '4.3.5' );
+define( 'MOOVE_GDPR_VERSION', '4.6.3' );
 if ( ! defined( 'MOOVE_SHOP_URL' ) ) :
 	define( 'MOOVE_SHOP_URL', 'https://shop.mooveagency.com' );
 endif;
@@ -30,13 +30,46 @@ register_deactivation_hook( __FILE__, 'moove_gdpr_deactivate' );
  * Functions on plugin activation, create relevant pages and defaults for settings page.
  */
 function moove_gdpr_activate() {
-
+	delete_option( 'gdpr_cc_db_created' );
 }
 
 /**
  * Function on plugin deactivation. It removes the pages created before.
  */
 function moove_gdpr_deactivate() {
+	try {
+		if ( class_exists( 'Moove_GDPR_License_Manager' ) ) :
+			$gdpr_default_content = new Moove_GDPR_Content();
+			$option_key           = $gdpr_default_content->moove_gdpr_get_key_name();
+			$gdpr_key             = function_exists( 'get_site_option' ) ? get_site_option( $option_key ) : get_option( $option_key );
+
+			if ( $gdpr_key && isset( $gdpr_key['key'] ) && isset( $gdpr_key['activation'] ) ) :
+				$license_manager  		= new Moove_GDPR_License_Manager();
+				$validate_license 		= $license_manager->validate_license( $gdpr_key['key'], 'gdpr', 'deactivate' );
+				if ( $validate_license && isset( $validate_license['valid'] ) && true === $validate_license['valid'] ) :
+					if ( function_exists( 'update_site_option' ) ) :
+						update_site_option(
+							$option_key,
+							array(
+								'key'          => $gdpr_key['key'],
+								'deactivation' => strtotime( 'now' ),
+							)
+						);
+					else :
+						update_option(
+							$option_key,
+							array(
+								'key'          => $gdpr_key['key'],
+								'deactivation' => strtotime( 'now' ),
+							)
+						);
+					endif;
+				endif;
+			endif;
+		endif;
+	} catch (Exception $e) {
+		
+	}
 }
 
 /**

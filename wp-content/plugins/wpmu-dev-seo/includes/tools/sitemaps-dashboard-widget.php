@@ -2,6 +2,8 @@
 
 /**
  * Init WDS Sitemaps Dashboard Widget
+ *
+ * TODO: move the information in this widget to the SC dashboard widget and get rid of this
  */
 class Smartcrawl_Sitemaps_Dashboard_Widget extends Smartcrawl_Base_Controller {
 
@@ -14,7 +16,7 @@ class Smartcrawl_Sitemaps_Dashboard_Widget extends Smartcrawl_Base_Controller {
 
 	public function should_run() {
 		return Smartcrawl_Settings::get_setting( 'sitemap' )
-		       && smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_SITEMAP );
+		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SITEMAP );
 	}
 
 	protected function init() {

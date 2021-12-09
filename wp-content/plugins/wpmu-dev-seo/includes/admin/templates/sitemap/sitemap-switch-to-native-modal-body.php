@@ -10,9 +10,9 @@
         class="sui-button sui-button-blue">
 
 	<span class="sui-loading-text">
-		<i class="sui-icon-defer" aria-hidden="true"></i>
+		<span class="sui-icon-defer" aria-hidden="true"></span>
 		<?php esc_html_e( 'Switch', 'wds' ); ?>
 	</span>
 
-	<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+	<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 </button>

@@ -9,6 +9,8 @@
  * Settings hub class
  *
  * Used for getting/setting component and global settings.
+ *
+ * TODO: we don't need the *_specific_* methods now so remove them
  */
 abstract class Smartcrawl_Settings extends Smartcrawl_Renderable {
 
@@ -19,6 +21,9 @@ abstract class Smartcrawl_Settings extends Smartcrawl_Renderable {
 	const COMP_SITEMAP = 'sitemap';
 	const COMP_REDIRECTIONS = 'redirections';
 	const COMP_CHECKUP = 'checkup';
+	const COMP_LIGHTHOUSE = 'lighthouse';
+	const COMP_HEALTH = 'health';
+	const COMP_ROBOTS = 'robots';
 
 	const TAB_DASHBOARD = 'wds_wizard';
 	const TAB_AUTOLINKS = 'wds_autolinks';
@@ -29,6 +34,8 @@ abstract class Smartcrawl_Settings extends Smartcrawl_Renderable {
 	const TAB_SETTINGS = 'wds_settings';
 	const TAB_REDIRECTIONS = 'wds_redirections';
 	const TAB_CHECKUP = 'wds_checkup';
+	const TAB_LIGHTHOUSE = 'wds_lighthouse';
+	const TAB_HEALTH = 'wds_health';
 
 	/**
 	 * Holds options cache, so it's only populated once
@@ -69,7 +76,9 @@ abstract class Smartcrawl_Settings extends Smartcrawl_Renderable {
 			self::TAB_ONPAGE,
 			self::TAB_SITEMAP,
 			self::TAB_SOCIAL,
+			self::TAB_HEALTH,
 			self::TAB_CHECKUP,
+			self::TAB_LIGHTHOUSE,
 		);
 	}
 
@@ -91,29 +100,19 @@ abstract class Smartcrawl_Settings extends Smartcrawl_Renderable {
 	/**
 	 * Merges all options together
 	 *
+	 * TODO: create a single model that includes all plugin settings and has methods for validating and saving changes
+	 *
 	 * Context and config dependent
 	 *
 	 * @return array
 	 */
 	private static function _populate_options() {
-		$settings = is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) || ! smartcrawl_is_allowed_tab( self::TAB_SETTINGS )
-			? self::get_sitewide_settings()
-			: self::get_local_settings();
-		$autolinks = is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) || ! smartcrawl_is_allowed_tab( self::TAB_AUTOLINKS )
-			? get_site_option( self::TAB_AUTOLINKS . '_options', array() )
-			: get_option( self::TAB_AUTOLINKS . '_options', array() );
-		$onpage = is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) || ! smartcrawl_is_allowed_tab( self::TAB_ONPAGE )
-			? get_site_option( self::TAB_ONPAGE . '_options', array() )
-			: get_option( self::TAB_ONPAGE . '_options', array() );
-		$sitemap = is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) || ! smartcrawl_is_allowed_tab( self::TAB_SITEMAP )
-			? get_site_option( self::TAB_SITEMAP . '_options', array() )
-			: get_option( self::TAB_SITEMAP . '_options', array() );
-		$social = is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) || ! smartcrawl_is_allowed_tab( self::TAB_SOCIAL )
-			? get_site_option( self::TAB_SOCIAL . '_options', array() )
-			: get_option( self::TAB_SOCIAL . '_options', array() );
-		$checkup = is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) || ! smartcrawl_is_allowed_tab( self::TAB_CHECKUP )
-			? get_site_option( self::TAB_CHECKUP . '_options', array() )
-			: get_option( self::TAB_CHECKUP . '_options', array() );
+		$settings = self::get_local_settings();
+		$autolinks = get_option( self::TAB_AUTOLINKS . '_options', array() );
+		$onpage = get_option( self::TAB_ONPAGE . '_options', array() );
+		$sitemap = get_option( self::TAB_SITEMAP . '_options', array() );
+		$social = get_option( self::TAB_SOCIAL . '_options', array() );
+		$checkup = get_option( self::TAB_CHECKUP . '_options', array() );
 
 		return array_merge(
 			(array) $settings,
@@ -123,15 +122,6 @@ abstract class Smartcrawl_Settings extends Smartcrawl_Renderable {
 			(array) $social,
 			(array) $checkup
 		);
-	}
-
-	/**
-	 * Gets sitewide options
-	 *
-	 * @return array
-	 */
-	public static function get_sitewide_settings() {
-		return get_site_option( 'wds_settings_options', array() );
 	}
 
 	/**
@@ -152,19 +142,10 @@ abstract class Smartcrawl_Settings extends Smartcrawl_Renderable {
 	 * @return mixed Value or falback
 	 */
 	public static function get_setting( $key, $fallback = false ) {
-		$options = self::get_sitewide_settings();
-		$value = isset( $options[ $key ] )
+		$options = self::get_local_settings();
+		return isset( $options[ $key ] )
 			? $options[ $key ]
 			: $fallback;
-
-		if ( ! ( defined( 'SMARTCRAWL_SITEWIDE' ) && SMARTCRAWL_SITEWIDE ) ) {
-			$options = self::get_local_settings();
-			$value = isset( $options[ $key ] )
-				? $options[ $key ]
-				: $value;
-		}
-
-		return $value;
 	}
 
 	/**
@@ -200,7 +181,10 @@ abstract class Smartcrawl_Settings extends Smartcrawl_Renderable {
 			self::COMP_SOCIAL,
 			self::COMP_SITEMAP,
 			self::COMP_REDIRECTIONS,
+			self::COMP_HEALTH,
 			self::COMP_CHECKUP,
+			self::COMP_LIGHTHOUSE,
+			self::COMP_ROBOTS,
 		);
 	}
 
@@ -216,11 +200,7 @@ abstract class Smartcrawl_Settings extends Smartcrawl_Renderable {
 			return array();
 		}
 
-		$options = is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' )
-			? get_site_option( $options_key )
-			: get_option( $options_key );
-
-		return $options;
+		return get_option( $options_key );
 	}
 
 	/**
@@ -249,15 +229,24 @@ abstract class Smartcrawl_Settings extends Smartcrawl_Renderable {
 	 * @param mixed $options Specific options we want to save.
 	 */
 	public static function update_specific_options( $option_key, $options ) {
-		return is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' )
-			? update_site_option( $option_key, $options )
-			: update_option( $option_key, $options );
+		return update_option( $option_key, $options );
+	}
+
+	public static function delete_component_options( $component ) {
+		if ( empty( $component ) ) {
+			return array();
+		}
+		if ( ! in_array( $component, self::get_all_components(), true ) ) {
+			return array();
+		}
+
+		$options_key = "wds_{$component}_options";
+
+		return self::delete_specific_options( $options_key );
 	}
 
 	public static function delete_specific_options( $option_key ) {
-		return is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' )
-			? delete_site_option( $option_key )
-			: delete_option( $option_key );
+		return delete_option( $option_key );
 	}
 
 	public static function deactivate_component( $component ) {
@@ -277,7 +266,6 @@ abstract class Smartcrawl_Settings extends Smartcrawl_Renderable {
 			self::COMP_ONPAGE    => __( 'Title & Meta Optimization', 'wds' ),
 			self::COMP_SOCIAL    => __( 'Social', 'wds' ),
 			self::COMP_SITEMAP   => __( 'XML Sitemap', 'wds' ),
-			self::COMP_CHECKUP   => __( 'SEO Checkup', 'wds' ),
 		);
 	}
 

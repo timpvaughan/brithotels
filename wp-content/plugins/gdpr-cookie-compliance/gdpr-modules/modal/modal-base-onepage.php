@@ -5,9 +5,9 @@
 ?>
 
 <!-- V2 -->
-<div id="moove_gdpr_cookie_modal" class="lity-hide" role="complementary" aria-label="<?php esc_html_e('GDPR Settings Screen', 'gdpr-cookie-compliance'); ?>">
+<div id="moove_gdpr_cookie_modal" class="gdpr_lightbox-hide" role="complementary" aria-label="<?php esc_html_e('GDPR Settings Screen', 'gdpr-cookie-compliance'); ?>">
   <div class="moove-gdpr-modal-content moove-clearfix logo-position-<?php echo esc_attr( $content->logo_position ); ?> <?php echo esc_attr( $content->theme ); ?>">
-    <button class="moove-gdpr-modal-close">
+    <button class="moove-gdpr-modal-close" aria-label="<?php esc_html_e( 'Close GDPR Cookie Settings', 'gdpr-cookie-compliance' ); ?>">
       <span class="gdpr-sr-only"><?php esc_html_e( 'Close GDPR Cookie Settings', 'gdpr-cookie-compliance' ); ?></span>
       <span class="gdpr-icon moovegdpr-arrow-close"></span>
     </button>
@@ -51,4 +51,4 @@
   </div>
   <!--  .moove-gdpr-modal-content -->
 </div>
-<!-- #moove_gdpr_cookie_modal  -->
+<!-- #moove_gdpr_cookie_modal -->

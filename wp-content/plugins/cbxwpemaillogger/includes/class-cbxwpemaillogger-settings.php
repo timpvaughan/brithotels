@@ -939,8 +939,11 @@
 			function show_navigation() {
 				$html = '<h2 class="nav-tab-wrapper">';
 
+				$i = 0;
 				foreach ( $this->settings_sections as $tab ) {
-					$html .= sprintf( '<a href="#%1$s" class="nav-tab" id="%1$s-tab">%2$s</a>', $tab['id'], $tab['title'] );
+					$extra_tab_class = ($i === 0)? 'nav-tab-active' : '';
+					$html .= sprintf( '<a data-tabid="'.$tab['id'].'" href="#%1$s" class="nav-tab %3$s" id="%1$s-tab">%2$s</a>', $tab['id'], $tab['title'], $extra_tab_class );
+					$i++;
 				}
 
 				$html .= '</h2>';
@@ -956,8 +959,12 @@
 			function show_forms() {
 				?>
 				<div class="metabox-holder">
-					<?php foreach ( $this->settings_sections as $form ) { ?>
-						<div id="<?php echo $form['id']; ?>" class="cbxwpemaillogger_group" style="display: none;">
+					<?php
+					$i = 0;
+                    foreach ( $this->settings_sections as $form ) {
+	                    $display_style = ($i === 0 )? '' : 'display: none;';
+                        ?>
+						<div id="<?php echo $form['id']; ?>" class="cbxwpemaillogger_group" style="<?php echo $display_style; ?>">
 							<form method="post" action="options.php">
 								<?php
 									do_action( 'cbxwpemaillogger_setting_form_top_' . $form['id'], $form );
@@ -966,7 +973,7 @@
 									do_action( 'cbxwpemaillogger_setting_form_bottom_' . $form['id'], $form );
 								?>
 								<div style="padding-left: 10px">
-									<?php submit_button(); ?>
+									<?php submit_button(esc_html__('Save Settings', 'cbxwpemaillogger'), 'primary submit_cbxwpemaillogger', 'submit', true, array('id' => 'submit_'.esc_attr($form['id']))); ?>
 								</div>
 							</form>
 						</div>

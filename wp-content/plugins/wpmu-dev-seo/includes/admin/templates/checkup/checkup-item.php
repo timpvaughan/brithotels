@@ -23,7 +23,7 @@ if ( $ignored ) {
 	$style_class = '';
 	$icon_class = 'sui-icon-eye-hide';
 } else {
-	$style_class = isset( $style_class_map[ $item['type'] ] ) ? $style_class_map[ $item['type'] ] : '';		 	 	   	 		  				
+	$style_class = isset( $style_class_map[ $item['type'] ] ) ? $style_class_map[ $item['type'] ] : '';
 	$icon_class = 'ok' === $type ? 'sui-icon-check-tick' : 'sui-icon-warning-alert';
 }
 $title = ! empty( $item['title'] ) ? $item['title'] : '';
@@ -42,8 +42,8 @@ $show_footer = $type !== 'ok'
      id="<?php echo esc_attr( $item_id ); ?>">
 	<div class="sui-accordion-item-header">
 		<div class="sui-accordion-item-title">
-			<i aria-hidden="true"
-			   class="<?php echo esc_attr( $style_class ); ?> <?php echo esc_attr( $icon_class ); ?>"></i>
+			<span aria-hidden="true"
+			      class="<?php echo esc_attr( $style_class ); ?> <?php echo esc_attr( $icon_class ); ?>"></span>
 			<?php echo esc_html( $title ); ?>
 		</div>
 
@@ -53,20 +53,26 @@ $show_footer = $type !== 'ok'
 				        data-title="<?php echo esc_attr( $title ); ?>"
 				        data-id="<?php echo esc_attr( $idx ); ?>">
 					<span class="sui-loading-text">
-						<i class="sui-icon-undo" aria-hidden="true"></i>
+						<span class="sui-icon-undo" aria-hidden="true"></span>
 						<?php esc_html_e( 'Restore', 'wds' ); ?>
 					</span>
 
-					<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+					<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 				</button>
 			</div>
 		<?php endif; ?>
 
 		<div>
 			<span class="sui-accordion-open-indicator">
-				<i aria-hidden="true" class="sui-icon-chevron-down"></i>
+				<span aria-hidden="true" class="sui-icon-chevron-down"></span>
 				<button type="button"
-				        class="sui-screen-reader-text"><?php esc_html_e( 'Expand', 'wds' ); ?></button>
+				        class="sui-screen-reader-text">
+
+					<?php printf(
+						esc_html__( 'Expand %s check', 'wds' ),
+						esc_html( $title )
+					); ?>
+				</button>
 			</span>
 		</div>
 	</div>
@@ -102,11 +108,11 @@ $show_footer = $type !== 'ok'
 						        data-title="<?php echo esc_attr( $title ); ?>"
 						        data-id="<?php echo esc_attr( $idx ); ?>">
 							<span class="sui-loading-text">
-								<i class="sui-icon-eye-hide" aria-hidden="true"></i>
+								<span class="sui-icon-eye-hide" aria-hidden="true"></span>
 								<?php esc_html_e( 'Ignore', 'wds' ); ?>
 							</span>
 
-							<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+							<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 						</button>
 					<?php endif; ?>
 

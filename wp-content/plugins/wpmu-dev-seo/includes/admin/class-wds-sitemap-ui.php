@@ -21,7 +21,7 @@ class Smartcrawl_Sitemap_UI extends Smartcrawl_Base_Controller {
 
 	public function should_run() {
 		return Smartcrawl_Settings::get_setting( 'sitemap' )
-		       && smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_SITEMAP );
+		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SITEMAP );
 	}
 
 	/**

@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * TODO: out of the two implementations of checkup service only keep the one we actually use
+ */
 class Smartcrawl_Checkup_Ajax_Service extends Smartcrawl_Checkup_Service_Implementation {
 
 	public function get_known_verbs() {
@@ -15,7 +18,7 @@ class Smartcrawl_Checkup_Ajax_Service extends Smartcrawl_Checkup_Service_Impleme
 	}
 
 	public function get_service_base_url() {
-		$base_url = 'https://premium.wpmudev.org/';
+		$base_url = 'https://wpmudev.com/';
 
 		if ( defined( 'WPMUDEV_CUSTOM_API_SERVER' ) && WPMUDEV_CUSTOM_API_SERVER ) {
 			$base_url = trailingslashit( WPMUDEV_CUSTOM_API_SERVER );

@@ -285,7 +285,7 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		$show = user_can_see_seo_metabox();
 		if ( function_exists( 'add_meta_box' ) ) {
 			// Show branding for singular installs.
-			$metabox_title = is_multisite() ? __( 'SmartCrawl', 'wds' ) : 'SmartCrawl';
+			$metabox_title = $this->get_metabox_title();
 			$post_types = get_post_types( array(
 				'show_ui' => true, // Only if it actually supports WP UI.
 				'public'  => true, // ... and is public
@@ -414,6 +414,11 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 			delete_post_meta( $post_id, "_wds_autolinks-exclude" );
 		}
 
+		update_post_meta( $post->ID, '_wds_trimmed_excerpt', smartcrawl_get_trimmed_excerpt(
+			$post->post_excerpt,
+			$post->post_content
+		) );
+
 		do_action( 'wds_saved_postdata' );
 	}
 
@@ -433,7 +438,7 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 	 */
 	public function smartcrawl_meta_column_heading( $columns ) {
 		$onpage_allowed = Smartcrawl_Settings::get_setting( Smartcrawl_Settings::COMP_ONPAGE )
-		                  && smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_ONPAGE );
+		                  && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAGE );
 
 		if ( $onpage_allowed ) {
 			$columns['smartcrawl-robots'] = __( 'Robots Meta', 'wds' );
@@ -592,5 +597,12 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		}
 
 		return $this->is_private_post_type( $current_screen->post_type );
+	}
+
+	/**
+	 * @return string|void
+	 */
+	private function get_metabox_title() {
+		return __( 'SmartCrawl', 'wds' );
 	}
 }

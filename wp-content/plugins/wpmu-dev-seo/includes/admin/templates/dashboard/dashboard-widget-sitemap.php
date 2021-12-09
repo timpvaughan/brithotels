@@ -1,6 +1,6 @@
 <?php
-$sitemap_available = smartcrawl_subsite_setting_page_enabled( 'wds_sitemap' );
-$sitemap_crawler_available = is_main_site();
+$sitemap_available = Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SITEMAP );
+$sitemap_crawler_available = Smartcrawl_Sitemap_Utils::crawler_available();
 if ( ! $sitemap_available ) {
 	return;
 }
@@ -23,15 +23,20 @@ $core_sitemap_notice_text = smartcrawl_format_link(
 	esc_html__( 'Your WordPress core sitemap is available at %s', 'wds' ),
 	home_url( '/wp-sitemap.xml' ), '/wp-sitemap.xml', '_blank'
 );
+$news_sitemap_notice_text = smartcrawl_format_link(
+	esc_html__( 'Your news sitemap is available at %s', 'wds' ),
+	home_url( '/news-sitemap.xml' ), '/news-sitemap.xml', '_blank'
+);
+$news_sitemap_enabled = smartcrawl_get_array_value( $options, 'enable-news-sitemap' );
 ?>
 <section id="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_SITEMAP ); ?>"
          class="sui-box wds-dashboard-widget"
          data-dependent="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_TOP_STATS ); ?>">
 
 	<div class="sui-box-header">
-		<h3 class="sui-box-title">
-			<i class="sui-icon-web-globe-world"></i> <?php esc_html_e( 'Sitemap', 'wds' ); ?>
-		</h3>
+		<h2 class="sui-box-title">
+			<span class="sui-icon-web-globe-world" aria-hidden="true"></span> <?php esc_html_e( 'Sitemaps', 'wds' ); ?>
+		</h2>
 		<?php
 		if ( $sitemap_enabled && $is_member && $sitemap_crawler_available ) {
 			$this->_render( 'url-crawl-master', array(
@@ -76,13 +81,25 @@ $core_sitemap_notice_text = smartcrawl_format_link(
 				<button type="button"
 				        data-option-id="<?php echo esc_attr( $option_name ); ?>"
 				        data-flag="<?php echo 'sitemap'; ?>"
+				        aria-label="<?php esc_html_e( 'Activate sitemap component', 'wds' ); ?>"
 				        class="wds-activate-component sui-button sui-button-blue wds-disabled-during-request">
 
 					<span class="sui-loading-text"><?php esc_html_e( 'Activate', 'wds' ); ?></span>
-					<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+					<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 				</button>
 			<?php endif; ?>
 		</div>
+
+		<?php if ( $news_sitemap_enabled ): ?>
+			<div class="wds-separator-top wds-draw-left-padded">
+				<small><strong><?php esc_html_e( 'News Sitemap', 'wds' ); ?></strong></small>
+
+				<?php $this->_render( 'notice', array(
+					'class'   => 'sui-notice-info',
+					'message' => $news_sitemap_notice_text,
+				) ); ?>
+			</div>
+		<?php endif; ?>
 
 		<?php if ( $sitemap_crawler_available ): ?>
 			<div class="wds-separator-top cf <?php echo $is_member ? 'wds-draw-left-padded' : 'wds-box-blocked-area wds-draw-down wds-draw-left'; ?>">
@@ -105,10 +122,10 @@ $core_sitemap_notice_text = smartcrawl_format_link(
 						</span></div>
 					<?php endif; ?>
 				<?php else : ?>
-					<a href="https://premium.wpmudev.org/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_crawl_pro_tag"
+					<a href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_crawl_pro_tag"
 					   target="_blank">
 						<span class="sui-tag sui-tag-pro sui-tooltip"
-						      data-tooltip="<?php esc_attr_e( 'Get SmartCrawl Pro today Free', 'wds' ); ?>">
+						      data-tooltip="<?php esc_attr_e( 'Try SmartCrawl Pro Free', 'wds' ); ?>">
 							<?php esc_html_e( 'Pro', 'wds' ); ?>
 						</span>
 					</a>
@@ -122,10 +139,11 @@ $core_sitemap_notice_text = smartcrawl_format_link(
 
 	<div class="sui-box-footer">
 		<a href="<?php echo esc_attr( $page_url ); ?>"
+		   aria-label="<?php esc_html_e( 'Configure sitemap component', 'wds' ); ?>"
 		   class="sui-button sui-button-ghost">
 
-			<i class="sui-icon-wrench-tool"
-			   aria-hidden="true"></i> <?php esc_html_e( 'Configure', 'wds' ); ?>
+			<span class="sui-icon-wrench-tool"
+			      aria-hidden="true"></span> <?php esc_html_e( 'Configure', 'wds' ); ?>
 		</a>
 	</div>
 </section>

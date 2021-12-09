@@ -41,7 +41,7 @@ $schema_enable_test_button = (bool) smartcrawl_get_array_value( $options, 'schem
 		<button type="button"
 		        id="wds-deactivate-schema-component"
 		        class="sui-button sui-button-ghost">
-			<i class="sui-icon-power-on-off" aria-hidden="true"></i>
+			<span class="sui-icon-power-on-off" aria-hidden="true"></span>
 
 			<?php esc_html_e( 'Deactivate', 'wds' ); ?>
 		</button>

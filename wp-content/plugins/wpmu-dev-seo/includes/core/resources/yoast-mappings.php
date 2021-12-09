@@ -62,7 +62,6 @@ return array(
 	'wpseo_social/twitter_site'                => 'wds_social_options/twitter_username',
 	'wpseo_social/twitter_card_type'           => 'wds_social_options/twitter-card-type',
 	'wpseo_social/youtube_url'                 => 'wds_social_options/youtube_url',
-	'wpseo_social/fbadminapp'                  => 'wds_social_options/fb-app-id',
 	'wpseo_social/og_frontpage_title'          => 'wds_onpage_options/og-title-home',
 	'wpseo_social/og_frontpage_desc'           => 'wds_onpage_options/og-description-home',
 	'wpseo_social/og_frontpage_image'          => 'wds_onpage_options/og-images-home[]',

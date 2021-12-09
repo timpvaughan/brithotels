@@ -22,7 +22,7 @@ class Smartcrawl_OnPage_UI extends Smartcrawl_Base_Controller {
 
 	public function should_run() {
 		return Smartcrawl_Settings::get_setting( 'onpage' )
-		       && smartcrawl_is_allowed_tab( Smartcrawl_Settings::TAB_ONPAGE );
+		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAGE );
 	}
 
 	/**

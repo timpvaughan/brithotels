@@ -1,18 +1,18 @@
-=== GDPR Cookie Compliance (CCPA, PIPEDA ready) ===
+=== GDPR Cookie Compliance (CCPA ready) ===
 Contributors: MooveAgency
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LCYMMR4EQ2YVW
-Stable tag: trunk
-Tags: gdpr, cookie, notice, consent, law
+Donate link: https://www.mooveagency.com/wordpress-plugins/gdpr-cookie-compliance/
+Tags: GDPR, CCPA, cookie banner, cookie law, cookie consent
+Stable tag: 4.6.3
 Requires at least: 4.5
-Tested up to: 5.5
+Tested up to: 5.8
 Requires PHP: 5.6 or higher
-License: GPLv2
+License: GPLv3
 
-Cookie Compliance for GDPR, PIPEDA, CCPA, LGPD, AAP, cookie law and consent notice requirements on your website.
+Cookie Compliance for GDPR & CCPA, European and other cookie law and consent notice requirements on your website.
 
 == Description ==
 
-**Prepare your website for cookie compliance related to GDPR, PIPEDA, CCPA, LGPD, AAP, cookie law and consent notice requirements with this incredibly powerful and 100% free WordPress cookie plugin.**
+**Prepare your website for cookie compliance related to GDPR & CCPA, EU cookie law and consent notice requirements with this incredibly powerful, easy-to-use, well supported and 100% free WordPress plugin.**
 
 
 ### Key Features
@@ -34,27 +34,19 @@ Cookie Compliance for GDPR, PIPEDA, CCPA, LGPD, AAP, cookie law and consent noti
 * WPML, QTranslate, WP Multilang and Polylang compatible, .pot file for translations included
 * **CDN** Base URL supported
 * Supports all major **caching** servers and plugins
-* Available in **11 languages**
+* Available in **14 languages**
 * Optimised for PHP 7.4
-
-**The plugin is especially useful in preparing your site for the following cookie law, data protection and privacy regulations:**
-* **GDPR**: The General Data Protection Regulation (European Union)
-* **PIPEDA**: The Personal Information Protection and Electronic Documents Act (Canada) 
-* **CCPA**: The California Consumer Privacy Act (California, United States)
-* **AAP**: Australia's Privacy Principles (Australia)
-* **LGPD**: The Brazilian General Data Protection Law (Brazil)
-* **DSGVO, CNIL, PECR, DPA** and other cookie law, data and privacy regulations
-
 
 ### Premium Features Available
 
 * **Cookie wall / Full-screen layout** - if enabled, the Cookie Consent Banner will be display in a full screen mode, and force users to either accept or reject cookies before they can see your content
 * **Export & import settings** - transfer your custom settings between sites with ease
-* **WordPress Multisite extension** - you can manage the plugin settings globally, and clone them from one site to another within your multi-site setup
+* **WordPress Multisite features** - you can manage the plugin settings globally, and clone them from one site to another within your multi-site setup. You can also sync users consent between individual subsites on your multisite network.
 * **Accept on Scroll / Hide timer** - allow users to accept cookies by scrolling down the page OR by setting a timer (ie. Hide banner after 5 seconds)
 * **Renew Consent** - ask users to renew their consent if there is a change in privacy or cookie policy on your site
 * **Geo-location** - if enabled, the Cookie Consent Banner will only be shown to visitors from the European Union or selected countries (ie. Canada, United States etc.)
 * **iFrame Blocker** - blocks users from viewing 3rd party resources (such as Youtube) until they accept cookies
+* **Language Specific Scripts** - insert different Tag Manager Scripts for different languages, supports WPML and other language plugins
 * **Premium Shortcodes** that can be added to your ‘Privacy & Cookie Policy’ and allow your users to manage their consent with ease.
 * **Hide Cookie Banner** allows you to hide the Cookie Notice Banner on selected pages
 * **Cookie Declaration** allows you to manually declare the exact type of cookies that your site uses, including the cookie name, provider, purpose and expiration
@@ -64,7 +56,7 @@ Cookie Compliance for GDPR, PIPEDA, CCPA, LGPD, AAP, cookie law and consent noti
 * **Fast Premium Support** from our friendly team
 * **12 months** of premium updates included
 
-[Buy GDPR Premium Add-on here](https://www.mooveagency.com/wordpress-plugins/gdpr-cookie-compliance/)
+[Download Premium Add-on here](https://www.mooveagency.com/wordpress-plugins/gdpr-cookie-compliance/)
 
 
 ### Demo Video
@@ -96,21 +88,22 @@ You can view a demo of the plugin here:
 * A few examples of how you can setup our plugin in various ways are below:
 
 **OPTION A** 
-No cookies are stored on users' computers until the user accepts cookies: 
+No cookies are stored on users' computers until the user accepts cookies. 
 [Example 1](https://www.mooveagency.com/wordpress-plugins/gdpr-cookie-compliance/)
 
 **OPTION B**  
-The 'Full-Screen Cookie Wall' option is used, cookies are accepted by default but the user has the option to turn them off: 
-[Example 2](https://www.teneo.net/uk/)
+The 'Full-Screen / Cookie Wall' option is used (a premium feature).
+[Example 2](https://www.teneo.net/)
 
-**OPTION C** 
-Cookies are accepted by default but the user has the option to turn them off: 
-[Example 3](https://www.nacro.org.uk/)
-
-**OPTION D**  
-Cookie Consent Banner is displayed at the top of the page. Cookies are also accepted automatically just by scrolling down the page:
+**OPTION C**  
+Cookie Consent Banner is displayed at the top of the page. Cookies are accepted automatically when user starts scrolling down the page.
 [Example 4](https://www.mrisoftware.com/uk/)
 
+**OPTION D**  
+Cookie Notice Banner is displayed at the bottom of the page and uses the 'light' colour scheme with squared buttons. Cookies are accepted by default but user can change their cookie settings preferences at anytime.
+[Example 5](https://www.mrisoftware.com/uk/)
+
+**OTHER OPTIONS**  
 There are many other settings available that you can use to create your own unique Cookie Consent Banner and satisfy the Cookie Compliance Law - our plugin is very flexible. 
 
 
@@ -122,14 +115,26 @@ There are many other settings available that you can use to create your own uniq
 * Any customisation should be implemented by experienced developers only.
 
 
+### Flexible 
+
+OUr cookie plugin is very flexible and especially useful in preparing your site for the following cookie law, data protection and privacy regulations:
+
+* **GDPR**: The General Data Protection Regulation (European Union)
+* **PIPEDA**: The Personal Information Protection and Electronic Documents Act (Canada) 
+* **CCPA**: The California Consumer Privacy Act (California, United States)
+* **AAP**: Australia's Privacy Principles (Australia)
+* **LGPD**: The Brazilian General Data Protection Law (Brazil)
+* **DSGVO, CNIL, PECR, DPA** and other cookie law, data protection and privacy regulations
+
+
 ### About us
 
-[Moove Agency](https://www.mooveagency.com/)is a premium supplier of quality WordPress plugins, services and support. [Visit our site] (https://www.mooveagency.com/services/wordpress-development/) to learn more.
+[Moove Agency](https://www.mooveagency.com/) is a premium supplier of quality WordPress plugins, services and support. [Visit our site](https://www.mooveagency.com/wordpress-plugins/) to learn more.
 
 
 ### Disclaimer
 
-* THIS PLUGIN DOES NOT MAKE YOUR WEBSITE COMPLIANT. YOU ARE RESPONSIBLE FOR ENSURING THAT ALL GDPR REQUIREMENTS ARE MET ON YOUR WEBSITE.
+* THIS PLUGIN DOES NOT MAKE YOUR WEBSITE COMPLIANT. YOU ARE RESPONSIBLE FOR ENSURING THAT ALL COOKIE LAW REQUIREMENTS ARE MET ON YOUR WEBSITE.
 
 
 
@@ -149,12 +154,15 @@ https://www.example.com/#gdpr_cookie_modal
 https://www.example.com/your-internal-page/#gdpr_cookie_modal
 
 = Can I use direct link to "Accept" and "Reject" cookies?
-* For ACCEPT cookies you can use "#gdpr-accept-cookies" as link
-* For REJECT cookies you can use "#gdpr-reject-cookies" as link
+* For ACCEPT cookies you can use "#gdpr-accept-cookies" as a link
+* For REJECT cookies you can use "#gdpr-reject-cookies" as a link
 
 = The scripts added to the plugin settings are not visible in the page source code. =
-* Our plugin loads scripts using JavaScript, which is why you cannot find them when viewing the source code of the page.
+* Our plugin loads scripts using JavaScript which is why you cannot find them when viewing the source code of the page.
 * To view the scripts, you can use the Developer Console in Chrome browser (Inspect Element feature).
+
+= Compatibility with GTM containers =
+* Our plugin fully supports GTM consent settings and containers. [More details here](https://support.mooveagency.com/topic/gtm-consent-settings/)
 
 = What are "Strictly Necessary Cookies"? =
 * The "Strictly Necessary Cookies", sometimes called Essential Cookies, are cookies that are necessary for your site to function properly.
@@ -170,19 +178,21 @@ Yes. Once you setup the plugin, you should delete the scripts you uploaded to th
 = Can I use custom code or hooks with your plugin? =
 * Yes, we have implemented hooks that allow you to implement custom code snippets. 
 * You will find the list of popular hooks in the plugin setttings: CMS > GDPR Cookie Compliance > Help, Hooks, Filters & Shortcodes
-* You can also find the list of all [pre-defined advanced hooks here:](https://wordpress.org/support/topic/conditional-php-script/)
 
-= Does the plugin support subdomains? =
-* Unfortunately not, subdomains are treated as separate domains by browsers and the plugin is unable to alter cookies stored by another domain. 
-* If your multisite setup uses subdomain version, each subsite will be recognised as a separate domain by browsers and will create separate cookies for each subdomain.
+= Does the plugin support subdomains or subfolders on multisite network? =
+* Yes, the plugin supports subdomains on the same WordPress Multisite Network.
+* This feature is part of our [Premium Add-on](https://www.mooveagency.com/wordpress-plugins/gdpr-cookie-compliance/)
+* We can sync users consent across your multisite network as long as your subsites are using the same domain and either folder or subdomain structure.
+* For example, if user agrees to cookies on one subsite (example.com/one/ or one.example.com), then we can automatically sync their consent and cookies will be accepted on the other subsites too (example.com/two/ or two.example.com).
+* There is only one exception where we cannot sync users consent between subsites and that's when you're using different domains (subdomains are fine). Browsers will treat each domain as separate entity and our plugin will be unable to alter cookies stored by the other domain. This is a security feature in browsers to prevent hacking.
 
 = Does this plugin block all cookies? =
 This plugin only restricts cookies for scripts that you have setup in the Settings. If you want to block all cookies, you have to add all scripts that use cookies into the Settings of this plugin. 
 
 = What information does the Consent Log store and where is it stored? = 
-The Consent Log features stores all data in your WordPress website's database. 
-The data stored includes: Consent Date, User's IP address, Cookies Accepted and User Email (for logged-in users)
-You can see the preview of Consent Log here: [Consent Log here:](https://ps.w.org/gdpr-cookie-compliance/assets/screenshot-36.png?rev=2263873)
+* The Consent Log feature stores all data in your website's database. 
+* The data stored includes: Consent Date, User's IP address, Cookies Accepted and User Email (for logged-in users)
+* You can see the [preview of Consent Log here](https://ps.w.org/gdpr-cookie-compliance/assets/screenshot-36.png?rev=2263873)
  
 = Does this plugin guarantee that I will comply with data protection laws?=
 This plugin is just a template and needs to be setup correctly in order to work properly.
@@ -261,6 +271,127 @@ The Brazilian General Data Protection Law (“Lei Geral de Proteção de Dados�
 39. GDPR Cookie Compliance - Front-end - Cookie Shortcode [Premium]
 
 == Changelog ==
+= 4.6.3: 8 December 2021 =
+* Reject button improved
+
+= 4.6.2: 24 November 2021 =
+* Optional reject button added to cookie settings screen
+* Accessibility improvements
+* CSS fixes
+* Bugfixes
+
+= 4.6.1: 15 November 2021 =
+* Bugfixes
+
+= 4.6.0: 4 November 2021 =
+* Added option to hide "Accept" button from Cookie Banner
+* Cookie removal feature improved
+* Bugfixes
+
+= 4.5.13: 18 October 2021 =
+* One page layout JS improvements
+
+= 4.5.12: 11 October 2021 =
+* Accessibility improvements
+* Bugfixes
+
+= 4.5.11: 27 September 2021 =
+* Accessibility improvements
+
+= 4.5.10: 13 September 2021 =
+* Script caching implemented
+* Accessibility improvements
+* Bugfixes
+
+= 4.5.9: 1 September 2021 =
+* copyscape auditing ?justtext=1 filter added
+* WP Multisite subdomain cookie domain filter implemented
+
+= 4.5.8: 26 July 2021 =
+* Fixed GDPR in Gutenberg Widget Editor
+
+= 4.5.7: 15 July 2021 =
+* Company logo alt improved
+* JavaScript improvements
+
+= 4.5.6: 8 June 2021 =
+* Licence manager updated
+* Setting link improved
+
+= 4.5.5: May 27, 2021 =
+* JavaScript click event improved
+* Bugfixes
+
+= 4.5.4: May 19, 2021 =
+* New hook to delay script execution
+* WooCommerce cookie removal improved
+* Code improvements
+* Bugfixes
+
+= 4.5.3: May 5, 2021 =
+* Company logo details query performance improved
+* Cookie removal feature improved
+
+= 4.5.2: April 14, 2021 =
+* Cookie removal feature improved
+* Cookie insert feature improved
+
+= 4.5.1: March 29, 2021 =
+* jQuery dependency restored
+* Extended help section with hook to remove jQuery dependency
+
+= 4.5.0: March 29, 2021 =
+* CLS improvements
+* Performance optimizations
+* Language specific improvements
+
+= 4.4.8: March 8, 2021 =
+* Cookie removal feature updated
+* Bugfixes
+
+= 4.4.7: February 22, 2021 =
+* Cookie removal feature improved
+
+= 4.4.6: February 2, 2021 =
+* Banner accessibility improved
+* Direct link for accept / reject improved
+* Bugfixes
+
+= 4.4.5: January 5, 2021 =
+* Lightbox improved
+
+= 4.4.4: December 15, 2020 =
+* Logo title attribute added
+
+= 4.4.3: December 15, 2020 =
+* SVG icon CSS update
+
+= 4.4.2: November 27, 2020 =
+* Banner save bug fixed
+
+= 4.4.1: November 26, 2020 =
+* Company logo attributes improved
+* Branding save option fixed
+* Pot file updated
+
+= 4.4.0: November 12, 2020 =
+* Buttons accessibility improved
+* One tab layout keyboard accessibility improved
+
+= 4.3.9: November 6, 2020 =
+* Checkbox JS error fixed
+
+= 4.3.8: November 3, 2020 =
+* Default cookie checkbox issue fixed
+
+= 4.3.7: October 30, 2020 =
+* Icon font replaced with SVG icons
+
+= 4.3.6: October 29, 2020 =
+* Modal switchers & layout glitches improved
+* Icon font improvements
+* Powered by link rel attribute extended with "noopener" and "noreferrer" values
+
 = 4.3.5: October 19, 2020 =
 * Admin improvements
 * Bugfixes
@@ -270,7 +401,7 @@ The Brazilian General Data Protection Law (“Lei Geral de Proteção de Dados�
 
 = 4.3.3: October 12, 2020 =
 * Admin assets enqueue improved
-* Powered by link improved
+* Powered by link rel attribute extended with "nofollow" value
 * Reset settings improved
 
 = 4.3.2: October 2, 2020 =

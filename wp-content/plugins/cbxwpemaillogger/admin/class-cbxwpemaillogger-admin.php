@@ -177,7 +177,8 @@
 			$table_data_html = $table_cache_html = '';
 			//cbxwpemaillogger_info_trig
 
-			$table_data_html .= '<p><a id="cbxwpemaillogger_info_trig" href="#">' . esc_html__( 'Show/hide details', 'cbxwpemaillogger' ) . '</a></p>';
+			$table_data_html .= '<p><a class="buttons button-primary" id="cbxwpemaillogger_info_trig" href="#">' . esc_html__( 'Show/hide details', 'cbxwpemaillogger' )
+			                    . '</a></p>';
 			$table_data_html .= '<div id="cbxwpemaillogger_resetinfo" style="display: none;">';
 			$table_data_html .= '<p id="cbxwpemaillogger_plg_gfig_info"><strong>' . esc_html__( 'Following option values created by this plugin(including addon)', 'cbxwpemaillogger' ) . '</strong></p>';
 
@@ -525,7 +526,7 @@
 
 			//review listing page
 			$email_logger_menu_hook = add_menu_page( esc_html__( 'CBX SMTP and Email Logger Dashboard', 'cbxwpemaillogger' ),
-				esc_html__( 'CBX SMTP & Logs', 'cbxwpemaillogger' ),
+				esc_html__( 'CBX SMTP', 'cbxwpemaillogger' ),
 				'manage_options',
 				'cbxwpemaillogger',
 				array( $this, 'display_cbxwpemaillogger_listing_page' ),
@@ -552,6 +553,12 @@
 				'manage_options',
 				'cbxwpemailloggeremailtesting',
 				array( $this, 'display_plugin_admin_email_testing' ) );
+			$helpsupport_page_hook = add_submenu_page( 'cbxwpemaillogger',
+				esc_html__( 'Helps & Updates', 'cbxwpemaillogger' ),
+				esc_html__( 'Helps & Updates', 'cbxwpemaillogger' ),
+				'manage_options',
+				'cbxwpemaillogger-help-support',
+				array( $this, 'cbxwpemaillogger_helps_updates_display' ) );
 
 			global $submenu;
 			if ( isset( $submenu['cbxwpemaillogger'][0][0] ) ) {
@@ -610,17 +617,26 @@
 		public function display_plugin_admin_settings() {
 			global $wpdb;
 
-			$plugin_data = get_plugin_data( plugin_dir_path( __DIR__ ) . '/../' . $this->plugin_basename );
+			//$plugin_data = get_plugin_data( plugin_dir_path( __DIR__ ) . '/../' . $this->plugin_basename );
 
-			include( cbxwpemaillogger_locate_template( 'admin/admin-settings-display.php' ) );
+			include( cbxwpemaillogger_locate_template( 'admin/settings-display.php' ) );
 		}//end display_plugin_admin_settings
 
 		/**
 		 * Display email testing page
 		 */
 		public function display_plugin_admin_email_testing() {
-			include( cbxwpemaillogger_locate_template( 'admin/admin-emailtesting-display.php' ) );
+			include( cbxwpemaillogger_locate_template( 'admin/emailtesting-display.php' ) );
 		}//end display_plugin_admin_email_testing
+
+		/**
+		 * Render the help & support page for this plugin.
+		 *
+		 * @since    1.0.0
+		 */
+		public function cbxwpemaillogger_helps_updates_display() {
+			include( cbxwpemaillogger_locate_template( 'admin/dashboard.php' ) );
+		}//end method cbxwpemaillogger_helps_updates_display
 
 		/**
 		 * Add screen option for log listing
@@ -679,6 +695,12 @@
 				wp_enqueue_style( 'select2' );
 				wp_enqueue_style( 'wp-color-picker' );
 				wp_enqueue_style( 'cbxwpemaillogger-setting' );
+			}
+			if ($page == 'cbxwpemaillogger' ||  $page == 'cbxwpemailloggersettings' || $page == 'cbxwpemailloggeremailtesting' || $page == 'cbxwpemaillogger-help-support' ) {
+				wp_register_style( 'cbxwpemaillogger-branding', plugin_dir_url( __FILE__ ) . '../assets/css/cbxwpemaillogger-branding.css',
+					array(),
+					$this->version );
+				wp_enqueue_style( 'cbxwpemaillogger-branding' );
 			}
 		}//end enqueue_styles
 
@@ -780,6 +802,12 @@
 				wp_enqueue_script( 'select2' );
 				wp_enqueue_script( 'wp-color-picker' );
 				wp_enqueue_script( 'cbxwpemaillogger-setting' );
+			}
+			//header scroll
+			wp_register_script( 'cbxwpemaillogger-scroll', plugins_url( '../assets/js/cbxwpemaillogger-scroll.js', __FILE__ ), array( 'jquery' ), CBXWPEMAILLOGGER_PLUGIN_VERSION );
+			if ( $page == 'cbxwpemaillogger-setting' || $page == 'cbxwpemailloggeremailtesting' || $page == 'cbxwpemaillogger-help-support' ) {
+				wp_enqueue_script( 'jquery' );
+				wp_enqueue_script( 'cbxwpemaillogger-scroll' );
 			}
 		}//end enqueue_scripts
 
@@ -1779,6 +1807,7 @@
 				$to        = isset( $post_data['to'] ) ? sanitize_text_field( $post_data['to'] ) : '';
 				$subject   = isset( $post_data['subject'] ) ? sanitize_text_field( $post_data['subject'] ) : '';
 				$message   = isset( $post_data['message'] ) ? sanitize_textarea_field( $post_data['message'] ) : '';
+				$file      = isset($_FILES['file']['tmp_name'])? $_FILES['file']['tmp_name'] : '';
 
 				$response = '';
 
@@ -1797,10 +1826,52 @@
 				if($response == ''){
 					add_action('wp_mail_failed', array($this, 'wp_mail_failed_testing'));
 					try {
-						$status = wp_mail( $to, $subject, $message );
+					    $attachments = array();
+                        $headers = '';
+
+
+
+                        if($file != ''){
+                            if ( ! function_exists( 'wp_handle_upload' ) ) {
+                                require_once( ABSPATH . 'wp-admin/includes/file.php' );
+                            }
+
+                            $uploaded_file = $_FILES['file'];
+
+                            $upload_overrides = array(
+                                'test_form' => false
+                            );
+
+                            $move_file = wp_handle_upload( $uploaded_file, $upload_overrides );
+
+                            if ( $move_file && ! isset( $move_file['error'] ) ) {
+                                $attachments[] = $move_file['file'];
+                                $headers = array('Content-Type: text/html; charset=UTF-8');
+
+                            } else {
+                                /*
+                                 * Error generated by _wp_handle_upload()
+                                 * @see _wp_handle_upload() in wp-admin/includes/file.php
+                                 */
+                                //echo $movefile['error'];
+                            }
+
+
+                        }
+
+
+
+						$status = wp_mail( $to, $subject, $message, $headers, $attachments );
 						if($status){
 							$response = esc_html__('Email sent successfully', 'cbxwpemaillogger');
 							$email_success = 1;
+
+							//let's delete the uploaded file
+                            if(sizeof($attachments) > 0){
+                                foreach ($attachments as $attachment){
+                                    wp_delete_file($attachment);
+                                }
+                            }
 						}
 						else{
 							$response = sprintf(__('Email sent failed. Error message: %s', 'cbxwpemaillogger'), $this->test_error_msg);

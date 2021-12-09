@@ -24,10 +24,10 @@ $override_native = empty( $override_native ) ? false : $override_native;
 		<div class="sui-summary-details">
 			<div class="wds-checkup-summary">
 				<?php if ( $in_progress ): ?>
-					<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+					<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 				<?php else: ?>
 					<span class="sui-summary-large"><?php echo esc_html( $issue_count ); ?></span>
-					<i class="<?php echo esc_attr( $score_class ); ?>"></i>
+					<span class="<?php echo esc_attr( $score_class ); ?>"></span>
 				<?php endif; ?>
 				<span class="sui-summary-sub"><?php echo esc_html( _n( 'Sitemap Issue', 'Sitemap Issues', $issue_count, 'wds' ) ); ?></span>
 			</div>
@@ -54,7 +54,7 @@ $override_native = empty( $override_native ) ? false : $override_native;
 				<span class="sui-list-label"><?php esc_html_e( 'Total URLs Discovered', 'wds' ); ?></span>
 				<span class="sui-list-detail">
 					<?php if ( $in_progress ): ?>
-						<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+						<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 						<small><?php esc_html_e( 'Crawl in progress', 'wds' ); ?></small>
 					<?php else:
 						echo intval( $crawl_report->get_meta( 'total' ) );
@@ -66,12 +66,12 @@ $override_native = empty( $override_native ) ? false : $override_native;
 					<?php esc_html_e( 'Invisible URLs', 'wds' ); ?>
 					<span class="sui-tooltip"
 					      data-tooltip="<?php esc_html_e( 'URLs that are missing from your sitemap', 'wds' ); ?>">
-						<i class="sui-icon-info"></i>
+						<span class="sui-icon-info"></span>
 					</span>
 				</span>
-				<span class="sui-list-detail">
+				<span class="sui-list-detail wds-invisible-urls-count">
 					<?php if ( $in_progress ): ?>
-						<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+						<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 						<small><?php esc_html_e( 'Crawl in progress', 'wds' ); ?></small>
 					<?php else:
 						echo intval( $crawl_report->get_issues_count( 'sitemap' ) );

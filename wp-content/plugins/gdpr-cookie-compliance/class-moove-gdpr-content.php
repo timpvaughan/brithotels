@@ -4,7 +4,7 @@
  *
  * @category Moove_GDPR_Content
  * @package   gdpr-cookie-compliance
- * @author    Gaspar Nemes
+ * @author    Moove Agency
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @category Class
  * @package  Moove_Controller
- * @author   Gaspar Nemes
+ * @author   Moove Agency
  */
 class Moove_GDPR_Content {
 
@@ -121,7 +121,8 @@ class Moove_GDPR_Content {
 		$_content  = '<h2>' . __( 'Sorry,<br /> the content is blocked!', 'gdpr-cookie-compliance' );
 		$_content .= '<p>' . __( 'To unlock, please enable the cookies!', 'gdpr-cookie-compliance' );
 		$_content .= '<br><br>';
-		$_content .= __( '[accept]Accept[/accept] [setting]Adjust your settings[/setting]', 'gdpr-cookie-compliance' );
+		$_content .= '[accept]' . esc_html__( 'Accept', 'gdpr-cookie-compliance' ) . '[/accept] ';
+		$_content .= '[setting]' . esc_html__( 'Adjust your settings', 'gdpr-cookie-compliance' ) . '[/setting] ';
 		return $_content;
 	}
 
@@ -243,11 +244,13 @@ class Moove_GDPR_Content {
 	public static function gdpr_licence_action_button( $response, $gdpr_key ) {
 		$type = isset( $response['type'] ) ? $response['type'] : false;
 		if ( 'expired' === $type || 'activated' === $type || 'max_activation_reached' === $type ) :
-			?>
-			<button type="submit" name="gdpr_activate_license" class="button button-primary button-inverse">
-				<?php esc_html_e( 'Activate', 'gdpr-cookie-compliance' ); ?>
-			</button>
-			<?php
+			if ( 'activated' !== $type ) :
+				?>
+				<button type="submit" name="gdpr_activate_license" class="button button-primary button-inverse">
+					<?php esc_html_e( 'Activate', 'gdpr-cookie-compliance' ); ?>
+				</button>
+				<?php
+			endif;
 		elseif ( 'invalid' === $type ) :
 			?>
 			<button type="submit" name="gdpr_activate_license" class="button button-primary button-inverse">
@@ -307,6 +310,16 @@ class Moove_GDPR_Content {
 					<input name="moove_gdpr_license_key" required min="35" type="text" id="moove_gdpr_license_key" value="" class="regular-text">
 				</td>
 			</tr>
+			<tr>
+				<th scope="row" style="padding: 0 0 10px 0;">
+					<label><?php esc_html_e( 'Enter licence key:', 'gdpr-cookie-compliance' ); ?></label>
+				</th>
+			</tr>
+			<tr>
+				<td style="padding: 0;">
+					<input name="moove_gdpr_license_key" required min="35" type="text" id="moove_gdpr_license_key" value="" class="regular-text">
+				</td>
+			</tr>
 			<?php
 		elseif ( 'activated' === $type || 'max_activation_reached' === $type ) :
 			// LICENSE ACTIVATED.
@@ -330,15 +343,22 @@ class Moove_GDPR_Content {
 					</p>
 					<br />
 					<hr />
-					<h4 style="margin-bottom: 0;"><?php esc_html_e( 'Enter new licence key', 'gdpr-cookie-compliance' ); ?></h4>
 				</th>
 			</tr>
-			<tr>
-				<td style="padding: 0;">
-					<input name="moove_gdpr_license_key" required min="35" type="text" id="moove_gdpr_license_key" value="" class="regular-text">
-				</td>
-			</tr>
-			<?php
+			<?php 
+				if ( 'max_activation_reached' === $type ) : ?>
+					<tr>
+						<th scope="row" style="padding: 0 0 10px 0;">
+							<label><?php esc_html_e( 'Enter a new licence key:', 'gdpr-cookie-compliance' ); ?></label>
+						</th>
+					</tr>
+					<tr>
+						<td style="padding: 0;">
+							<input name="moove_gdpr_license_key" required min="35" type="text" id="moove_gdpr_license_key" value="" class="regular-text">
+						</td>
+					</tr>
+				<?php
+			endif;
 		elseif ( 'invalid' === $type ) :
 			?>
 			<tr>
@@ -423,7 +443,12 @@ class Moove_GDPR_Content {
 			?>
 			<div class="gdpr-admin-alert gdpr-admin-alert-error">
 				<div class="gdpr-alert-content">        
-					<p>License key: <strong><?php echo esc_attr( isset( $response['key'] ) ? $response['key'] : $gdpr_key['key'] ); ?></strong></p>
+					<div class="gdpr-licence-key-wrap">
+						<p>License key: 
+						<strong><?php echo esc_attr( apply_filters( 'gdpr_licence_key_visibility', isset( $response['key'] ) ? $response['key'] : ( isset( $gdpr_key['key'] ) ? $gdpr_key['key'] : $gdpr_key ) ) ); ?></strong>								
+						</p>
+					</div>
+					<!-- .gdpr-licence-key-wrap -->
 					<p><?php apply_filters( 'gdpr_cc_keephtml', $messages, true ); ?></p>
 				</div>
 				<span class="dashicons dashicons-dismiss"></span>
@@ -434,8 +459,13 @@ class Moove_GDPR_Content {
 			$messages = isset( $response['message'] ) && is_array( $response['message'] ) ? implode( '</p><p>', $response['message'] ) : '';
 			?>
 			<div class="gdpr-admin-alert gdpr-admin-alert-success">    
-				<div class="gdpr-alert-content">         
-					<p>License key: <strong><?php echo esc_attr( isset( $response['key'] ) ? $response['key'] : $gdpr_key['key'] ); ?></strong></p>
+				<div class="gdpr-alert-content">
+					<div class="gdpr-licence-key-wrap">
+						<p>License key: 
+						<strong><?php echo esc_attr( apply_filters( 'gdpr_licence_key_visibility', isset( $response['key'] ) ? $response['key'] : ( isset( $gdpr_key['key'] ) ? $gdpr_key['key'] : $gdpr_key ) ) ); ?></strong>								
+						</p>
+					</div>
+					<!-- .gdpr-licence-key-wrap -->					
 					<p><?php apply_filters( 'gdpr_cc_keephtml', $messages, true ); ?></p>
 				</div>
 				<span class="dashicons dashicons-yes-alt"></span>

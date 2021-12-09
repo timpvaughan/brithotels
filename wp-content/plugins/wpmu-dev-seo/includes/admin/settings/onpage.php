@@ -498,10 +498,9 @@ class Smartcrawl_Onpage_Settings extends Smartcrawl_Settings_Admin {
 
 		$arguments['separators'] = smartcrawl_get_separators();
 
-		$is_sitewide = is_multisite() && smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' );
 		$static_homepage = 'page' === get_option( 'show_on_front' );
 		$front_page = get_post( (int) get_option( 'page_on_front' ) );
-		$show_static_home_settings = ! $is_sitewide && $static_homepage && $front_page;
+		$show_static_home_settings = $static_homepage && $front_page;
 
 		$arguments['front_page'] = $front_page;
 		$arguments['front_page_notice'] = $this->static_frontpage_notice( $front_page );
@@ -662,12 +661,7 @@ class Smartcrawl_Onpage_Settings extends Smartcrawl_Settings_Admin {
 	 * Default settings
 	 */
 	public function defaults() {
-
-		if ( is_multisite() && SMARTCRAWL_SITEWIDE ) {
-			$this->options = get_site_option( $this->option_name );
-		} else {
-			$this->options = get_option( $this->option_name );
-		}
+		$this->options = get_option( $this->option_name );
 
 		if ( empty( $this->options['title-home'] ) ) {
 			$this->options['title-home'] = '%%sitename%%';
@@ -687,6 +681,14 @@ class Smartcrawl_Onpage_Settings extends Smartcrawl_Settings_Admin {
 
 		if ( empty( $this->options['onpage-disable-automatic-regeneration'] ) ) {
 			$this->options['onpage-disable-automatic-regeneration'] = 0;
+		}
+
+		if ( empty( $this->options['meta_robots-noindex-attachment'] ) ) {
+			$this->options['meta_robots-noindex-attachment'] = true;
+		}
+
+		if ( empty( $this->options['meta_robots-nofollow-attachment'] ) ) {
+			$this->options['meta_robots-nofollow-attachment'] = true;
 		}
 
 		foreach ( get_post_types( array( 'public' => true ) ) as $posttype ) {
@@ -781,19 +783,14 @@ class Smartcrawl_Onpage_Settings extends Smartcrawl_Settings_Admin {
 		}
 
 		if ( ! isset( $this->options['enable-author-archive'] ) ) {
-			$this->options['enable-author-archive'] = true;
+			$this->options['enable-author-archive'] = false;
 		}
 
 		if ( ! isset( $this->options['enable-date-archive'] ) ) {
-			$this->options['enable-date-archive'] = true;
+			$this->options['enable-date-archive'] = false;
 		}
 
-		if ( is_multisite() && SMARTCRAWL_SITEWIDE ) {
-			update_site_option( $this->option_name, $this->options );
-		} else {
-			update_option( $this->option_name, $this->options );
-		}
-
+		update_option( $this->option_name, $this->options );
 	}
 
 	/**
@@ -816,7 +813,8 @@ class Smartcrawl_Onpage_Settings extends Smartcrawl_Settings_Admin {
 		foreach ( $post_types as $post_type ) {
 			$posts = get_posts( array(
 				'post_status'    => array( 'publish', 'inherit' ),
-				'orderby'        => 'rand',
+				'order'          => 'ASC',
+				'orderby'        => 'ID',
 				'posts_per_page' => 1,
 				'post_type'      => $post_type->name,
 			) );
@@ -871,6 +869,39 @@ class Smartcrawl_Onpage_Settings extends Smartcrawl_Settings_Admin {
 				$term = array_shift( $terms );
 				$data[ $taxonomy->name ] = $term->to_array();
 				$data[ $taxonomy->name ]['permalink'] = get_term_link( $term );
+			}
+		}
+
+		return $data;
+	}
+
+	public static function get_random_buddypress() {
+		$user = Smartcrawl_Model_User::get( get_current_user_id() );
+		$data = array();
+		$replacement_helper = Smartcrawl_Replacement_Helper::get();
+
+		if ( function_exists( 'bp_core_get_user_domain' ) ) {
+			$replacement_helper->handle_bp_profile( array(
+				'bp_user_username'  => $user->get_username(),
+				'bp_user_full_name' => $user->get_display_name(),
+			) );
+			$data['bp_profile'] = array(
+				'replacements' => $replacement_helper->get_specific_replacements(),
+				'url'          => bp_core_get_user_domain( $user->get_id() ),
+			);
+		}
+
+		if ( function_exists( 'groups_get_groups' ) ) {
+			$groups = groups_get_groups( array(
+				'per_page' => 1,
+			) );
+			if ( ! empty( $groups['groups'] ) ) {
+				$replacement_helper->handle_bp_groups( $groups['groups'][0] );
+
+				$data['bp_groups'] = array(
+					'replacements' => $replacement_helper->get_specific_replacements(),
+					'url'          => bp_get_group_permalink( $groups['groups'][0] ),
+				);
 			}
 		}
 

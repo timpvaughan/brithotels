@@ -21,10 +21,11 @@ $disable_addition = empty( $disable_addition ) ? false : true;
 
 	<?php if ( ! $disable_addition ): ?>
 		<a data-modal-open="<?php echo esc_attr( $modal_id ); ?>"
+		   href="#"
 		   class="sui-button sui-button-ghost">
 
-			<i class="sui-icon-plus"
-			   aria-hidden="true"></i> <?php esc_html_e( 'Add Recipient', 'wds' ); ?>
+			<span class="sui-icon-plus"
+			   aria-hidden="true"></span> <?php esc_html_e( 'Add Recipient', 'wds' ); ?>
 		</a>
 
 		<?php $this->_render( 'modal', array(

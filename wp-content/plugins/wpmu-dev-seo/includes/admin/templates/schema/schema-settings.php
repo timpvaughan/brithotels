@@ -15,11 +15,15 @@ $this->_render( 'before-page-container' );
 	<?php $this->_render( 'page-header', array(
 		'title'                 => esc_html__( 'Schema', 'wds' ),
 		'documentation_chapter' => 'schema',
+		'utm_campaign'          => 'smartcrawl_schema_docs',
 	) ); ?>
 
 	<?php $this->_render( 'floating-notices', array(
 		'keys' => array(
 			'wds-youtube-api-key-valid',
+			'wds-schema-types-notice',
+			'wds-schema-types-local-business-notice',
+			'wds-schema-types-invalid-notice',
 		),
 	) ); ?>
 
@@ -72,6 +76,20 @@ $this->_render( 'before-page-container' );
 				) );
 
 				$this->_render( 'vertical-tab', array(
+					'tab_id'       => 'tab_types',
+					'tab_name'     => esc_html__( 'Types Builder', 'wds' ),
+					'is_active'    => 'tab_types' === $active_tab,
+					'tab_sections' => array(
+						array(
+							'section_description' => esc_html__( 'Choose what post types and taxonomies you want to associate with each available schema type. By default we output general markup on key WordPress pages, but you can enhance and tailor this to your specific needs below.', 'wds' ),
+							'section_template'    => 'schema/schema-section-types',
+							'section_args'        => array(),
+						),
+					),
+					'button_text'  => false,
+				) );
+
+				$this->_render( 'vertical-tab', array(
 					'tab_id'       => 'tab_settings',
 					'tab_name'     => esc_html__( 'Settings', 'wds' ),
 					'is_active'    => 'tab_settings' === $active_tab,
@@ -90,4 +108,6 @@ $this->_render( 'before-page-container' );
 			</div>
 		</form>
 	<?php } ?>
+
+	<?php $this->_render( 'footer' ); ?>
 </div>

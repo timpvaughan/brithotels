@@ -1,6 +1,10 @@
 <?php
 
 // phpcs:ignoreFile -- This is an experimental class. The ignore will be removed once the functionality matures
+
+/**
+ * TODO: Remove this class until we can properly develop this feature. We can probably reuse the schema video functionality
+ */
 class Smartcrawl_Xml_VideoSitemap {
 
 	const VIDEO_SITEMAP_LIMIT = 50000;
@@ -233,7 +237,7 @@ class Smartcrawl_Xml_VideoSitemap {
 			if ( 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
 				return false;
 			}
-			$body = unserialize( wp_remote_retrieve_body( $response ) );
+//			$body = unserialize( wp_remote_retrieve_body( $response ) );
 			if ( ! empty( $body[0]['thumbnail_medium'] ) ) {
 				$thumbnail = $body[0]['thumbnail_medium'];
 				update_post_meta( $post_id, '_vimeo_thumbnail_id-' . $video_id, $thumbnail );

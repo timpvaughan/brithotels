@@ -5,24 +5,34 @@ $active_tab = empty( $active_tab ) ? '' : $active_tab;
 $crawl_report = empty( $_view['crawl_report'] ) ? null : $_view['crawl_report'];
 $smartcrawl_buddypress = empty( $smartcrawl_buddypress ) ? array() : $smartcrawl_buddypress;
 $sitemaps_enabled = Smartcrawl_Settings::get_setting( 'sitemap' );
-$sitemap_crawler_available = is_main_site();
+$sitemap_crawler_available = Smartcrawl_Sitemap_Utils::crawler_available();
 $automatically_switched = empty( $automatically_switched ) ? false : $automatically_switched;
 $total_post_count = empty( $total_post_count ) ? 0 : $total_post_count;
 $email_recipients = Smartcrawl_Sitemap_Settings::get_email_recipients();
 $override_native = empty( $override_native ) ? false : $override_native;
+$ping_google = ! empty( $_view['options']['ping-google'] );
+$ping_bing = ! empty( $_view['options']['ping-bing'] );
 ?>
 
 <?php $this->_render( 'before-page-container' ); ?>
 <div id="container" class="<?php smartcrawl_wrap_class( 'wds-sitemap-settings' ); ?>">
 
 	<?php $this->_render( 'page-header', array(
-		'title'                 => esc_html__( 'Sitemap', 'wds' ),
+		'title'                 => esc_html__( 'Sitemaps', 'wds' ),
 		'documentation_chapter' => 'sitemap',
+		'utm_campaign'          => 'smartcrawl_sitemap_docs',
 		'extra_actions'         => $sitemap_crawler_available ? 'sitemap/sitemap-extra-actions' : '',
 	) ); ?>
 
 	<?php $this->_render( 'floating-notices', array(
-		'keys' => array( 'wds-email-recipient-notice' ),
+		'message' => $ping_google || $ping_bing
+			? esc_html__( 'Your Sitemap is updated and Search Engines are being notified with changes.', 'wds' )
+			: esc_html__( 'Your sitemap has been updated.', 'wds' ),
+		'keys'    => array(
+			'wds-email-recipient-notice',
+			'wds-sitemap-manually-updated',
+			'wds-sitemap-manually-notify-search-engines',
+		),
 	) ); ?>
 	<?php $this->_render( 'sitemap/sitemap-notices' ); ?>
 
@@ -61,14 +71,7 @@ $override_native = empty( $override_native ) ? false : $override_native;
 					'tab_name'     => esc_html__( 'Settings', 'wds' ),
 					'is_active'    => 'tab_settings' === $active_tab,
 					'tab_sections' => array(
-						array(
-							'section_template' => 'sitemap/sitemap-section-advanced',
-							'section_args'     => array(
-								'engines'                => $engines,
-								'automatically_switched' => $automatically_switched,
-								'total_post_count'       => $total_post_count,
-							),
-						),
+						array( 'section_template' => 'sitemap/sitemap-section-advanced' ),
 					),
 				) );
 				if ( $override_native ) {
@@ -79,11 +82,15 @@ $override_native = empty( $override_native ) ? false : $override_native;
 				?>
 
 				<?php
+				$this->_render( 'sitemap/sitemap-section-news', array(
+					'is_active' => 'tab_news' === $active_tab,
+				) );
+
 				$this->_render( 'vertical-tab', array(
 					'tab_id'       => 'tab_sitemap',
 					'tab_name'     =>
 						$override_native
-							? esc_html__( 'Sitemap', 'wds' )
+							? esc_html__( 'General Sitemap', 'wds' )
 							: esc_html__( 'WP Core Sitemap', 'wds' ),
 					'is_active'    => 'tab_sitemap' === $active_tab,
 					'tab_sections' => array(

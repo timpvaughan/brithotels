@@ -14,8 +14,12 @@ $override_native = empty( $override_native ) ? false : $override_native;
 $tabs[] = array(
 	'id'   => 'tab_sitemap',
 	'name' => $override_native
-		? esc_html__( 'Sitemap', 'wds' )
+		? esc_html__( 'General Sitemap', 'wds' )
 		: esc_html__( 'WP Core Sitemap', 'wds' ),
+);
+$tabs[] = array(
+	'id'   => 'tab_news',
+	'name' => esc_html__( 'News Sitemap', 'wds' ),
 );
 if ( $sitemap_crawler_available ) {
 	$tabs[] = array(

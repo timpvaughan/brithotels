@@ -21,14 +21,14 @@ if ( $readability_analysis_enabled ) {
          class="sui-box wds-dashboard-widget <?php echo esc_attr( implode( ' ', $classes ) ); ?>">
 
 	<div class="sui-box-header">
-		<h3 class="sui-box-title">
-			<i class="sui-icon-magnifying-glass-search"
-			   aria-hidden="true"></i> <?php esc_html_e( 'Content Analysis', 'wds' ); ?>
-		</h3>
+		<h2 class="sui-box-title">
+			<span class="sui-icon-magnifying-glass-search"
+			      aria-hidden="true"></span> <?php esc_html_e( 'Content Analysis', 'wds' ); ?>
+		</h2>
 	</div>
 
 	<div class="sui-box-body">
-		<p><?php esc_html_e( 'SEO and Readability Analysis recommend improvements to your content to give it the best chance of ranking highly, as well as being easy for average person to read.', 'wds' ); ?></p>
+		<p><?php esc_html_e( 'SEO and Readability Analysis recommend improvements to your content to give it the best chance of ranking highly, as well as being easy for the average person to read.', 'wds' ); ?></p>
 
 		<div class="wds-report">
 			<?php if ( $seo_analysis_enabled ) : ?>
@@ -43,12 +43,13 @@ if ( $readability_analysis_enabled ) {
 					</p>
 					<button type="button"
 					        id="wds-activate-analysis-seo"
+					        aria-label="<?php esc_html_e( 'Activate SEO analysis', 'wds' ); ?>"
 					        data-option-id="<?php echo esc_attr( $option_name ); ?>"
 					        data-flag="analysis-seo"
 					        class="wds-activate-component sui-button sui-button-blue wds-disabled-during-request">
 
 						<span class="sui-loading-text"><?php esc_html_e( 'Activate', 'wds' ); ?></span>
-						<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+						<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 					</button>
 				</div>
 			<?php endif; ?>
@@ -66,11 +67,12 @@ if ( $readability_analysis_enabled ) {
 					<button type="button"
 					        id="wds-activate-analysis-readability"
 					        data-option-id="<?php echo esc_attr( $option_name ); ?>"
+					        aria-label="<?php esc_html_e( 'Activate readability analysis', 'wds' ); ?>"
 					        data-flag="analysis-readability"
 					        class="wds-activate-component sui-button sui-button-blue wds-disabled-during-request">
 
 						<span class="sui-loading-text"><?php esc_html_e( 'Activate', 'wds' ); ?></span>
-						<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+						<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 					</button>
 				</div>
 			<?php endif; ?>
@@ -81,8 +83,8 @@ if ( $readability_analysis_enabled ) {
 		<a href="<?php echo esc_attr( admin_url( 'edit.php' ) ); ?>"
 		   class="sui-button sui-button-ghost">
 
-			<i class="sui-icon-pencil"
-			   aria-hidden="true"></i> <?php esc_html_e( 'Edit Posts', 'wds' ); ?>
+			<span class="sui-icon-pencil"
+			      aria-hidden="true"></span> <?php esc_html_e( 'Edit Posts', 'wds' ); ?>
 		</a>
 	</div>
 </section>

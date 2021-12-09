@@ -134,8 +134,8 @@ class Smartcrawl_Sitemap_Cache {
 				$this->update_sitemap_pristine_option( $pristine );
 			}
 		} else {
-			if ( ! is_multisite() || smartcrawl_is_switch_active( 'SMARTCRAWL_SITEWIDE' ) ) {
-				// The whole network (or single site) is out of date now so drop everything
+			if ( ! is_multisite() ) {
+				// The single site is out of date now so drop everything
 				$this->delete_sitemap_pristine_option();
 			} else {
 				$this->update_sitemap_pristine_option(

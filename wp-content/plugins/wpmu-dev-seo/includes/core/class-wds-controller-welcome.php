@@ -27,13 +27,8 @@ class Smartcrawl_Controller_Welcome extends Smartcrawl_Base_Controller {
 		// Dismiss the modal
 		Smartcrawl_Settings::update_specific_options( self::WELCOME_MODAL_DISMISSED_OPTION, SMARTCRAWL_VERSION );
 
-		// Enable schema
-		$social_options = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
-		$social_options['disable-schema'] = false;
-		Smartcrawl_Settings::update_component_options( Smartcrawl_Settings::COMP_SOCIAL, $social_options );
-
 		// Redirect the user
-		$redirect_url = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_SCHEMA );
+		$redirect_url = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_AUTOLINKS ) . '&tab=tab_woo';
 		wp_send_json_success( array(
 			'redirect_url' => $redirect_url,
 		) );
@@ -56,7 +51,8 @@ class Smartcrawl_Controller_Welcome extends Smartcrawl_Base_Controller {
 		$modal_dismissed_version = Smartcrawl_Settings::get_specific_options( self::WELCOME_MODAL_DISMISSED_OPTION );
 		$not_dismissed = version_compare( $modal_dismissed_version, SMARTCRAWL_VERSION, '<' );
 		$onboarding_done = Smartcrawl_Settings::get_specific_options( Smartcrawl_Controller_Onboard::ONBOARDING_DONE_OPTION );
-		if ( $onboarding_done && $not_dismissed ) {
+		$is_fresh_install = ! Smartcrawl_Loader::get_last_version();
+		if ( $onboarding_done && $not_dismissed && ! $is_fresh_install && smartcrawl_woocommerce_active() ) {
 			Smartcrawl_Simple_Renderer::render( 'dashboard/dashboard-welcome-modal' );
 		}
 	}

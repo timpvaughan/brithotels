@@ -20,7 +20,7 @@
 					email: email
 				});
 				$container.prepend(markup);
-				$modal.find('[data-modal-close]').click();
+				$modal.find('[data-modal-close]').first().trigger('click');
 				$name.val('');
 				$email.val('');
 				Wds.show_floating_message('wds-email-recipient-notice', name + window.Wds.l10n('email_recipients', 'recipient_added'));
@@ -32,7 +32,8 @@
 			var is_valid = true;
 			$('.sui-form-field', $container).each(function () {
 				var $form_field = $(this);
-				if (!$('input', $form_field).val()) {
+				var input_value = $('input', $form_field).val();
+				if (!input_value.trim() || $('<div>').html(input_value).text() !== input_value) {
 					is_valid = false;
 					$form_field.addClass('sui-form-field-error');
 				}
@@ -41,7 +42,8 @@
 			return is_valid;
 		},
 
-		remove: function () {
+		remove: function (e) {
+			e.preventDefault();
 			$(this).closest('.wds-recipient').remove();
 
 			Wds.EmailRecipients.toggle_notice_visibility();
@@ -63,7 +65,7 @@
 				e.preventDefault();
 				e.stopPropagation();
 
-				$button.click();
+				$button.trigger('click');
 			}
 		},
 

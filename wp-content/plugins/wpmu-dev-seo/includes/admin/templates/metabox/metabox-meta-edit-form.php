@@ -12,7 +12,7 @@ $macros = array_merge(
 ?>
 <div class="wds-edit-meta">
 	<a class="sui-button sui-button-ghost">
-		<i class="sui-icon-pencil" aria-hidden="true"></i>
+		<span class="sui-icon-pencil" aria-hidden="true"></span>
 
 		<?php esc_html_e( 'Edit Meta', 'wds' ); ?>
 	</a>

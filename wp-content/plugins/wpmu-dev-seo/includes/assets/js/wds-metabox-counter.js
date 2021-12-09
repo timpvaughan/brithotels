@@ -39,8 +39,8 @@ function setUpCounters () {
 	var $title = $('#wds_title');
 	if (!$title.length) return false;
 	$title.parents('td').append('<p id="wds_title_counter_result">' + __WDS_TITLE_COUNT + ' characters left</p>');
-	$title.keyup(checkTitleLength);
-	$title.change(checkTitleLength);
+	$title.on('keyup', checkTitleLength);
+	$title.on('change', checkTitleLength);
 	checkTitleLength();
 
 	var $meta = $('#wds_metadesc');
@@ -52,8 +52,8 @@ function setUpCounters () {
 			$main_title_root = $("#titlewrap")
 		;
 		$main_title_root.append('<p id="wds_main_title_counter_result">' + __WDS_TITLE_COUNT + ' characters left</p>');
-		$main_title.keyup(checkMainTitleLength);
-		$main_title.change(checkMainTitleLength);
+		$main_title.on('keyup', checkMainTitleLength);
+		$main_title.on('change', checkMainTitleLength);
 		checkMainTitleLength();
 	}
 }

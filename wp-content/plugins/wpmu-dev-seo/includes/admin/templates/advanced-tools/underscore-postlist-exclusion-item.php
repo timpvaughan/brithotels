@@ -6,7 +6,7 @@
 		<td class="wds-postlist-item-remove">
 			<a href="#remove" class="wds-postlist-list-item-remove">
 				<button class="sui-button-icon" type="button">
-					<i class="sui-icon-trash" aria-hidden="true"></i>
+					<span class="sui-icon-trash" aria-hidden="true"></span>
 				</button>
 			</a>
 		</td>

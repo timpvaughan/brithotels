@@ -1,5 +1,5 @@
 <?php
-if ( ! smartcrawl_subsite_setting_page_enabled( 'wds_onpage' ) ) {
+if ( ! Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAGE ) ) {
 	return;
 }
 
@@ -12,9 +12,9 @@ $onpage_enabled = Smartcrawl_Settings::get_setting( 'onpage' );
 ?>
 <section id="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_ONPAGE ); ?>" class="sui-box wds-dashboard-widget">
 	<div class="sui-box-header">
-		<h3 class="sui-box-title">
-			<i class="sui-icon-pencil" aria-hidden="true"></i><?php esc_html_e( 'Titles & Meta', 'wds' ); ?>
-		</h3>
+		<h2 class="sui-box-title">
+			<span class="sui-icon-pencil" aria-hidden="true"></span><?php esc_html_e( 'Titles & Meta', 'wds' ); ?>
+		</h2>
 	</div>
 
 	<div class="sui-box-body">
@@ -39,19 +39,21 @@ $onpage_enabled = Smartcrawl_Settings::get_setting( 'onpage' );
 	<div class="sui-box-footer">
 		<?php if ( $onpage_enabled ): ?>
 			<a href="<?php echo esc_attr( $page_url ); ?>"
+			   aria-label="<?php esc_html_e( 'Configure titles and meta component', 'wds' ); ?>"
 			   class="sui-button sui-button-ghost">
 
-				<i class="sui-icon-wrench-tool"
-				   aria-hidden="true"></i> <?php esc_html_e( 'Configure', 'wds' ); ?>
+				<span class="sui-icon-wrench-tool"
+				      aria-hidden="true"></span> <?php esc_html_e( 'Configure', 'wds' ); ?>
 			</a>
 		<?php else : ?>
 			<button type="button"
 			        data-option-id="<?php echo esc_attr( $option_name ); ?>"
 			        data-flag="<?php echo esc_attr( 'onpage' ); ?>"
+			        aria-label="<?php esc_html_e( 'Activate title and meta component', 'wds' ); ?>"
 			        class="wds-activate-component wds-disabled-during-request sui-button sui-button-blue">
 
 				<span class="sui-loading-text"><?php esc_html_e( 'Activate', 'wds' ); ?></span>
-				<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+				<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 			</button>
 		<?php endif; ?>
 	</div>

@@ -1,18 +1,44 @@
-(function ($, undefined) {
-	window.Wds = window.Wds || {};
-	var crawlerReport = window.Wds.URLCrawlerReport;
+import ErrorBoundary from "./components/error-boundry";
+import {render} from "react-dom";
+import React from "react";
+import CrawlReport from "./components/crawler/crawl-report";
+import UrlUtil from "./components/utils/url-util";
+import NewsSitemapTab from "./components/sitemaps/news-sitemap-tab";
+import Config_Values from "./es6/config-values";
 
-	function update_page_after_report_reload() {
-		var $report = $('.wds-crawl-results-report'),
-			active_issues = $report.data('activeIssues'),
-			ignored_issues = $report.data('ignoredIssues'),
-			$vertical_tab = $report.closest('.tab_url_crawler'),
-			$title_issues_indicator = $vertical_tab.find('.sui-box-header .sui-tag'),
+(function ($, undefined) {
+	const reportContainer = document.getElementById('wds-url-crawler-report');
+	if (reportContainer) {
+		render(
+			<ErrorBoundary>
+				<CrawlReport
+					onActiveIssueCountChange={update_page_after_report_reload}/>
+			</ErrorBoundary>,
+			reportContainer
+		);
+	}
+
+	const newsSitemapTab = document.getElementById('wds-news-sitemap-tab');
+	if (newsSitemapTab) {
+		render(<ErrorBoundary><NewsSitemapTab
+			homeUrl={Config_Values.get('home_url', 'news')}
+			schemaEnabled={Config_Values.get('schema_enabled', 'news')}
+			enabled={Config_Values.get('enabled', 'news')}
+			publication={Config_Values.get('publication', 'news')}
+			postTypes={Config_Values.get('post_types', 'news')}
+		/></ErrorBoundary>, newsSitemapTab);
+	}
+
+	function update_page_after_report_reload(active_issues, active_sitemap_issues) {
+		const $title_issues_indicator = $('#tab_url_crawler .sui-box-header .sui-tag'),
 			$crawler_tab = $('li.tab_url_crawler'),
 			$label_issues_indicator = $crawler_tab.find('.sui-tag'),
 			$label_tick = $crawler_tab.find('.sui-icon-check-tick'),
 			$label_spinner = $crawler_tab.find('.sui-icon-loader'),
 			$new_crawl_button = $('.wds-new-crawl-button'),
+			$summary_number = $('.sui-summary-large'),
+			$summary_icon = $('.sui-summary-large + [class*="sui-icon-"]'),
+			$sitemap_issue_count = $('.wds-invisible-urls-count'),
 			$title_ignore_all_button = $('.sui-box-header .wds-ignore-all').closest('div');
 
 		if (active_issues === undefined) {
@@ -25,12 +51,22 @@
 			$label_issues_indicator.show().html(active_issues);
 			$title_ignore_all_button.show();
 			$label_tick.hide();
+			$summary_icon
+				.removeClass('sui-icon-check-tick sui-success')
+				.addClass('sui-icon-info sui-warning');
 		} else {
 			$title_issues_indicator.hide();
 			$label_issues_indicator.hide();
 			$title_ignore_all_button.hide();
 			$label_tick.show();
+			$summary_icon
+				.removeClass('sui-icon-info sui-warning')
+				.addClass('sui-icon-check-tick sui-success');
 		}
+
+		// Show active issue count in top section
+		$summary_number.html(active_issues);
+		$sitemap_issue_count.html(active_sitemap_issues);
 
 		// Hide the spinner and show the new crawl button regardless of the result
 		$label_spinner.hide();
@@ -38,53 +74,46 @@
 	}
 
 	function update_progress() {
-		var $container = $('.tab_url_crawler');
+		const $container = $('.tab_url_crawler');
 		if (
 			!$container.find('.wds-url-crawler-progress').length
-			|| !crawlerReport
 		) {
 			return;
 		}
 
-		crawlerReport.reload_report().done(function () {
-			setTimeout(update_progress, 5000);
+		/**
+		 * @param {{data:{in_progress:boolean, progress: int}}} response
+		 */
+		get_crawl_progress().done(function (response) {
+			const in_progress = response?.data?.in_progress;
+			const progress = response?.data?.progress;
+			const $progress_bar = $('#tab_url_crawler .wds-progress');
+
+			if (in_progress) {
+				Wds.update_progress_bar($progress_bar, progress);
+				setTimeout(update_progress, 5000);
+			} else {
+				Wds.update_progress_bar($progress_bar, 100);
+				window.location.reload();
+			}
 		});
 	}
 
-	function handle_accordion_item_click() {
-		var $accordion_item = $(this).closest('.sui-accordion-item');
-
-		// Keep one section open at a time
-		$('.sui-accordion-item--open').not($accordion_item).removeClass('sui-accordion-item--open');
+	function get_crawl_progress() {
+		return $.post(
+			ajaxurl,
+			{
+				action: 'wds_get_crawl_progress',
+				_wds_nonce: Wds.get('crawler', 'nonce')
+			},
+			() => false,
+			'json'
+		);
 	}
 
-	function initialize_components() {
-		$('.sui-accordion').each(function () {
-			SUI.suiAccordion(this);
-		});
-		$('.sui-accordion-item-header').off('click.sui.accordion').on('click.sui.accordion', handle_accordion_item_click);
-		SUI.suiTabs();
-	}
-
-	// As soon as a link is clicked inside the dropdown close it
-	function close_links_dropdown() {
-		var $dropdown = $(this).closest('.wds-links-dropdown');
-		$dropdown.removeClass('open');
-	}
-
-	function change_crawl_frequency() {
-		var $radio = $(this),
-			frequency = $radio.val();
-
-		$dow_selects = $('.wds-dow').hide();
-		$dow_selects.find('select').prop('disabled', true);
-		$dow_selects.filter('.' + frequency).show();
-		$dow_selects.filter('.' + frequency).find('select').prop('disabled', false);
-	}
-
-	function update_sitemap_sub_section_visbility() {
+	function update_sitemap_sub_section_visibility() {
 		$('.wds-sitemap-toggleable').each(function () {
-			var $toggleable = $(this),
+			const $toggleable = $(this),
 				$nested_table = $toggleable.next('tr').find('.sui-table');
 
 			if ($toggleable.find('input[type="checkbox"]').is(':checked')) {
@@ -95,20 +124,8 @@
 		});
 	}
 
-	function submit_dialog_form_on_enter(e) {
-		var $button = $(this).find('.wds-submit-redirect'),
-			key = e.which;
-
-		if ($button.length && 13 === key) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			$button.click();
-		}
-	}
-
 	function switch_to_native_sitemap() {
-		var $button = $('#wds-switch-to-native-button');
+		const $button = $('#wds-switch-to-native-button');
 
 		Wds.open_dialog(
 			'wds-switch-to-native-modal',
@@ -126,7 +143,7 @@
 	}
 
 	function switch_to_smartcrawl_sitemap() {
-		var $button = $('#wds-switch-to-smartcrawl-button');
+		const $button = $('#wds-switch-to-smartcrawl-button');
 
 		Wds.open_dialog(
 			'wds-switch-to-smartcrawl-modal',
@@ -144,7 +161,7 @@
 	}
 
 	function add_query_params(params) {
-		var current_url = window.location.href,
+		const current_url = window.location.href,
 			current_params = new URLSearchParams(window.location.search);
 
 		return current_url.split('?')[0] + '?' + $.param($.extend({}, {page: current_params.get('page')}, params));
@@ -159,6 +176,48 @@
 				_wds_nonce: Wds.get('sitemaps', 'nonce')
 			},
 			callback,
+			'json'
+		);
+	}
+
+	function manually_notify_search_engines() {
+		const $button = $(this);
+		$button.addClass('sui-button-onload');
+		return $.post(
+			ajaxurl,
+			{
+				action: 'wds-manually-update-engines',
+				_wds_nonce: Wds.get('sitemaps', 'nonce')
+			},
+			function () {
+				Wds.show_floating_message(
+					'wds-sitemap-manually-notify-search-engines',
+					Wds.l10n('sitemaps', 'manually_notified_engines'),
+					'success'
+				);
+				$button.removeClass('sui-button-onload');
+			},
+			'json'
+		);
+	}
+
+	function manually_update_sitemap() {
+		const $button = $(this);
+		$button.addClass('sui-button-onload');
+		return $.post(
+			ajaxurl,
+			{
+				action: 'wds-manually-update-sitemap',
+				_wds_nonce: Wds.get('sitemaps', 'nonce')
+			},
+			function () {
+				Wds.show_floating_message(
+					'wds-sitemap-manually-updated',
+					Wds.l10n('sitemaps', 'manually_updated'),
+					'success'
+				);
+				$button.removeClass('sui-button-onload');
+			},
 			'json'
 		);
 	}
@@ -184,17 +243,15 @@
 		window.Wds.conditional_fields();
 		window.Wds.dismissible_message();
 		window.Wds.vertical_tabs();
+		window.Wds.reporting_schedule();
 
 		update_progress();
-		initialize_components();
+		UrlUtil.removeQueryParam('crawl-in-progress');
 
 		$(document)
-			.on('click', '.wds-links-dropdown a', close_links_dropdown)
-			.on('change', '.wds-sitemap-toggleable input[type="checkbox"]', update_sitemap_sub_section_visbility)
-			.on('keydown', '.sui-modal', submit_dialog_form_on_enter)
-			.on('change', '.wds-crawler-frequency-radio', change_crawl_frequency)
+			.on('change', '.wds-sitemap-toggleable input[type="checkbox"]', update_sitemap_sub_section_visibility)
 			.on('change', '#wds_sitemap_options-sitemap-disable-automatic-regeneration', function () {
-				var $checkbox = $(this),
+				const $checkbox = $(this),
 					$notice = $checkbox.closest('.sui-toggle').find('.sui-notice');
 
 				$notice.toggleClass('hidden', $checkbox.is(':checked'));
@@ -202,20 +259,11 @@
 			.on('click', '#wds-switch-to-native-sitemap', switch_to_native_sitemap)
 			.on('click', '#wds-switch-to-smartcrawl-sitemap', switch_to_smartcrawl_sitemap)
 			.on('click', '#wds-deactivate-sitemap-module', deactivate_sitemap_module)
+			.on('click', '#wds-manually-update-sitemap', manually_update_sitemap)
+			.on('click', '#wds-manually-notify-search-engines', manually_notify_search_engines)
 		;
 
-		$('.wds-crawler-frequency-radio:checked').each(function () {
-			change_crawl_frequency.apply(this);
-		});
-
-		if (crawlerReport) {
-			crawlerReport.init();
-			$(crawlerReport)
-				.on('wds_url_crawler_report:reloaded', update_page_after_report_reload)
-				.on('wds_url_crawler_report:reloaded', initialize_components);
-		}
-
-		$(update_sitemap_sub_section_visbility);
+		$(update_sitemap_sub_section_visibility);
 	}
 
 	$(init);

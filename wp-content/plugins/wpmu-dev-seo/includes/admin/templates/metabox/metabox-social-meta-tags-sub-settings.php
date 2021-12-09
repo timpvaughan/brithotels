@@ -44,7 +44,7 @@ $images_description = empty( $images_description ) ? false : $images_description
 			     style="<?php echo $single_image && $images_available ? 'display:none;' : ''; ?>">
 				<a href="#add" id="<?php echo esc_attr( $field_name ); ?>-images"
 				   title="<?php esc_attr_e( 'Add image', 'wds' ); ?>">
-					<i class="sui-icon-upload-cloud" aria-hidden="true"></i>
+					<span class="sui-icon-upload-cloud" aria-hidden="true"></span>
 				</a>
 			</div>
 			<?php if ( $images_available ) : ?>

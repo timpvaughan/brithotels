@@ -97,6 +97,7 @@ class Smartcrawl_Endpoint_Resolver {
 			$this->set_location( self::L_BP_GROUPS );
 		} elseif ( function_exists( 'bp_current_component' ) && 'profile' === bp_current_component() ) {
 			$this->set_location( self::L_BP_PROFILE );
+		} elseif ( function_exists( 'bp_current_component' ) && bp_current_component() && 'profile' !== bp_current_component() ) {
 		} elseif ( is_singular() ) {
 			$this->set_location( self::L_SINGULAR );
 		}
@@ -109,10 +110,10 @@ class Smartcrawl_Endpoint_Resolver {
 	 */
 	private function is_static_posts_page() {
 		$page_for_posts = (int) get_option( 'page_for_posts' );
-		$query          = $this->get_query_context();
+		$query = $this->get_query_context();
 		return 'page' === get_option( 'show_on_front' )
-			&& 0 < $page_for_posts
-			&& $query->get_queried_object_id() === $page_for_posts;
+		       && 0 < $page_for_posts
+		       && $query->get_queried_object_id() === $page_for_posts;
 	}
 
 	/**
@@ -122,10 +123,10 @@ class Smartcrawl_Endpoint_Resolver {
 	 */
 	private function is_home_posts_page() {
 		return is_home() &&
-			(
-				'posts' === get_option( 'show_on_front' ) ||
-				0 === (int) get_option( 'page_on_front' )
-			);
+		       (
+			       'posts' === get_option( 'show_on_front' ) ||
+			       0 === (int) get_option( 'page_on_front' )
+		       );
 	}
 
 	/**

@@ -84,7 +84,7 @@ $this->_render( 'toggle-group', array(
 	<div class="sui-box-settings-col-2">
 		<button type="submit" name="deactivate-autolinks-component"
 		        class="sui-button sui-button-ghost">
-			<i class="sui-icon-power-on-off" aria-hidden="true"></i>
+			<span class="sui-icon-power-on-off" aria-hidden="true"></span>
 			<?php esc_html_e( 'Deactivate', 'wds' ); ?>
 		</button>
 	</div>
