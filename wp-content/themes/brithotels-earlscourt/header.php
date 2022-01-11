@@ -21,6 +21,32 @@
     <!--<link href="https://fonts.googleapis.com/css?family=Baskervville%7CLibre+Baskerville%7CMontserrat:200,400,500&display=swap" rel="stylesheet">-->
 	<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400&family=Montserrat:wght@200;400;500&display=swap" rel="stylesheet">
 	<?php wp_head(); ?>
+
+	<?php if (has_post_thumbnail() ):
+		$url = wp_get_attachment_url( get_post_thumbnail_id( $post->ID ) );?>
+		<meta property="og:image" content="<?php echo $url ?>"/>
+	<?php endif;?>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-NQW2P3X186"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-NQW2P3X186');
+	</script>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173907043-1"></script>
+<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+	gtag('config', 'UA-173907043-1');
+</script>
+
 </head>
 
 <body <?php body_class(); ?>>
@@ -45,7 +71,7 @@
 				<div id="offcanvas-menu-wrapper">
 					<div class="menu-logo">
 						<img src="<?php echo get_template_directory_uri(); ?>/assets/images/text-logo.svg" alt="" />
-						<h4><?php esc_html_e('Earls Courts', 'brithotels'); ?></h4>
+						<h4><?php esc_html_e('Earls Court', 'brithotels'); ?></h4>
 					</div>
 		            <?php
 			            wp_nav_menu( array(

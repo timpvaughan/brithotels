@@ -1,5 +1,21 @@
 input{font-family:"Montserrat",sans-serif;}
 
+.page-content.facilities a{
+  color: #686868;
+}
+#cmplz-document {
+    max-width: 60%;
+    margin: auto;
+    text-align: left;
+}
+#cmplz-document a{
+  color: #686868;
+}
+#cmplz-document p, #cmplz-document li, #cmplz-document td {
+    font-size: 2rem;
+    margin-top: 0;
+}
+
 .privacy-policy .entry-content {
     padding: 0 200px;
 }
@@ -189,14 +205,14 @@ h4 {
 
 
 @media (max-width: 991px){
-    
+
     .privacy-policy .entry-content {
         padding: 0;
     }
-     
+
      h1.page-title, h2.page-title {
         font-size: 4rem;
-    }   
+    }
     .footer-icons {
         padding-top: 50px;
         padding-bottom: 50px;
@@ -259,14 +275,14 @@ h4 {
     }
     .pb200 {
         padding-bottom: 15px;
-        padding-top: 15px;       
+        padding-top: 15px;
     }
     .pt200 {
         padding-top: 15px;
     }
-    
-    
-    
+
+
+
     .next-page h2 , .info-box h3 {
         font-size: 2.8rem;
     }
@@ -286,7 +302,7 @@ h4 {
     .hotel-list .body ul li{
         font-size: 1.6rem;
     }
-       
+
 }
 
 @media (max-width: 767px){
