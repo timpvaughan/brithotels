@@ -1,8 +1,18 @@
 input{font-family:"Montserrat",sans-serif;}
 
-.page-content.facilities a{
-  color: #686868;
+
+.page-template-tpl-basic-page p, .page-template-tpl-basic-page ul, .page-template-tpl-basic-page ol{
+    font-size: 2rem;
+    font-weight: 200;
+    font-family: "Montserrat",sans-serif;
+    color: #686868;
+    margin-bottom: 30px;
+    line-height: 1.5;
 }
+
+/* .page-content.facilities a{
+  color: #686868;
+} */
 #cmplz-document {
     max-width: 60%;
     margin: auto;
@@ -16,7 +26,7 @@ input{font-family:"Montserrat",sans-serif;}
     margin-top: 0;
 }
 
-.privacy-policy .entry-content {
+/* .privacy-policy .entry-content {
     padding: 0 200px;
 }
 .privacy-policy .entry-content{
@@ -27,7 +37,7 @@ input{font-family:"Montserrat",sans-serif;}
 }
 .privacy-policy .entry-content h3 {
     margin-bottom:15px;
-}
+} */
 
 .footer {
     background: #141414;
@@ -308,6 +318,9 @@ h4 {
 @media (max-width: 767px){
     .facilities ul li {
         flex: 0 0 95%;
+    }
+    ol, ul {
+        margin: 0 0 1.5em 0em;
     }
 }
 
