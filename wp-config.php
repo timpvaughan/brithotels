@@ -1,4 +1,7 @@
 <?php
+/** Enable W3 Total Cache */
+define('WP_CACHE', true); // Added by W3 Total Cache
+
 /**
  * The base configuration for WordPress
  *
@@ -23,10 +26,10 @@
 define( 'DB_NAME', 'projects_brithotels' );
 
 /** MySQL database username */
-define( 'DB_USER', 'root' );
+define( 'DB_USER', 'brithotel' );
 
 /** MySQL database password */
-define( 'DB_PASSWORD', 'root' );
+define( 'DB_PASSWORD', 'cxr5@5LzrMe1goZh' );
 
 /** MySQL hostname */
 define( 'DB_HOST', 'localhost' );
@@ -80,22 +83,24 @@ $table_prefix = 'bhs_';
  *
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
-define( 'WP_DEBUG', true);
-define( 'WP_DEBUG_DISPLAY', true);
-define( 'WP_DEBUG_LOG', true);
-define( 'SCRIPT_DEBUG', true );
+define( 'WP_DEBUG', false);
+define( 'WP_DEBUG_DISPLAY', false);
+define( 'WP_DEBUG_LOG', false);
+define( 'SCRIPT_DEBUG', false );
 
-define( 'WP_HOME','http://brithotels.test/');
-define( 'WP_SITEURL','http://brithotels.test/');
+define( 'WP_HOME','http://brithotels.com/');
+define( 'WP_SITEURL','http://brithotels.com/');
 
 define( 'WP_ALLOW_MULTISITE', true);
 
 define( 'MULTISITE', true);
 define( 'SUBDOMAIN_INSTALL', false);
-define( 'DOMAIN_CURRENT_SITE', 'brithotels.test');
+define( 'DOMAIN_CURRENT_SITE', 'brithotels.com');
 define( 'PATH_CURRENT_SITE', '/');
 define( 'SITE_ID_CURRENT_SITE', 1);
 define( 'BLOG_ID_CURRENT_SITE', 1);
+
+define( 'AUTOPTIMIZE_WP_CONTENT_URL', 'https://brithotels.com/wp-content');
 
 //only for dev debug for email testing
 //define('CBXWPWRITELOG_EMAIL_FAILED', false);
